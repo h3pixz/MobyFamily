@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { BynIcon } from '@/components/ui/byn-icon';
 import { Card } from '@/components/ui/card';
 import { Icon } from '@/components/ui/icon';
+import { IconTile } from '@/components/ui/icon-tile';
 import type { DecisionRequest } from '@/types/dashboard';
 import { formatBYN } from '@/utils/format';
 
@@ -23,7 +24,7 @@ export function DecisionsSection({ requests, onApprove, onDecline }: DecisionsSe
             Требует решения
           </Text>
           {requests.length > 0 ? (
-            <Badge label={String(requests.length)} tone="secondary" dot />
+            <Badge label={String(requests.length)} tone="warning" dot />
           ) : null}
         </View>
         <Text className="text-label-sm font-inter-medium text-outline">Саша ожидает</Text>
@@ -62,68 +63,71 @@ function DecisionCard({ request, onApprove, onDecline }: DecisionCardProps) {
 
   return (
     <Card className="gap-2.5 p-space-md">
-      <View className="flex-row items-start gap-2.5">
-        <View
-          className={`h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ${
-            purchase ? 'bg-secondary-fixed/50' : 'bg-tertiary-fixed/50'
-          }`}>
-          <Icon name={request.icon} size={22} color={purchase ? '#994700' : '#006242'} />
-        </View>
+      <View className="flex-row items-start gap-3">
+        <IconTile icon={request.icon} tone={purchase ? 'secondary' : 'tertiary'} />
         <View className="min-w-0 flex-1">
           <View className="flex-row items-start justify-between gap-2">
-            <Text className="flex-1 text-label-lg font-inter-semibold text-on-surface">
-              {request.title}
-            </Text>
-            <View className="flex-shrink-0 flex-row items-center gap-1 pt-0.5">
-              <Text
-                className={`text-label-lg font-inter-bold ${
-                  purchase ? 'text-on-surface' : 'text-tertiary'
-                }`}>
-                {purchase ? formatBYN(request.amount) : `+${formatBYN(request.amount)}`}
+            <View className="min-w-0 flex-1 flex-row flex-wrap items-center">
+              <Text className="text-label-lg font-inter-semibold leading-snug text-on-surface">
+                {request.title}
               </Text>
-              <BynIcon size={10} color={purchase ? '#191C1E' : '#006242'} />
+              {purchase ? (
+                <View className="flex-row items-center">
+                  <Text className="text-label-lg font-inter-semibold leading-snug text-on-surface">
+                    {' · '}
+                  </Text>
+                  <Text className="text-label-lg font-inter-semibold leading-snug text-on-surface">
+                    {formatBYN(request.amount)}
+                  </Text>
+                  <BynIcon size={10} color="#191C1E" style={{ marginLeft: 2 }} />
+                </View>
+              ) : null}
             </View>
+            {!purchase ? (
+              <View className="flex-shrink-0 flex-row items-center gap-1 rounded-full bg-success-soft px-2 py-0.5">
+                <Text className="text-label-sm font-inter-bold text-success">
+                  +{formatBYN(request.amount)}
+                </Text>
+                <BynIcon size={9} color="#00B856" />
+              </View>
+            ) : null}
           </View>
-          {purchase ? (
-            <View className="flex-row flex-wrap items-center">
-              <Text className="text-body-sm text-on-surface-variant">{request.subtitle} · </Text>
-              <Text className="text-body-sm text-on-surface-variant">
-                {formatBYN(request.amount)}
-              </Text>
-              <BynIcon size={9} color="#424655" style={{ marginLeft: 2 }} />
-            </View>
-          ) : (
-            <Text className="text-body-sm text-on-surface-variant">{request.subtitle}</Text>
-          )}
+          <Text className="pt-0.5 text-[13px] leading-[18px] text-on-surface-variant">
+            {request.subtitle}
+          </Text>
         </View>
       </View>
 
-      <View className="flex-row items-center justify-between gap-2 rounded-lg bg-secondary-fixed/40 px-2.5 py-1.5">
-        <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-1.5">
-          <Icon
-            name={purchase ? 'warning' : 'pending-actions'}
-            size={16}
-            color="#FB7800"
-          />
+      <View className="flex-row flex-wrap items-center gap-2 rounded-lg border border-warning/25 bg-warning-soft px-2.5 py-1.5">
+        <Icon
+          name={purchase ? 'warning' : 'pending-actions'}
+          size={purchase ? 18 : 16}
+          color="#FF7A00"
+        />
+        <View className="min-w-0 flex-1 flex-row flex-wrap items-center">
+          <Text className="text-label-sm font-inter-medium text-secondary">{request.note}</Text>
           {request.noteAmount !== undefined ? (
-            <View className="flex-row flex-wrap items-center">
-              <Text className="text-label-sm font-inter-medium text-on-secondary-fixed">
-                {request.note} (
-              </Text>
-              <Text className="text-label-sm font-inter-medium text-on-secondary-fixed">
+            <>
+              <Text className="text-label-sm font-inter-medium text-secondary"> (</Text>
+              <Text className="text-label-sm font-inter-medium text-secondary">
                 {formatBYN(request.noteAmount)}
               </Text>
-              <BynIcon size={9} color="#321200" style={{ marginHorizontal: 2 }} />
-              <Text className="text-label-sm font-inter-medium text-on-secondary-fixed">)</Text>
-            </View>
-          ) : (
-            <Text className="text-label-sm font-inter-semibold text-on-secondary-fixed">
-              {request.note}
-            </Text>
-          )}
+              <BynIcon size={9} color="#994700" style={{ marginHorizontal: 2 }} />
+              <Text className="text-label-sm font-inter-medium text-secondary">)</Text>
+            </>
+          ) : null}
+          {request.available !== undefined ? (
+            <>
+              <Text className="text-label-sm font-inter-medium text-secondary">. Доступно: </Text>
+              <Text className="text-label-sm font-inter-medium text-secondary">
+                {formatBYN(request.available)}
+              </Text>
+              <BynIcon size={9} color="#994700" style={{ marginHorizontal: 2 }} />
+            </>
+          ) : null}
         </View>
         {request.noteDetail ? (
-          <Text className="flex-shrink-0 text-label-sm font-inter-medium text-on-secondary-fixed/80">
+          <Text className="flex-shrink-0 text-label-sm font-inter-medium text-secondary/80">
             {request.noteDetail}
           </Text>
         ) : null}
@@ -133,14 +137,14 @@ function DecisionCard({ request, onApprove, onDecline }: DecisionCardProps) {
         <Button
           label="Отклонить"
           variant="secondary"
-          className="flex-1"
+          className="flex-1 rounded-xl"
           onPress={onDecline}
         />
         {purchase ? (
           <Button
             label="Одобрить"
             variant="primary"
-            className="flex-1"
+            className="flex-1 rounded-xl"
             onPress={onApprove}
             labelNode={
               <View className="flex-row items-center">
@@ -157,11 +161,15 @@ function DecisionCard({ request, onApprove, onDecline }: DecisionCardProps) {
             label="Подтвердить"
             icon="check-circle"
             variant="primary"
-            className="flex-1"
+            className="flex-1 rounded-xl"
             onPress={onApprove}
           />
         )}
       </View>
+
+      {request.hint ? (
+        <Text className="pt-0.5 text-center text-[11px] text-outline">{request.hint}</Text>
+      ) : null}
     </Card>
   );
 }
