@@ -32,20 +32,11 @@ export function FamilyMemberCard({
         </View>
 
         <View className="min-w-0 flex-1">
-          <View className="flex-row flex-wrap items-center gap-1.5">
-            <Text
-              numberOfLines={1}
-              className="text-headline-sm font-inter-semibold text-on-surface">
-              {member.name}
-            </Text>
-            {child ? (
-              <View
-                accessible
-                accessibilityLabel="Moby Junior"
-                className="h-2 w-2 flex-shrink-0 rounded-full bg-primary-container"
-              />
-            ) : null}
-          </View>
+          <Text
+            numberOfLines={1}
+            className="text-headline-sm font-inter-semibold text-on-surface">
+            {member.name}
+          </Text>
 
           {child && member.balance !== undefined ? (
             <View className="flex-row items-center gap-1">
