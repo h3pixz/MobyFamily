@@ -1,0 +1,6 @@
+{
+  "name": "expo-module-scripts",
+  "version": "56.0.3",
+  "private": true,
+  "description": "Local stub: resolves tsconfig extends used by published Expo packages (editor only)."
+}
