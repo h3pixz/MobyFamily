@@ -47,7 +47,6 @@ export const familyMembers: FamilyMember[] = [
     emoji: '👦🏻',
     age: childProfile.age,
     balance: childProfile.purchaseBalance,
-    online: true,
   },
   {
     id: 'member-parent-alexey',
@@ -55,7 +54,6 @@ export const familyMembers: FamilyMember[] = [
     name: 'Алексей',
     roleLabel: 'Совместный доступ',
     emoji: '👨🏻',
-    online: true,
   },
 ];
 

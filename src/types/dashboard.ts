@@ -52,7 +52,6 @@ export interface FamilyMember {
   emoji: string;
   age?: number;
   balance?: number;
-  online: boolean;
 }
 
 export interface BonusMember {

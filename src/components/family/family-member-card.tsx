@@ -29,9 +29,6 @@ export function FamilyMemberCard({
             }`}>
             <Text className="text-[22px]">{member.emoji}</Text>
           </View>
-          {!child && member.online ? (
-            <View className="absolute -right-0.5 top-0 h-3 w-3 rounded-full border-2 border-surface-lowest bg-secondary-container" />
-          ) : null}
         </View>
 
         <View className="min-w-0 flex-1">
@@ -47,16 +44,7 @@ export function FamilyMemberCard({
                 accessibilityLabel="Moby Junior"
                 className="h-2 w-2 flex-shrink-0 rounded-full bg-primary-container"
               />
-            ) : (
-              <View
-                className={`rounded-full px-2 py-0.5 ${
-                  member.online ? 'bg-surface-container' : 'bg-surface-low'
-                }`}>
-                <Text className="text-label-xs font-inter-semibold text-on-surface-variant">
-                  {member.online ? 'В сети' : 'Не в сети'}
-                </Text>
-              </View>
-            )}
+            ) : null}
           </View>
 
           {child && member.balance !== undefined ? (
