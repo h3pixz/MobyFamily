@@ -28,7 +28,7 @@ export function LoginHeader({ onPressSupport }: LoginHeaderProps) {
             </Text>
           </View>
           <Text className="mt-0.5 text-[9px] font-inter-semibold uppercase tracking-widest text-on-surface-variant">
-            МТБАНК
+            МТбанк
           </Text>
         </View>
       </View>

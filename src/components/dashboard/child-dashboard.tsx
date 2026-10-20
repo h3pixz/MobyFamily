@@ -38,12 +38,6 @@ export function ChildDashboard({
           <Text className="text-headline-sm font-inter-semibold text-on-surface">{greeting}</Text>
           <Text className="text-[16px]">✨</Text>
         </View>
-        <View className="flex-row items-center gap-1.5 pt-0.5">
-          <View className="h-2 w-2 rounded-full bg-success" />
-          <Text className="text-label-sm font-inter-medium text-tertiary">
-            Связь с картой ребёнка: онлайн
-          </Text>
-        </View>
       </View>
 
       <ChildSummaryCard
