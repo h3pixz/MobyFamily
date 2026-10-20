@@ -22,13 +22,6 @@ export function DashboardHeader({
 
   return (
     <View className="border-b border-outline-soft/70 bg-background px-4 pb-2.5 pt-1">
-      <View className="flex-row items-center justify-between py-1">
-        <View className="flex-row items-center gap-1.5 rounded-full bg-primary-soft px-2.5 py-0.5">
-          <View className="h-1.5 w-1.5 rounded-full bg-primary" />
-          <Text className="text-[10px] font-inter-semibold text-primary">Демо</Text>
-        </View>
-      </View>
-
       <View className="mt-1 flex-row items-center justify-between gap-2">
         <View className="flex-shrink flex-row items-center gap-2">
           <IconTile icon="account-balance-wallet" tone="solidPrimary" size="sm" />
@@ -67,7 +60,7 @@ export function DashboardHeader({
                     ? 'font-inter-semibold text-primary'
                     : 'font-inter-medium text-on-surface-variant'
                 }`}>
-                Анна
+                Елена
               </Text>
             </Pressable>
             <Pressable
