@@ -10,6 +10,7 @@ export interface Task {
   id: string;
   title: string;
   subtitle: string;
+  from?: string;
   icon: IconName;
   reward: Reward;
   status: TaskStatus;

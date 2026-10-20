@@ -136,6 +136,15 @@ export const initialDecisions: DecisionRequest[] = [
 
 export const childTasks: Task[] = [
   {
+    id: 'task-groceries',
+    title: 'Помочь с покупками к ужину',
+    subtitle: 'Хлеб, молоко и яблоки по списку',
+    from: 'Задание от мамы',
+    icon: 'shopping-cart',
+    reward: { kind: 'money', amount: 5 },
+    status: 'pending',
+  },
+  {
     id: 'task-room',
     title: 'Убраться в комнате',
     subtitle: 'Срок: сегодня до 19:00',
