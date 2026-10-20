@@ -10,7 +10,7 @@ import type {
 
 export const parentProfile: ParentProfile = {
   name: 'Анна',
-  greeting: 'Доброе утро, Анна',
+  greeting: 'Здравствуйте, Анна',
   avatarUrl:
     'https://lh3.googleusercontent.com/aida-public/AB6AXuAiO545l76QWuQmCHaZU-bGb03c5JLBEwo-BawjnoleKfqFTrV0NyzwWDQkfoSz1FtY6PMyS-bUZWhmeyk0_jTnCun2zCVzlsQm3u9cPOkDvra4R7Qk0R91x2_a-PbPx6RWufZ8dRtjyQs2nUEGtVyFK84emFNrJeixBioLz329BMuy7qPIY4oyVxa6q1MIeusuO1epSiIszSlBj4stSlW5tpggmyb3UWZabunxKLVv1cOPQpq7k_o_Kw',
 };
