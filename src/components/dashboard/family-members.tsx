@@ -34,7 +34,7 @@ export function FamilyMembersSection({
         <View className="flex-row items-center gap-1.5">
           <Text className="text-body-md font-inter-bold text-on-surface">Члены семьи</Text>
           <View className="rounded-full bg-surface-container px-1.5 py-0.5">
-            <Text className="text-label-xs font-inter-semibold text-on-surface-variant">
+            <Text className="text-label-md font-inter-semibold text-on-surface-variant">
               {members.length}
             </Text>
           </View>
@@ -49,8 +49,8 @@ export function FamilyMembersSection({
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={{ marginHorizontal: -16 }}
-        contentContainerStyle={{ gap: 12, paddingHorizontal: 16 }}>
+        style={{ marginHorizontal: -20 }}
+        contentContainerStyle={{ gap: 12, paddingHorizontal: 20, paddingVertical: 4 }}>
         {members.map((member) => {
           const child = member.kind === 'child';
 
@@ -101,7 +101,7 @@ export function FamilyMembersSection({
                     <Text className="text-body-md font-inter-extrabold text-primary-container">
                       {formatBYN(member.balance)}
                     </Text>
-                    <BynIcon size={10} color="#1D63ED" />
+                    <BynIcon size={11} color="#1D63ED" />
                   </View>
                 ) : (
                   <Text className="mt-1 text-label-sm font-inter-semibold text-outline">Родитель</Text>
