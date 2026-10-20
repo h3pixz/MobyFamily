@@ -1,5 +1,7 @@
 import type { IconName } from '@/types/icons';
 
+export type AppRole = 'parent' | 'child';
+
 export type TaskStatus = 'pending' | 'in_progress';
 
 export type Reward = { kind: 'money'; amount: number } | { kind: 'points'; amount: number };
@@ -115,7 +117,9 @@ export interface SavingsGoal {
   title: string;
   subtitle: string;
   icon: IconName;
+  deadline: string;
   saved: number;
   target: number;
   weeklyDelta: number;
+  monthsLeft: number;
 }
