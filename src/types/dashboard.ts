@@ -55,6 +55,16 @@ export interface FamilyMember {
   online: boolean;
 }
 
+export interface BonusMember {
+  id: string;
+  kind: FamilyMemberKind;
+  name: string;
+  roleLabel?: string;
+  emoji?: string;
+  points: number;
+  goal?: number;
+}
+
 export type AccountTone = 'primary' | 'tertiary';
 
 export interface Account {

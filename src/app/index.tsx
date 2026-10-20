@@ -10,6 +10,7 @@ import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 import { ParentDashboard } from '@/components/dashboard/parent-dashboard';
 import {
   accounts,
+  bonusMembers,
   childProfile,
   childTasks,
   familyMembers,
@@ -78,6 +79,7 @@ export default function HomeScreen() {
             <ParentDashboard
               card={parentCard}
               members={familyMembers}
+              bonuses={bonusMembers}
               accounts={accounts}
               quickPayments={quickPayments}
               pendingCount={decisions.length}

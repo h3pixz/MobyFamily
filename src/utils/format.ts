@@ -5,6 +5,12 @@ export function formatBYN(value: number): string {
   return `${sign}${grouped},${decimals}`;
 }
 
+export function formatPoints(value: number): string {
+  return Math.round(value)
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
 export function formatPercent(value: number, total: number): number {
   if (total <= 0) {
     return 0;

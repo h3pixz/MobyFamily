@@ -1,5 +1,6 @@
 import type {
   Account,
+  BonusMember,
   ChildProfile,
   DecisionRequest,
   FamilyMember,
@@ -55,6 +56,24 @@ export const familyMembers: FamilyMember[] = [
     roleLabel: 'Совместный доступ',
     emoji: '👨🏻',
     online: true,
+  },
+];
+
+export const bonusMembers: BonusMember[] = [
+  {
+    id: 'bonus-anna',
+    kind: 'parent',
+    name: 'Анна',
+    roleLabel: 'Родитель',
+    points: 1240,
+  },
+  {
+    id: 'bonus-sasha',
+    kind: 'child',
+    name: 'Саша',
+    emoji: '👦🏻',
+    points: 350,
+    goal: 500,
   },
 ];
 
