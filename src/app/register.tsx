@@ -42,7 +42,7 @@ export default function RegisterScreen() {
             activeTab="register"
             onChange={(tab) => {
               if (tab === 'login') {
-                openSoon('Вход');
+                router.push('/login');
               }
             }}
           />
@@ -57,7 +57,7 @@ export default function RegisterScreen() {
           <AuthSwitch
             prompt="Уже есть аккаунт?"
             actionLabel="Войти"
-            onPress={() => openSoon('Вход')}
+            onPress={() => router.push('/login')}
           />
         </ScrollView>
       </KeyboardAvoidingView>
