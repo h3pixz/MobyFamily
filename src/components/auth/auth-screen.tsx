@@ -67,7 +67,10 @@ export function AuthScreen({ initialTab }: AuthScreenProps) {
           <View className="px-4">
             {isLogin ? (
               <LoginForm
-                onSubmit={() => router.replace('/')}
+                onSubmit={({ login, password }) => {
+                  const isChildDemo = login.toLowerCase() === 'child' && password === 'child';
+                  router.replace(isChildDemo ? '/child' : '/');
+                }}
                 onForgotPassword={() => openSoon('Восстановление пароля')}
               />
             ) : (

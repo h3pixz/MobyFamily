@@ -18,7 +18,7 @@ type FieldKey = 'login' | 'password';
 type FormErrors = Partial<Record<FieldKey, string>>;
 
 type LoginFormProps = {
-  onSubmit: () => void;
+  onSubmit: (credentials: { login: string; password: string }) => void;
   onForgotPassword: () => void;
 };
 
@@ -56,7 +56,7 @@ export function LoginForm({ onSubmit, onForgotPassword }: LoginFormProps) {
     setSubmitting(true);
     setTimeout(() => {
       setSubmitting(false);
-      onSubmit();
+      onSubmit({ login: login.trim(), password });
     }, 700);
   };
 
