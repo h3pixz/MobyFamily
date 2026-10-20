@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { PanResponder, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BottomNav } from '@/components/dashboard/bottom-nav';
@@ -39,8 +39,22 @@ export default function HomeScreen() {
     setDecisions((current) => current.filter((request) => request.id !== id));
   };
 
+  const swipeBack = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponderCapture: (_, gesture) =>
+        gesture.dx > 12 && Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.5,
+      onPanResponderRelease: (_, gesture) => {
+        if (gesture.dx > 70) {
+          changeRole('parent');
+        }
+      },
+    }),
+  ).current;
+
   return (
-    <View style={{ flex: 1, backgroundColor: '#F8F9FB' }}>
+    <View
+      style={{ flex: 1, backgroundColor: '#F8F9FB' }}
+      {...(role === 'child' ? swipeBack.panHandlers : {})}>
       <View style={{ backgroundColor: '#FFFFFF', paddingTop: insets.top }}>
         <DashboardHeader
           role={role}
