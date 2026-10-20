@@ -20,7 +20,7 @@ export function TasksSection({ tasks, onNewTask }: TasksSectionProps) {
       <SectionHeader title="Задания Саши" actionLabel="+ Новое задание" onAction={onNewTask} />
 
       {tasks.length === 0 ? (
-        <Text className="py-2 text-center text-body-sm text-on-surface-variant">
+        <Text className="py-2 text-center text-body-sm font-inter text-on-surface-variant">
           Активных заданий нет
         </Text>
       ) : (
@@ -40,7 +40,7 @@ function TaskRow({ task }: { task: Task }) {
             <Text className="text-label-lg font-inter-semibold text-on-surface" numberOfLines={1}>
               {task.title}
             </Text>
-            <Text className="text-[13px] leading-[18px] text-outline">{task.subtitle}</Text>
+            <Text className="text-[13px] font-inter leading-[18px] text-outline">{task.subtitle}</Text>
           </View>
         </View>
         {task.reward.kind === 'points' ? (
@@ -63,7 +63,7 @@ function TaskRow({ task }: { task: Task }) {
         <Badge label="В процессе" tone="info" />
         <View className="flex-row items-center gap-1">
           <Icon name="notifications-active" size={14} color="#737686" />
-          <Text className="text-[12px] text-outline">Напоминание отправлено</Text>
+          <Text className="text-[12px] font-inter text-outline">Напоминание отправлено</Text>
         </View>
       </View>
     </View>

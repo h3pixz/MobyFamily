@@ -190,7 +190,7 @@ export function RegisterForm({ onSubmit, onOpenPolicy }: RegisterFormProps) {
           error={errors.terms}
           accessibilityLabel="Согласие с условиями обслуживания и политикой конфиденциальности"
           labelNode={
-            <Text className="text-body-sm leading-tight text-on-surface-variant">
+            <Text className="text-body-sm font-inter leading-tight text-on-surface-variant">
               Я согласен с{' '}
               <Text
                 accessibilityRole="link"

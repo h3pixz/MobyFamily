@@ -42,10 +42,10 @@ export function ChildSummaryCard({ child, onPressPocketMoney }: ChildSummaryCard
         <View className="flex-row gap-3">
           <View className="flex-1 gap-1 rounded-xl border border-white/10 bg-white/10 p-2.5">
             <View className="flex-row flex-wrap items-center justify-between gap-1">
-              <Text className="text-[11px] leading-tight text-white/80">Для покупок</Text>
+              <Text className="text-[11px] font-inter leading-tight text-white/80">Для покупок</Text>
               <View className="flex-row items-center gap-1 rounded bg-success-soft/20 px-1.5 py-0.5">
                 <View className="h-1.5 w-1.5 rounded-full bg-tertiary-fixed-dim" />
-                <Text className="text-[10px] text-white">Активна</Text>
+                <Text className="text-[10px] font-inter text-white">Активна</Text>
               </View>
             </View>
             <View className="flex-row items-center gap-1 pt-0.5">
@@ -54,12 +54,12 @@ export function ChildSummaryCard({ child, onPressPocketMoney }: ChildSummaryCard
               </Text>
               <BynIcon size={10} color="#FFFFFF" style={{ marginTop: 4 }} />
             </View>
-            <Text className="text-[10px] text-white/70">Можно потратить</Text>
+            <Text className="text-[10px] font-inter text-white/70">Можно потратить</Text>
           </View>
 
           <View className="flex-1 gap-1 rounded-xl border border-white/10 bg-white/10 p-2.5">
             <View className="flex-row items-center justify-between gap-1">
-              <Text className="text-[11px] leading-tight text-white/80">В копилке</Text>
+              <Text className="text-[11px] font-inter leading-tight text-white/80">В копилке</Text>
               <Icon name="savings" size={16} color="rgba(255,255,255,0.8)" />
             </View>
             <View className="flex-row items-center gap-1 pt-0.5">
@@ -68,7 +68,7 @@ export function ChildSummaryCard({ child, onPressPocketMoney }: ChildSummaryCard
               </Text>
               <BynIcon size={10} color="#FFFFFF" style={{ marginTop: 4 }} />
             </View>
-            <Text className="text-[10px] text-white/70">
+            <Text className="text-[10px] font-inter text-white/70">
               {child.activeGoals} {goalsLabel}
             </Text>
           </View>
@@ -94,11 +94,11 @@ export function ChildSummaryCard({ child, onPressPocketMoney }: ChildSummaryCard
           <View className="flex-row flex-wrap items-center justify-between gap-2 px-1">
             <View className="flex-row flex-wrap items-center gap-1">
               <Icon name="calendar-today" size={14} color="rgba(255,255,255,0.8)" />
-              <Text className="text-[11px] text-white/80">
+              <Text className="text-[11px] font-inter text-white/80">
                 Карманные: {child.pocketMoney}
               </Text>
               <BynIcon size={8} color="rgba(255,255,255,0.8)" />
-              <Text className="text-[11px] text-white/80">
+              <Text className="text-[11px] font-inter text-white/80">
                 в неделю ({child.pocketMoneySchedule})
               </Text>
             </View>

@@ -13,7 +13,7 @@ export function AuthWelcome({ title, emoji, subtitle }: AuthWelcomeProps) {
         <Text className="text-headline-lg font-inter-bold text-on-surface">{title}</Text>
         <Text className="text-[18px]">{emoji}</Text>
       </View>
-      <Text className="mt-1 text-body-md text-on-surface-variant">{subtitle}</Text>
+      <Text className="mt-1 text-body-md font-inter text-on-surface-variant">{subtitle}</Text>
     </View>
   );
 }

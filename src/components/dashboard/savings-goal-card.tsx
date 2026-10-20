@@ -27,14 +27,14 @@ export function SavingsGoalCard({ goal, onAddMoney }: SavingsGoalCardProps) {
             <Text className="text-headline-sm font-inter-bold leading-tight text-on-surface">
               {goal.title}
             </Text>
-            <Text className="text-[12px] leading-4 text-outline">{goal.deadline}</Text>
+            <Text className="text-[12px] font-inter leading-4 text-outline">{goal.deadline}</Text>
           </View>
         </View>
         <View className="flex-shrink-0 items-end">
           <Badge label={`${percent}%`} tone="success" />
           <View className="flex-row items-center pt-0.5">
-            <Text className="text-[12px] text-outline">{formatBYN(goal.saved)} / </Text>
-            <Text className="text-[12px] text-outline">{formatBYN(goal.target)}</Text>
+            <Text className="text-[12px] font-inter text-outline">{formatBYN(goal.saved)} / </Text>
+            <Text className="text-[12px] font-inter text-outline">{formatBYN(goal.target)}</Text>
             <BynIcon size={9} color="#737686" style={{ marginLeft: 2 }} />
           </View>
         </View>

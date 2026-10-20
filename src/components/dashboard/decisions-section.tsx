@@ -32,7 +32,7 @@ export function DecisionsSection({ requests, onApprove, onDecline }: DecisionsSe
 
       {requests.length === 0 ? (
         <Card className="p-space-md">
-          <Text className="text-center text-body-sm text-on-surface-variant">
+          <Text className="text-center text-body-sm font-inter text-on-surface-variant">
             Все запросы обработаны
           </Text>
         </Card>
@@ -92,7 +92,7 @@ function DecisionCard({ request, onApprove, onDecline }: DecisionCardProps) {
               </View>
             ) : null}
           </View>
-          <Text className="pt-0.5 text-[13px] leading-[18px] text-on-surface-variant">
+          <Text className="pt-0.5 text-[13px] font-inter leading-[18px] text-on-surface-variant">
             {request.subtitle}
           </Text>
         </View>
@@ -168,7 +168,7 @@ function DecisionCard({ request, onApprove, onDecline }: DecisionCardProps) {
       </View>
 
       {request.hint ? (
-        <Text className="pt-0.5 text-center text-[11px] text-outline">{request.hint}</Text>
+        <Text className="pt-0.5 text-center text-[11px] font-inter text-outline">{request.hint}</Text>
       ) : null}
     </Card>
   );

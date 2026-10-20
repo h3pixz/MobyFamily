@@ -49,7 +49,7 @@ export default function PolicyScreen() {
                   <Text className="min-w-[24px] text-body-md font-inter-semibold text-on-surface">
                     {block.number}
                   </Text>
-                  <Text className="flex-1 text-body-md text-on-surface">{block.text}</Text>
+                  <Text className="flex-1 text-body-md font-inter text-on-surface">{block.text}</Text>
                 </View>
               );
             }
@@ -57,14 +57,14 @@ export default function PolicyScreen() {
             if (block.kind === 'bullet') {
               return (
                 <View key={index} className="flex-row gap-2 pl-4">
-                  <Text className="text-body-md text-on-surface">•</Text>
-                  <Text className="flex-1 text-body-md text-on-surface">{block.text}</Text>
+                  <Text className="text-body-md font-inter text-on-surface">•</Text>
+                  <Text className="flex-1 text-body-md font-inter text-on-surface">{block.text}</Text>
                 </View>
               );
             }
 
             return (
-              <Text key={index} className="pl-4 text-body-md text-on-surface">
+              <Text key={index} className="pl-4 text-body-md font-inter text-on-surface">
                 {block.text}
               </Text>
             );

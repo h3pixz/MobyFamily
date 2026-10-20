@@ -121,7 +121,7 @@ export function LoginForm({ onSubmit, onForgotPassword }: LoginFormProps) {
         onChange={setRemembered}
         accessibilityLabel="Запомнить меня"
         labelNode={
-          <Text className="text-body-sm text-on-surface">Запомнить меня</Text>
+          <Text className="text-body-sm font-inter text-on-surface">Запомнить меня</Text>
         }
       />
 

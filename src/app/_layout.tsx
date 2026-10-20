@@ -5,6 +5,7 @@ import {
   Inter_500Medium,
   Inter_600SemiBold,
   Inter_700Bold,
+  Inter_800ExtraBold,
   useFonts,
 } from '@expo-google-fonts/inter';
 import { Stack } from 'expo-router';
@@ -20,6 +21,7 @@ export default function RootLayout() {
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_700Bold,
+    Inter_800ExtraBold,
   });
 
   useEffect(() => {
