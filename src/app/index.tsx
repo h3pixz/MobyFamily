@@ -1,54 +1,54 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomNav } from '@/components/dashboard/bottom-nav';
-import { ChildSummaryCard } from '@/components/dashboard/child-summary-card';
+import { ChildDashboard } from '@/components/dashboard/child-dashboard';
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
-import { EventsSection } from '@/components/dashboard/events-section';
-import { PointsCard } from '@/components/dashboard/points-card';
-import { QuickActions } from '@/components/dashboard/quick-actions';
-import { SavingsGoalCard } from '@/components/dashboard/savings-goal-card';
-import { TasksSection } from '@/components/dashboard/tasks-section';
-import { Icon } from '@/components/ui/icon';
+import { ParentDashboard } from '@/components/dashboard/parent-dashboard';
 import {
+  accounts,
+  cardSettings,
   childProfile,
-  initialTasks,
-  parentPoints,
+  childTasks,
+  initialDecisions,
+  parentCard,
   parentProfile,
-  pendingPurchase,
-  recentEvents,
+  quickPayments,
   savingsGoal,
 } from '@/data/dashboard';
-import type { PendingPurchase, Task } from '@/types/dashboard';
+import type { AppRole, DecisionRequest } from '@/types/dashboard';
 
 export default function HomeScreen() {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
-  const [approval, setApproval] = useState<PendingPurchase | null>(pendingPurchase);
+  const [role, setRole] = useState<AppRole>('parent');
+  const [decisions, setDecisions] = useState<DecisionRequest[]>(initialDecisions);
+  const scrollRef = useRef<ScrollView>(null);
 
   const openSoon = (title: string) => {
     router.push({ pathname: '/soon', params: { title } });
   };
 
-  const resolveTask = (id: string) => {
-    setTasks((current) => current.filter((task) => task.id !== id));
+  const changeRole = (next: AppRole) => {
+    setRole(next);
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
   };
 
-  const resolveApproval = () => {
-    setApproval(null);
+  const resolveDecision = (id: string) => {
+    setDecisions((current) => current.filter((request) => request.id !== id));
   };
 
   return (
-    <SafeAreaView
-      edges={['top', 'bottom']}
-      style={{ flex: 1, backgroundColor: '#F4F5F8' }}>
+    <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1, backgroundColor: '#F8F9FB' }}>
       <DashboardHeader
+        role={role}
+        onChangeRole={changeRole}
         onPressNotifications={() => openSoon('Уведомления')}
         onPressProfile={() => openSoon('Профиль')}
       />
 
       <ScrollView
+        ref={scrollRef}
         className="flex-1"
         contentContainerStyle={{
           gap: 16,
@@ -57,40 +57,30 @@ export default function HomeScreen() {
           paddingTop: 8,
         }}
         showsVerticalScrollIndicator={false}>
-        <View className="pt-0.5">
-          <View className="flex-row items-center gap-1.5">
-            <Text className="text-[22px] font-inter-bold tracking-tight text-on-surface">
-              {parentProfile.greeting}
-            </Text>
-            <Icon name="auto-awesome" size={18} color="#F59E0B" />
-          </View>
-          <View className="mt-0.5 flex-row items-center gap-1.5">
-            <View className="h-2 w-2 rounded-full bg-accent" />
-            <Text className="text-[13px] font-inter text-on-surface-variant">
-              Связь с картой ребёнка: онлайн
-            </Text>
-          </View>
-        </View>
-
-        <ChildSummaryCard child={childProfile} />
-        <SavingsGoalCard goal={savingsGoal} onAddMoney={() => openSoon('Пополнение цели')} />
-        <QuickActions onPress={openSoon} />
-        <PointsCard points={parentPoints} onPress={() => openSoon('Баллы родителя')} />
-
-        <TasksSection
-          tasks={tasks}
-          onConfirm={resolveTask}
-          onDecline={resolveTask}
-          onNewTask={() => openSoon('Новое задание')}
-        />
-
-        <EventsSection
-          events={recentEvents}
-          approval={approval}
-          onApprove={resolveApproval}
-          onDecline={resolveApproval}
-          onPressHistory={() => openSoon('История событий')}
-        />
+        {role === 'parent' ? (
+          <ParentDashboard
+            profile={parentProfile}
+            card={parentCard}
+            accounts={accounts}
+            quickPayments={quickPayments}
+            pendingCount={decisions.length}
+            onPressAction={openSoon}
+            onSwitchToChild={() => changeRole('child')}
+          />
+        ) : (
+          <ChildDashboard
+            child={childProfile}
+            decisions={decisions}
+            tasks={childTasks}
+            goal={savingsGoal}
+            cardSettings={cardSettings}
+            onApprove={resolveDecision}
+            onDecline={resolveDecision}
+            onPressAction={openSoon}
+            onNewTask={() => openSoon('Новое задание')}
+            onAddMoney={() => openSoon('Пополнение цели')}
+          />
+        )}
       </ScrollView>
 
       <BottomNav

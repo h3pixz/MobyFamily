@@ -11,7 +11,7 @@ export default function SoonScreen() {
   return (
     <SafeAreaView
       edges={['top', 'bottom']}
-      style={{ flex: 1, backgroundColor: '#F4F5F8' }}>
+      style={{ flex: 1, backgroundColor: '#F8F9FB' }}>
       <View className="flex-row items-center gap-3 px-4 py-3">
         <Pressable
           accessibilityRole="button"
