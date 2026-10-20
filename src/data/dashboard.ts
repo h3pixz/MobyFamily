@@ -159,9 +159,7 @@ export const savingsGoal: SavingsGoal = {
   title: 'Новый телефон',
   subtitle: 'Копилка мечты',
   icon: 'smartphone',
-  deadline: 'Цель до 1 сентября',
   saved: 180,
   target: 600,
   weeklyDelta: 15,
-  monthsLeft: 4,
 };

@@ -117,9 +117,7 @@ export interface SavingsGoal {
   title: string;
   subtitle: string;
   icon: IconName;
-  deadline: string;
   saved: number;
   target: number;
   weeklyDelta: number;
-  monthsLeft: number;
 }
