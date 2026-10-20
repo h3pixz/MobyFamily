@@ -32,7 +32,7 @@ export default function ChildScreen() {
       <View style={{ backgroundColor: '#FFFFFF', paddingTop: insets.top }}>
         <DashboardHeader
           onPressNotifications={() => openSoon('Уведомления')}
-          onPressProfile={() => router.push('/register')}
+          onPressProfile={() => router.push('/profile')}
         />
       </View>
 
@@ -69,7 +69,7 @@ export default function ChildScreen() {
         activeTab="family"
         onPress={(tab) => {
           if (tab.key === 'profile') {
-            router.push('/register');
+            router.push('/profile');
           } else if (tab.key !== 'family') {
             openSoon(tab.label);
           }

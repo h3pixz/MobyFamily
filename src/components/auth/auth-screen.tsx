@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { isChildRole, loginWithPhone, registerAccount } from '@/api/auth';
+import { useAuth } from '@/auth/auth-context';
 import { AuthBackground } from '@/components/auth/auth-background';
 import { AuthSwitch } from '@/components/auth/auth-switch';
 import { AuthTabs } from '@/components/auth/auth-tabs';
@@ -18,16 +18,13 @@ type AuthScreenProps = {
 };
 
 export function AuthScreen({ initialTab }: AuthScreenProps) {
+  const { signIn, signUp } = useAuth();
   const [tab, setTab] = useState<AuthTab>(initialTab);
   const scrollRef = useRef<ScrollView>(null);
   const insets = useSafeAreaInsets();
 
   const openSoon = (title: string) => {
     router.push({ pathname: '/soon', params: { title } });
-  };
-
-  const openHome = (role: string) => {
-    router.replace(isChildRole(role) ? '/child' : '/');
   };
 
   const changeTab = (next: AuthTab) => {
@@ -73,16 +70,14 @@ export function AuthScreen({ initialTab }: AuthScreenProps) {
             {isLogin ? (
               <LoginForm
                 onSubmit={async ({ phone, password, remember }) => {
-                  const profile = await loginWithPhone(phone, password, remember);
-                  openHome(profile.role);
+                  await signIn(phone, password, remember);
                 }}
                 onForgotPassword={() => openSoon('Восстановление пароля')}
               />
             ) : (
               <RegisterForm
                 onSubmit={async (data) => {
-                  const profile = await registerAccount(data);
-                  openHome(profile.role);
+                  await signUp(data);
                 }}
                 onOpenPolicy={() => router.push('/policy')}
               />

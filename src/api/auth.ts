@@ -1,17 +1,29 @@
 import './client';
 
-import { authControllerGetProfile, authControllerLogin, authControllerRegister } from './gen/clients';
-import { saveSession } from './session';
+import {
+  authControllerGetProfile,
+  authControllerLogin,
+  authControllerLogout,
+  authControllerRegister,
+} from './gen/clients';
+import type { AuthResponseDto } from './gen/models/AuthResponseDto';
+import type { UserProfileDto } from './gen/models/UserProfileDto';
+import { clearSession, saveSession } from './session';
 import { toPhoneNumber } from '@/utils/phone';
 
-type AuthTokens = {
-  accessToken: string;
-  refreshToken: string;
+export type AuthProfile = UserProfileDto & {
+  name?: string;
 };
 
-async function completeAuth(tokens: AuthTokens, persist: boolean) {
-  await saveSession(tokens, persist);
+async function completeAuth(tokens: AuthResponseDto, persist: boolean): Promise<AuthProfile> {
+  await saveSession(tokens, persist, tokens.user.name);
 
+  const profile = await authControllerGetProfile({});
+
+  return { ...profile, name: tokens.user.name };
+}
+
+export async function fetchProfile() {
   return authControllerGetProfile({});
 }
 
@@ -39,6 +51,14 @@ export async function registerAccount(input: {
   });
 
   return completeAuth(tokens, true);
+}
+
+export async function logout() {
+  try {
+    await authControllerLogout({});
+  } finally {
+    await clearSession();
+  }
 }
 
 export function isChildRole(role: string) {

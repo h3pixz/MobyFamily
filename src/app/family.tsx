@@ -19,7 +19,7 @@ export default function FamilyScreen() {
       <View style={{ backgroundColor: '#FFFFFF', paddingTop: insets.top }}>
         <FamilyHeader
           onPressBack={() => (router.canGoBack() ? router.back() : router.replace('/'))}
-          onPressProfile={() => router.push('/register')}
+          onPressProfile={() => router.push('/profile')}
         />
       </View>
 
@@ -43,7 +43,7 @@ export default function FamilyScreen() {
         activeTab="family"
         onPress={(tab) => {
           if (tab.key === 'profile') {
-            router.push('/register');
+            router.push('/profile');
           } else if (tab.key !== 'family') {
             openSoon(tab.label);
           }

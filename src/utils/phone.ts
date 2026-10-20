@@ -27,3 +27,7 @@ export function isPhoneComplete(value: string) {
 export function toPhoneNumber(value: string) {
   return `+375${phoneDigits(value)}`;
 }
+
+export function formatStoredPhone(value: string) {
+  return value.startsWith('+375') ? formatPhone(value.slice(4)) : value;
+}

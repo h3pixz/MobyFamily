@@ -75,13 +75,13 @@ export default function QrScannerScreen() {
 
   return (
     <View className="flex-1 bg-inverse-surface">
-      <StatusBar style="light" backgroundColor="#2E3132" />
+      <StatusBar style="light" />
 
       <QrHeader
         torchOn={torchOn}
         onToggleTorch={() => setTorchOn((current) => !current)}
         onPressBack={goBack}
-        onPressProfile={() => router.push('/register')}
+        onPressProfile={() => router.push('/profile')}
       />
 
       <ScrollView
