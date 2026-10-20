@@ -37,10 +37,10 @@ function formatPhone(value: string) {
 
 type RegisterFormProps = {
   onSubmit: () => void;
-  onOpenDocument: (title: string) => void;
+  onOpenPolicy: () => void;
 };
 
-export function RegisterForm({ onSubmit, onOpenDocument }: RegisterFormProps) {
+export function RegisterForm({ onSubmit, onOpenPolicy }: RegisterFormProps) {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [login, setLogin] = useState('');
@@ -194,14 +194,14 @@ export function RegisterForm({ onSubmit, onOpenDocument }: RegisterFormProps) {
               Я согласен с{' '}
               <Text
                 accessibilityRole="link"
-                onPress={() => onOpenDocument('Условия обслуживания')}
+                onPress={onOpenPolicy}
                 className="font-inter-medium text-primary underline">
                 условиями обслуживания
               </Text>{' '}
               и{' '}
               <Text
                 accessibilityRole="link"
-                onPress={() => onOpenDocument('Политика конфиденциальности')}
+                onPress={onOpenPolicy}
                 className="font-inter-medium text-primary underline">
                 политикой конфиденциальности
               </Text>{' '}

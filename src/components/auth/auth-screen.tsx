@@ -73,7 +73,7 @@ export function AuthScreen({ initialTab }: AuthScreenProps) {
             ) : (
               <RegisterForm
                 onSubmit={() => router.replace('/')}
-                onOpenDocument={openSoon}
+                onOpenPolicy={() => router.push('/policy')}
               />
             )}
           </View>
