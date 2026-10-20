@@ -1,23 +1,5 @@
 import { childProfile } from '@/data/dashboard';
-import type { QrMode, QrPaymentSource } from '@/types/qr';
-
-export const qrModes: QrMode[] = [
-  {
-    id: 'payment',
-    label: 'Оплата по QR',
-    hint: 'Наведите камеру на QR-код для моментальной оплаты или перевода',
-  },
-  {
-    id: 'erip',
-    label: 'ЕРИП QR',
-    hint: 'Наведите камеру на QR-код ЕРИП, чтобы оплатить услугу',
-  },
-  {
-    id: 'transfer',
-    label: 'Перевод',
-    hint: 'Наведите камеру на QR-код получателя перевода',
-  },
-];
+import type { QrPaymentSource } from '@/types/qr';
 
 export const qrPaymentSource: QrPaymentSource = {
   title: 'Moby junior',

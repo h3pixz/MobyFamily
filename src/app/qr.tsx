@@ -3,23 +3,20 @@ import * as ImagePicker from 'expo-image-picker';
 import { router, useIsFocused } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, ScrollView, Text, View } from 'react-native';
+import { Alert, ScrollView, View } from 'react-native';
 
 import { MyQrSheet } from '@/components/qr/my-qr-sheet';
 import { QrHeader } from '@/components/qr/qr-header';
-import { QrModeSelector } from '@/components/qr/qr-mode-selector';
 import { QrPaymentSheet } from '@/components/qr/qr-payment-sheet';
 import { QrViewfinder } from '@/components/qr/qr-viewfinder';
 import { childProfile } from '@/data/dashboard';
-import { myQrValue, qrModes, qrPaymentSource } from '@/data/qr';
-import type { QrModeId } from '@/types/qr';
+import { myQrValue, qrPaymentSource } from '@/data/qr';
 
 const FEEDBACK_DURATION = 1600;
 
 export default function QrScannerScreen() {
   const isFocused = useIsFocused();
   const [torchOn, setTorchOn] = useState(false);
-  const [modeId, setModeId] = useState<QrModeId>('payment');
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [myQrVisible, setMyQrVisible] = useState(false);
   const [galleryLoading, setGalleryLoading] = useState(false);
@@ -40,8 +37,6 @@ export default function QrScannerScreen() {
     }
     feedbackTimer.current = setTimeout(() => setFeedbackVisible(false), FEEDBACK_DURATION);
   }, []);
-
-  const activeMode = qrModes.find((mode) => mode.id === modeId) ?? qrModes[0];
 
   const goBack = () => {
     if (router.canGoBack()) {
@@ -104,18 +99,6 @@ export default function QrScannerScreen() {
             onBarcodeScanned={showScanFeedback}
             onDemoScan={showScanFeedback}
           />
-
-          <Text className="mt-4 max-w-[280px] text-center text-body-md font-inter leading-snug text-inverse-on-surface/80">
-            {activeMode.hint}
-          </Text>
-
-          <View className="mt-4">
-            <QrModeSelector
-              modes={qrModes}
-              activeId={modeId}
-              onChange={setModeId}
-            />
-          </View>
         </View>
 
         <QrPaymentSheet
