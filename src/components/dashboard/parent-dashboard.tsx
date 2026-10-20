@@ -22,6 +22,7 @@ type ParentDashboardProps = {
   quickPayments: QuickActionItem[];
   pendingCount: number;
   onPressAction: (label: string) => void;
+  onPressManageFamily: () => void;
   onSwitchToChild: () => void;
 };
 
@@ -33,6 +34,7 @@ export function ParentDashboard({
   quickPayments,
   pendingCount,
   onPressAction,
+  onPressManageFamily,
   onSwitchToChild,
 }: ParentDashboardProps) {
   return (
@@ -43,7 +45,7 @@ export function ParentDashboard({
         members={members}
         onPressChild={onSwitchToChild}
         onPressMember={(member) => onPressAction(`Профиль ${member.name}`)}
-        onPressManage={() => onPressAction('Управление семьёй')}
+        onPressManage={onPressManageFamily}
         onPressAdd={() => onPressAction('Добавить члена семьи')}
       />
 

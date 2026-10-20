@@ -84,6 +84,7 @@ export default function HomeScreen() {
               quickPayments={quickPayments}
               pendingCount={decisions.length}
               onPressAction={openSoon}
+              onPressManageFamily={() => router.push('/family')}
               onSwitchToChild={() => changeRole('child')}
             />
           </Animated.View>
