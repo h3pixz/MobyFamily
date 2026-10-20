@@ -86,6 +86,15 @@ export interface QuickActionItem {
   tone: ActionTone;
 }
 
+export type ChildActionTone = 'primary' | 'secondary' | 'accent';
+
+export interface ChildQuickAction {
+  id: string;
+  label: string;
+  icon: IconName;
+  tone: ChildActionTone;
+}
+
 export type DecisionKind = 'purchase' | 'task';
 
 export interface DecisionRequest {

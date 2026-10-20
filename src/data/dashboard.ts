@@ -2,6 +2,7 @@ import type {
   Account,
   BonusMember,
   ChildProfile,
+  ChildQuickAction,
   DecisionRequest,
   FamilyMember,
   ParentCard,
@@ -100,6 +101,12 @@ export const quickPayments: QuickActionItem[] = [
   { id: 'payment-erip', label: 'ЕРИП', icon: 'account-balance-wallet', tone: 'primary' },
   { id: 'payment-mobile', label: 'Связь', icon: 'phone-android', tone: 'secondary' },
   { id: 'payment-by-number', label: 'По номеру', icon: 'send-to-mobile', tone: 'tertiary' },
+];
+
+export const childQuickActions: ChildQuickAction[] = [
+  { id: 'child-action-ask', label: 'Попросить деньги', icon: 'handshake', tone: 'primary' },
+  { id: 'child-action-goal', label: 'Пополнить цель', icon: 'savings', tone: 'secondary' },
+  { id: 'child-action-qr', label: 'Оплатить по QR', icon: 'qr-code-scanner', tone: 'accent' },
 ];
 
 export const initialDecisions: DecisionRequest[] = [
