@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Pressable, Text } from 'react-native';
 
 import { Icon } from '@/components/ui/icon';
@@ -23,6 +24,7 @@ const sizes: Record<ButtonSize, { container: string; text: string; icon: number 
 
 type ButtonProps = {
   label: string;
+  labelNode?: ReactNode;
   icon?: IconName;
   variant?: ButtonVariant;
   size?: ButtonSize;
@@ -32,6 +34,7 @@ type ButtonProps = {
 
 export function Button({
   label,
+  labelNode,
   icon,
   variant = 'primary',
   size = 'md',
@@ -48,7 +51,11 @@ export function Button({
       className={`flex-row items-center justify-center ${variantStyle.container} ${sizeStyle.container} ${className}`}
       style={({ pressed }) => (pressed ? { opacity: 0.85 } : undefined)}>
       {icon ? <Icon name={icon} size={sizeStyle.icon} color={variantStyle.color} /> : null}
-      <Text className={`font-inter-semibold ${variantStyle.text} ${sizeStyle.text}`}>{label}</Text>
+      {labelNode ?? (
+        <Text className={`font-inter-semibold ${variantStyle.text} ${sizeStyle.text}`}>
+          {label}
+        </Text>
+      )}
     </Pressable>
   );
 }

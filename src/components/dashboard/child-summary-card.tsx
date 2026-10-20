@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { BynIcon } from '@/components/ui/byn-icon';
 import { Icon } from '@/components/ui/icon';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import type { ChildProfile } from '@/types/dashboard';
@@ -68,7 +69,7 @@ export function ChildSummaryCard({ child }: ChildSummaryCardProps) {
                   <Text className="text-[26px] font-inter-bold leading-none tracking-tight text-white">
                     {formatBYN(child.purchaseBalance)}
                   </Text>
-                  <Text className="text-[13px] font-inter-semibold text-white/90">BYN</Text>
+                  <BynIcon size={10} color="rgba(255,255,255,0.9)" />
                 </View>
                 <View className="mt-2 flex-row items-center gap-1.5">
                   <View className="h-1.5 w-1.5 rounded-full border border-white/20 bg-accent" />
@@ -87,7 +88,7 @@ export function ChildSummaryCard({ child }: ChildSummaryCardProps) {
                   <Text className="text-[26px] font-inter-bold leading-none tracking-tight text-white">
                     {formatBYN(child.savingsBalance)}
                   </Text>
-                  <Text className="text-[13px] font-inter-semibold text-white/90">BYN</Text>
+                  <BynIcon size={10} color="rgba(255,255,255,0.9)" />
                 </View>
                 <Text className="mt-2 text-[11px] font-inter-medium text-white/85">
                   {child.activeGoals} активная цель
@@ -105,9 +106,12 @@ export function ChildSummaryCard({ child }: ChildSummaryCardProps) {
                     Дневной лимит:
                   </Text>
                 </View>
-                <Text className="text-[12px] font-inter-bold text-white">
-                  {formatBYN(child.dailySpent)} из {formatBYN(child.dailyLimit)} BYN
-                </Text>
+                <View className="flex-row items-center gap-1">
+                  <Text className="text-[12px] font-inter-bold text-white">
+                    {formatBYN(child.dailySpent)} из {formatBYN(child.dailyLimit)}
+                  </Text>
+                  <BynIcon size={10} color="#FFFFFF" />
+                </View>
               </View>
               <ProgressBar
                 value={limitProgress}
@@ -120,13 +124,14 @@ export function ChildSummaryCard({ child }: ChildSummaryCardProps) {
             <View className="flex-row items-center justify-between rounded-xl border border-white/10 bg-white/15 px-3 py-2">
               <View className="flex-1 flex-row items-center gap-2">
                 <Icon name="event-repeat" size={17} color="rgba(255,255,255,0.9)" />
-                <Text className="text-[12px] font-inter text-white/90">
-                  Карманные:{' '}
-                  <Text className="font-inter-semibold text-white">
-                    {child.pocketMoney} BYN
-                  </Text>{' '}
-                  в неделю
-                </Text>
+                <View className="flex-row flex-wrap items-center gap-1">
+                  <Text className="text-[12px] font-inter text-white/90">Карманные:</Text>
+                  <Text className="text-[12px] font-inter-semibold text-white">
+                    {child.pocketMoney}
+                  </Text>
+                  <BynIcon size={10} color="#FFFFFF" />
+                  <Text className="text-[12px] font-inter text-white/90">в неделю</Text>
+                </View>
               </View>
               <View className="rounded-md bg-white/10 px-2 py-0.5">
                 <Text className="text-[11px] font-inter-medium text-white/80">

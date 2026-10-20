@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { BynIcon } from '@/components/ui/byn-icon';
 import { Card } from '@/components/ui/card';
 import { Icon } from '@/components/ui/icon';
 import { IconTile } from '@/components/ui/icon-tile';
@@ -43,30 +44,48 @@ export function PendingApprovalCard({
             <Text className="text-[15px] font-inter-bold leading-tight text-on-surface">
               {purchase.title}
             </Text>
-            <Text className="mt-0.5 text-[12px] font-inter-medium text-on-surface-variant">
-              {purchase.merchant} • {formatBYN(purchase.amount)} BYN
-            </Text>
+            <View className="mt-0.5 flex-row items-center gap-1">
+              <Text className="text-[12px] font-inter-medium text-on-surface-variant">
+                {purchase.merchant} • {formatBYN(purchase.amount)}
+              </Text>
+              <BynIcon size={10} color="#64748B" />
+            </View>
           </View>
         </View>
-        <View className="flex-row items-baseline">
+        <View className="flex-row items-baseline gap-0.5">
           <Text className="text-[17px] font-inter-bold text-primary">
             {formatBYN(purchase.amount)}
           </Text>
-          <Text className="text-[12px] font-inter-semibold text-primary"> BYN</Text>
+          <BynIcon size={12} color="#1D63ED" />
         </View>
       </View>
 
       <View className="flex-row items-center gap-2 rounded-xl border border-outline-soft bg-slate-50 px-3 py-2">
         <Icon name="info-outline" size={16} color="#EF4444" />
-        <Text className="flex-1 text-[12px] font-inter text-on-surface-variant">
-          Превышен дневной лимит ({formatBYN(purchase.dailyLimit)} BYN). Доступно:{' '}
-          {formatBYN(purchase.available)} BYN
-        </Text>
+        <View className="flex-1 flex-row flex-wrap items-center gap-1">
+          <Text className="text-[12px] font-inter text-on-surface-variant">
+            Превышен дневной лимит ({formatBYN(purchase.dailyLimit)}
+          </Text>
+          <BynIcon size={10} color="#64748B" />
+          <Text className="text-[12px] font-inter text-on-surface-variant">
+            ). Доступно: {formatBYN(purchase.available)}
+          </Text>
+          <BynIcon size={10} color="#64748B" />
+        </View>
       </View>
 
       <View className="flex-row gap-2 pt-0.5">
         <Button
           label={`Одобрить (${purchase.amount} BYN)`}
+          labelNode={
+            <View className="flex-row items-center gap-1">
+              <Text className="text-[13px] font-inter-semibold text-white">
+                Одобрить ({purchase.amount}
+              </Text>
+              <BynIcon size={10} color="#FFFFFF" />
+              <Text className="text-[13px] font-inter-semibold text-white">)</Text>
+            </View>
+          }
           icon="check-circle"
           className="flex-1"
           onPress={onApprove}

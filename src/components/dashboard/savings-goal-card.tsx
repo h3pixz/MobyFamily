@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { BynIcon } from '@/components/ui/byn-icon';
 import { Card } from '@/components/ui/card';
 import { Icon } from '@/components/ui/icon';
 import { IconTile } from '@/components/ui/icon-tile';
@@ -30,12 +31,12 @@ export function SavingsGoalCard({ goal, onAddMoney }: SavingsGoalCardProps) {
             <Text className="text-[12px] font-inter text-on-surface-variant">{goal.subtitle}</Text>
           </View>
         </View>
-        <View className="flex-row items-baseline">
+        <View className="flex-row items-baseline gap-0.5">
           <Text className="text-[17px] font-inter-bold text-on-surface">{goal.saved}</Text>
           <Text className="text-[12px] font-inter-medium text-on-surface-variant">
-            {' '}
-            / {goal.target} BYN
+            / {goal.target}
           </Text>
+          <BynIcon size={10} color="#64748B" />
         </View>
       </View>
 
@@ -44,13 +45,20 @@ export function SavingsGoalCard({ goal, onAddMoney }: SavingsGoalCardProps) {
       <View className="flex-row items-center justify-between gap-2">
         <View className="flex-row items-center gap-1">
           <Icon name="arrow-upward" size={15} color="#10B981" />
-          <Text className="text-[12px] font-inter-semibold text-accent">
-            +{goal.weeklyDelta} BYN за неделю
-          </Text>
+          <View className="flex-row items-center gap-1">
+            <Text className="text-[12px] font-inter-semibold text-accent">
+              +{goal.weeklyDelta}
+            </Text>
+            <BynIcon size={10} color="#10B981" />
+            <Text className="text-[12px] font-inter-semibold text-accent">за неделю</Text>
+          </View>
         </View>
-        <Text className="text-[12px] font-inter-medium text-on-surface-variant">
-          Осталось {goal.target - goal.saved} BYN
-        </Text>
+        <View className="flex-row items-center gap-1">
+          <Text className="text-[12px] font-inter-medium text-on-surface-variant">
+            Осталось {goal.target - goal.saved}
+          </Text>
+          <BynIcon size={10} color="#64748B" />
+        </View>
       </View>
 
       <Button

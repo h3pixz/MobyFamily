@@ -1,6 +1,7 @@
 import { Text, View } from 'react-native';
 
 import { Badge } from '@/components/ui/badge';
+import { BynIcon } from '@/components/ui/byn-icon';
 import { Card } from '@/components/ui/card';
 import { IconTile } from '@/components/ui/icon-tile';
 import { SectionHeader } from '@/components/ui/section-header';
@@ -55,12 +56,18 @@ export function EventsSection({
               </View>
 
               {event.trailing.kind === 'money' ? (
-                <Text
-                  className={`text-[16px] font-inter-bold ${
-                    event.trailing.amount > 0 ? 'text-accent' : 'text-on-surface'
-                  }`}>
-                  {formatSignedBYN(event.trailing.amount)} BYN
-                </Text>
+                <View className="flex-row items-center gap-1">
+                  <Text
+                    className={`text-[16px] font-inter-bold ${
+                      event.trailing.amount > 0 ? 'text-accent' : 'text-on-surface'
+                    }`}>
+                    {formatSignedBYN(event.trailing.amount)}
+                  </Text>
+                  <BynIcon
+                    size={12}
+                    color={event.trailing.amount > 0 ? '#10B981' : '#141B2B'}
+                  />
+                </View>
               ) : (
                 <Badge label={`+${event.trailing.amount} баллов`} tone="accent" />
               )}

@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { BynIcon } from '@/components/ui/byn-icon';
 import { Card } from '@/components/ui/card';
 import { IconTile } from '@/components/ui/icon-tile';
 import { SectionHeader } from '@/components/ui/section-header';
@@ -68,9 +69,12 @@ function TaskCard({ task, onConfirm, onDecline }: TaskCardProps) {
         </View>
         <View className="flex-shrink-0">
           {task.reward.kind === 'money' ? (
-            <Text className="text-[15px] font-inter-bold text-warning">
-              +{formatBYN(task.reward.amount)} BYN
-            </Text>
+            <View className="flex-row items-center gap-1">
+              <Text className="text-[15px] font-inter-bold text-warning">
+                +{formatBYN(task.reward.amount)}
+              </Text>
+              <BynIcon size={11} color="#FF7A00" />
+            </View>
           ) : (
             <Badge label={`+${task.reward.amount} баллов`} tone="accent" />
           )}
