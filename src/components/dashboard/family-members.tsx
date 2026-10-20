@@ -82,14 +82,6 @@ export function FamilyMembersSection({
                     </View>
                   ) : null}
                 </View>
-
-                {child ? (
-                  <View className="mt-0.5 h-2 w-2 rounded-full bg-success" />
-                ) : member.online ? (
-                  <View className="rounded bg-success-soft px-1.5 py-0.5">
-                    <Text className="text-[10px] font-inter-semibold text-success">В сети</Text>
-                  </View>
-                ) : null}
               </View>
 
               <View className="mt-3">
