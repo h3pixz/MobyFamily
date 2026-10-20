@@ -35,7 +35,7 @@ export const childProfile: ChildProfile = {
   dailyLimit: 15,
   dailySpent: 0,
   pocketMoney: 25,
-  pocketMoneySchedule: 'в пн',
+  pocketMoneySchedule: 'в понедельник',
 };
 
 export const familyMembers: FamilyMember[] = [
