@@ -39,7 +39,7 @@ export function QrActionCard({
       onPress={onPress}
       className="w-full"
       style={({ pressed }) => (pressed || loading ? { opacity: 0.8 } : undefined)}>
-      <Card className="h-28 justify-between p-space-md">
+      <Card className="gap-3 p-space-md">
         <View className={`h-10 w-10 items-center justify-center rounded-xl ${container}`}>
           {loading ? (
             <ActivityIndicator size="small" color={color} />
