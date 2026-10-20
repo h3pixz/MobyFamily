@@ -65,7 +65,7 @@ export function ChildBalanceCard({ child }: ChildBalanceCardProps) {
           </View>
 
           <View className="-mx-5 -mb-5 flex-row flex-wrap items-center gap-1.5 bg-black/15 px-5 py-2">
-            <Icon name="event-upcoming" size={16} color="#6FFBBE" />
+            <Icon name="event-available" size={16} color="#6FFBBE" />
             <Text className="text-body-sm font-inter text-white/90">Следующие карманные</Text>
             <Text className="text-body-sm font-inter-semibold text-white">
               {formatBYN(child.pocketMoney)}
