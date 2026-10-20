@@ -18,14 +18,6 @@ export default function ChildScreen() {
     router.push({ pathname: '/soon', params: { title } });
   };
 
-  const goHome = () => {
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/');
-    }
-  };
-
   return (
     <View className="flex-1 bg-surface">
       <View style={{ backgroundColor: '#FFFFFF', paddingTop: insets.top }}>
@@ -69,9 +61,7 @@ export default function ChildScreen() {
         onPress={(tab) => {
           if (tab.key === 'profile') {
             router.push('/register');
-          } else if (tab.key === 'family') {
-            goHome();
-          } else {
+          } else if (tab.key !== 'family') {
             openSoon(tab.label);
           }
         }}
