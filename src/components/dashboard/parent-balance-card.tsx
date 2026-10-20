@@ -19,20 +19,20 @@ type ParentBalanceCardProps = {
 
 export function ParentBalanceCard({ card, onPressAction }: ParentBalanceCardProps) {
   return (
-    <BankCard colors={['#004BC3', '#1D63ED']}>
+    <BankCard colors={['#1D63ED', '#2B73FA']} padding={20}>
       <View className="gap-4">
         <View className="flex-row items-center justify-between border-b border-white/10 pb-3">
           <Text className="text-label-sm font-inter-medium text-white/80">{card.title}</Text>
           <View className="flex-row items-center gap-1.5 rounded-full border border-white/10 bg-white/15 px-2.5 py-1">
             <View className="h-2 w-2 rounded-full bg-success" />
-            <Text className="text-label-sm font-inter-semibold tracking-wider text-white">
+            <Text className="text-label-md font-inter-medium tracking-wider text-white">
               •••• {card.last4}
             </Text>
           </View>
         </View>
 
         <View>
-          <Text className="text-label-xs font-inter-medium uppercase tracking-wider text-white/80">
+          <Text className="text-label-sm font-inter-medium uppercase tracking-wider text-white/80">
             Баланс карты
           </Text>
           <View className="mt-1 flex-row items-center gap-1.5">
@@ -57,7 +57,7 @@ export function ParentBalanceCard({ card, onPressAction }: ParentBalanceCardProp
               style={({ pressed }) => (pressed ? { opacity: 0.85 } : undefined)}>
               <Icon
                 name={action.icon}
-                size={18}
+                size={16}
                 color={action.filled ? '#004BC3' : '#FFFFFF'}
               />
               <Text

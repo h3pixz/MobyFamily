@@ -4,10 +4,11 @@ import { View } from 'react-native';
 
 type BankCardProps = {
   colors: [string, string];
+  padding?: number;
   children: ReactNode;
 };
 
-export function BankCard({ colors, children }: BankCardProps) {
+export function BankCard({ colors, padding = 16, children }: BankCardProps) {
   return (
     <View
       className="rounded-card"
@@ -22,7 +23,7 @@ export function BankCard({ colors, children }: BankCardProps) {
         colors={colors}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={{ borderRadius: 16, overflow: 'hidden', padding: 16 }}>
+        style={{ borderRadius: 16, overflow: 'hidden', padding }}>
         <View className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-white/10" />
         <View className="pointer-events-none absolute -bottom-16 -left-10 h-40 w-40 rounded-full bg-white/10" />
         {children}
