@@ -5,7 +5,7 @@ import { Icon } from '@/components/ui/icon';
 import type { IconName } from '@/types/icons';
 
 type ButtonVariant = 'primary' | 'secondary' | 'soft' | 'warning';
-type ButtonSize = 'sm' | 'md' | 'lg';
+type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
 
 const variants: Record<ButtonVariant, { container: string; text: string; color: string }> = {
   primary: {
@@ -34,6 +34,7 @@ const sizes: Record<ButtonSize, { container: string; text: string; icon: number 
   sm: { container: 'h-9 gap-1 rounded-lg px-3', text: 'text-label-sm', icon: 16 },
   md: { container: 'h-10 gap-1.5 rounded-lg px-3', text: 'text-label-md', icon: 18 },
   lg: { container: 'h-12 gap-2 rounded-2xl px-4', text: 'text-label-lg', icon: 18 },
+  xl: { container: 'h-14 gap-2 rounded-2xl px-4', text: 'text-headline-sm', icon: 20 },
 };
 
 type ButtonProps = {

@@ -7,6 +7,7 @@ import type { IconName } from '@/types/icons';
 
 type FieldProps = Omit<TextInputProps, 'className'> & {
   label: string;
+  labelAccessory?: ReactNode;
   icon?: IconName;
   prefix?: ReactNode;
   trailing?: ReactNode;
@@ -17,6 +18,7 @@ type FieldProps = Omit<TextInputProps, 'className'> & {
 
 export function Field({
   label,
+  labelAccessory,
   icon,
   prefix,
   trailing,
@@ -32,7 +34,10 @@ export function Field({
 
   return (
     <View className={`gap-1.5 ${className}`}>
-      <Text className="text-label-md font-inter-semibold text-on-surface-variant">{label}</Text>
+      <View className="flex-row items-center justify-between gap-2">
+        <Text className="text-label-md font-inter-semibold text-on-surface-variant">{label}</Text>
+        {labelAccessory}
+      </View>
 
       <View
         className={`min-h-[48px] flex-row items-center rounded-xl border-2 px-3 ${
