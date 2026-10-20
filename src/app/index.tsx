@@ -91,10 +91,6 @@ export default function HomeScreen() {
           onDecline={resolveApproval}
           onPressHistory={() => openSoon('История событий')}
         />
-
-        <Text className="py-2 text-center text-[12px] font-inter leading-relaxed text-on-surface-variant">
-          Интерфейс не перегружен сторонними каталогами. Только семейный баланс и безопасность.
-        </Text>
       </ScrollView>
 
       <BottomNav
