@@ -1,5 +1,7 @@
 import type { IconName } from '@/types/icons';
 
+export type AppRole = 'parent' | 'child';
+
 export type TaskStatus = 'pending' | 'in_progress';
 
 export type Reward = { kind: 'money'; amount: number } | { kind: 'points'; amount: number };
@@ -13,57 +15,73 @@ export interface Task {
   status: TaskStatus;
 }
 
-export type EventTone = 'success' | 'neutral' | 'primary';
-
-export interface ActivityEvent {
-  id: string;
-  title: string;
-  subtitle: string;
-  icon: IconName;
-  tone: EventTone;
-  trailing: Reward;
-}
-
 export interface ParentProfile {
   name: string;
   greeting: string;
+  roleLabel: string;
+}
+
+export interface ParentCard {
+  title: string;
+  last4: string;
+  balance: number;
 }
 
 export interface ChildProfile {
   name: string;
+  initials: string;
   age: number;
   ageGroup: string;
   cardLast4: string;
   purchaseBalance: number;
   savingsBalance: number;
-  activeGoals: number;
   dailyLimit: number;
   dailySpent: number;
   pocketMoney: number;
   pocketMoneySchedule: string;
 }
 
-export interface SavingsGoal {
+export type AccountTone = 'primary' | 'tertiary';
+
+export interface Account {
   id: string;
   title: string;
   subtitle: string;
+  amount: number;
+  note?: string;
+  delta?: number;
+  icon: IconName;
+  tone: AccountTone;
+}
+
+export type ActionTone = 'primary' | 'secondary' | 'tertiary';
+
+export interface QuickActionItem {
+  id: string;
+  label: string;
+  icon: IconName;
+  tone: ActionTone;
+}
+
+export type DecisionKind = 'purchase' | 'task';
+
+export interface DecisionRequest {
+  id: string;
+  kind: DecisionKind;
+  title: string;
+  subtitle: string;
+  amount: number;
+  icon: IconName;
+  note: string;
+  noteAmount?: number;
+  noteDetail?: string;
+}
+
+export interface SavingsGoal {
+  id: string;
+  title: string;
   saved: number;
   target: number;
   weeklyDelta: number;
-}
-
-export interface ParentPoints {
-  points: number;
-  levelLabel: string;
-  description: string;
-}
-
-export interface PendingPurchase {
-  id: string;
-  title: string;
-  merchant: string;
-  amount: number;
-  dailyLimit: number;
-  available: number;
-  scenario: string;
+  monthsLeft: number;
 }
