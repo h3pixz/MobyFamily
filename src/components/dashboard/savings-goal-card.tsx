@@ -4,11 +4,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BynIcon } from '@/components/ui/byn-icon';
 import { Card } from '@/components/ui/card';
-import { Icon } from '@/components/ui/icon';
 import { IconTile } from '@/components/ui/icon-tile';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import type { SavingsGoal } from '@/types/dashboard';
-import { formatPercent } from '@/utils/format';
+import { formatBYN, formatPercent } from '@/utils/format';
 
 type SavingsGoalCardProps = {
   goal: SavingsGoal;
@@ -17,54 +16,54 @@ type SavingsGoalCardProps = {
 
 export function SavingsGoalCard({ goal, onAddMoney }: SavingsGoalCardProps) {
   const percent = formatPercent(goal.saved, goal.target);
+  const remaining = goal.target - goal.saved;
 
   return (
-    <Card className="gap-3 p-4">
-      <View className="flex-row flex-wrap items-center justify-between gap-2">
-        <View className="flex-1 min-w-[224px] flex-row items-center gap-3">
-          <IconTile icon="smartphone" tone="primary" size="md" />
-          <View className="flex-1">
-            <View className="flex-row flex-wrap items-center gap-2">
-              <Text className="text-[16px] font-inter-bold text-on-surface">{goal.title}</Text>
-              <Badge label={`${percent}%`} tone="accent" />
+    <Card className="gap-space-sm p-space-md">
+      <View className="flex-row items-center justify-between gap-2">
+        <View className="min-w-0 flex-1 flex-row items-center gap-2.5">
+          <IconTile icon="savings" tone="primary" size="md" />
+          <View className="min-w-0 flex-1">
+            <View className="flex-row flex-wrap items-center gap-1.5">
+              <Text className="text-headline-sm font-inter-semibold text-on-surface">
+                {goal.title}
+              </Text>
+              <View className="flex-row items-center gap-1 rounded-full bg-tertiary-fixed px-2 py-0.5">
+                <Text className="text-label-xs font-inter-bold text-tertiary">
+                  +{formatBYN(goal.weeklyDelta)}
+                </Text>
+                <BynIcon size={8} color="#006242" />
+                <Text className="text-label-xs font-inter-bold text-tertiary">за неделю</Text>
+              </View>
             </View>
-            <Text className="text-[12px] font-inter text-on-surface-variant">{goal.subtitle}</Text>
+            <View className="flex-row flex-wrap items-center">
+              <Text className="text-body-sm text-outline">
+                {formatBYN(goal.saved)} / {formatBYN(goal.target)}
+              </Text>
+              <BynIcon size={9} color="#737686" style={{ marginHorizontal: 2 }} />
+              <Text className="text-body-sm text-outline">({percent}%)</Text>
+            </View>
           </View>
         </View>
-        <View className="ml-auto shrink-0 flex-row items-end gap-1">
-          <Text className="text-[17px] font-inter-bold text-on-surface">{goal.saved}</Text>
-          <Text className="text-[12px] font-inter-medium text-on-surface-variant">
-            / {goal.target}
-          </Text>
-          <BynIcon size={10} color="#64748B" style={{ marginBottom: 3 }} />
-        </View>
+        <Badge label={`${percent}%`} tone="primary" />
       </View>
 
       <ProgressBar value={goal.saved / goal.target} />
 
-      <View className="flex-row items-center justify-between gap-2">
+      <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-1">
-          <Icon name="arrow-upward" size={15} color="#10B981" />
-          <View className="flex-row items-center gap-1">
-            <Text className="text-[12px] font-inter-semibold text-accent">
-              +{goal.weeklyDelta}
-            </Text>
-            <BynIcon size={10} color="#10B981" />
-            <Text className="text-[12px] font-inter-semibold text-accent">за неделю</Text>
-          </View>
+          <Text className="text-label-sm font-inter-medium text-outline">Осталось {formatBYN(remaining)}</Text>
+          <BynIcon size={9} color="#737686" />
         </View>
-        <View className="flex-row items-center gap-1">
-          <Text className="text-[12px] font-inter-medium text-on-surface-variant">
-            Осталось {goal.target - goal.saved}
-          </Text>
-          <BynIcon size={10} color="#64748B" />
-        </View>
+        <Text className="text-label-sm font-inter-semibold text-primary">
+          ~{goal.monthsLeft} месяца
+        </Text>
       </View>
 
       <Button
         label="Пополнить цель"
-        icon="add-circle"
-        variant="accent"
+        icon="add"
+        variant="soft"
         className="w-full"
         onPress={onAddMoney}
       />
