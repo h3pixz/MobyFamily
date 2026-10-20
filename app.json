@@ -36,6 +36,20 @@
       ],
       "expo-font",
       "expo-image",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Moby Family использует камеру, чтобы сканировать QR-коды для оплаты.",
+          "recordAudioAndroid": false,
+          "barcodeScannerEnabled": true
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Moby Family использует фото, чтобы распознать QR-код из галереи."
+        }
+      ],
       "expo-status-bar",
       "expo-web-browser"
     ],

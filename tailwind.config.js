@@ -43,6 +43,8 @@ module.exports = {
         'warning-soft': '#FFF4EB',
         'warning-border': '#FFE0C3',
         'family-alert': '#FFF4E5',
+        'inverse-surface': '#2E3132',
+        'inverse-on-surface': '#F0F1F3',
         'on-surface': '#191C1E',
         'on-surface-variant': '#424655',
         outline: '#737686',
