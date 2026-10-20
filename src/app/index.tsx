@@ -57,8 +57,6 @@ export default function HomeScreen() {
       {...(role === 'child' ? swipeBack.panHandlers : {})}>
       <View style={{ backgroundColor: '#FFFFFF', paddingTop: insets.top }}>
         <DashboardHeader
-          role={role}
-          onChangeRole={changeRole}
           onPressNotifications={() => openSoon('Уведомления')}
           onPressProfile={() => router.push('/register')}
         />

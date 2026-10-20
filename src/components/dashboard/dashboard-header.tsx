@@ -2,26 +2,13 @@ import { Pressable, Text, View } from 'react-native';
 
 import { BrandLogo } from '@/components/ui/brand-logo';
 import { Icon } from '@/components/ui/icon';
-import type { AppRole } from '@/types/dashboard';
-
-const roles: { key: AppRole; label: string }[] = [
-  { key: 'parent', label: 'Анна (Родитель)' },
-  { key: 'child', label: 'Саша (Ребёнок)' },
-];
 
 type DashboardHeaderProps = {
-  role: AppRole;
-  onChangeRole: (role: AppRole) => void;
   onPressNotifications: () => void;
   onPressProfile: () => void;
 };
 
-export function DashboardHeader({
-  role,
-  onChangeRole,
-  onPressNotifications,
-  onPressProfile,
-}: DashboardHeaderProps) {
+export function DashboardHeader({ onPressNotifications, onPressProfile }: DashboardHeaderProps) {
   return (
     <View
       className="gap-space-xs bg-surface-lowest px-margin pb-2 pt-2"
@@ -60,35 +47,6 @@ export function DashboardHeader({
             className="h-8 w-8 items-center justify-center rounded-full bg-primary">
             <Icon name="person" size={18} color="#FFFFFF" />
           </Pressable>
-        </View>
-      </View>
-
-      <View className="flex-row justify-center pb-1">
-        <View className="flex-row rounded-full bg-surface-container p-0.5">
-          {roles.map((item) => {
-            const active = role === item.key;
-
-            return (
-              <Pressable
-                key={item.key}
-                accessibilityRole="tab"
-                accessibilityState={{ selected: active }}
-                onPress={() => onChangeRole(item.key)}
-                className={`flex-row items-center gap-1.5 rounded-full px-3.5 py-1 ${
-                  active ? 'bg-primary-container' : ''
-                }`}>
-                {active ? <View className="h-1.5 w-1.5 rounded-full bg-surface-lowest" /> : null}
-                <Text
-                  className={`text-label-sm ${
-                    active
-                      ? 'font-inter-semibold text-on-primary'
-                      : 'font-inter-medium text-on-surface-variant'
-                  }`}>
-                  {item.label}
-                </Text>
-              </Pressable>
-            );
-          })}
         </View>
       </View>
     </View>
