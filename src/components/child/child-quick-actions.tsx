@@ -27,7 +27,7 @@ const accentShadow = {
 
 type ChildQuickActionsProps = {
   actions: ChildQuickAction[];
-  onPress: (label: string) => void;
+  onPress: (action: ChildQuickAction) => void;
 };
 
 export function ChildQuickActions({ actions, onPress }: ChildQuickActionsProps) {
@@ -42,7 +42,7 @@ export function ChildQuickActions({ actions, onPress }: ChildQuickActionsProps) 
             key={action.id}
             accessibilityRole="button"
             accessibilityLabel={action.label}
-            onPress={() => onPress(action.label)}
+            onPress={() => onPress(action)}
             className={`min-h-[96px] flex-1 items-center justify-center gap-1.5 rounded-card p-space-sm ${
               accent ? 'bg-primary-container' : 'bg-surface-lowest'
             }`}

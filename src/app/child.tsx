@@ -10,12 +10,21 @@ import { FinanceAcademyCard } from '@/components/child/finance-academy-card';
 import { BottomNav } from '@/components/dashboard/bottom-nav';
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 import { childProfile, childQuickActions, childTasks, savingsGoal } from '@/data/dashboard';
+import type { ChildQuickAction } from '@/types/dashboard';
 
 export default function ChildScreen() {
   const insets = useSafeAreaInsets();
 
   const openSoon = (title: string) => {
     router.push({ pathname: '/soon', params: { title } });
+  };
+
+  const openQuickAction = (action: ChildQuickAction) => {
+    if (action.id === 'child-action-qr') {
+      router.push('/qr');
+      return;
+    }
+    openSoon(action.label);
   };
 
   return (
@@ -45,7 +54,7 @@ export default function ChildScreen() {
 
           <ChildBalanceCard child={childProfile} />
 
-          <ChildQuickActions actions={childQuickActions} onPress={openSoon} />
+          <ChildQuickActions actions={childQuickActions} onPress={openQuickAction} />
 
           <ChildGoalCard goal={savingsGoal} onAddMoney={() => openSoon('Пополнение цели')} />
 
