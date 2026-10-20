@@ -29,6 +29,7 @@ export const childProfile: ChildProfile = {
   cardLast4: '4821',
   purchaseBalance: 42,
   savingsBalance: 180,
+  activeGoals: 1,
   dailyLimit: 15,
   dailySpent: 0,
   pocketMoney: 25,
@@ -62,22 +63,18 @@ export const quickPayments: QuickActionItem[] = [
   { id: 'payment-by-number', label: 'По номеру', icon: 'send-to-mobile', tone: 'tertiary' },
 ];
 
-export const cardSettings: QuickActionItem[] = [
-  { id: 'setting-limit', label: 'Изменить лимит', icon: 'tune', tone: 'primary' },
-  { id: 'setting-pause', label: 'Пауза карты', icon: 'pause-circle', tone: 'secondary' },
-  { id: 'setting-pocket-money', label: 'Выдать карманные', icon: 'payments', tone: 'tertiary' },
-];
-
 export const initialDecisions: DecisionRequest[] = [
   {
     id: 'decision-purchase',
     kind: 'purchase',
-    title: 'Саша просит одобрить покупку',
-    subtitle: 'Книжный магазин',
+    title: 'Саша просит одобрить покупку · Книжный магазин',
+    subtitle: 'Книги и комиксы · Магазин «Читай-город»',
     amount: 18,
     icon: 'menu-book',
     note: 'Превышен дневной лимит',
     noteAmount: 15,
+    available: 42,
+    hint: 'Сценарий КРОК. Запрос отправлен в 1 клик через QR',
   },
   {
     id: 'decision-task',
@@ -105,6 +102,8 @@ export const childTasks: Task[] = [
 export const savingsGoal: SavingsGoal = {
   id: 'goal-phone',
   title: 'Новый телефон',
+  icon: 'smartphone',
+  deadline: 'Цель до 1 сентября',
   saved: 180,
   target: 600,
   weeklyDelta: 15,

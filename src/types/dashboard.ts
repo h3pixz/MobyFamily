@@ -35,6 +35,7 @@ export interface ChildProfile {
   cardLast4: string;
   purchaseBalance: number;
   savingsBalance: number;
+  activeGoals: number;
   dailyLimit: number;
   dailySpent: number;
   pocketMoney: number;
@@ -75,11 +76,15 @@ export interface DecisionRequest {
   note: string;
   noteAmount?: number;
   noteDetail?: string;
+  available?: number;
+  hint?: string;
 }
 
 export interface SavingsGoal {
   id: string;
   title: string;
+  icon: IconName;
+  deadline: string;
   saved: number;
   target: number;
   weeklyDelta: number;
