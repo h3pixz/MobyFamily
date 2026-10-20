@@ -9,7 +9,6 @@ import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 import { ParentDashboard } from '@/components/dashboard/parent-dashboard';
 import {
   accounts,
-  cardSettings,
   childProfile,
   childTasks,
   initialDecisions,
@@ -72,11 +71,11 @@ export default function HomeScreen() {
           />
         ) : (
           <ChildDashboard
+            greeting={parentProfile.greeting}
             child={childProfile}
             decisions={decisions}
             tasks={childTasks}
             goal={savingsGoal}
-            cardSettings={cardSettings}
             onApprove={resolveDecision}
             onDecline={resolveDecision}
             onPressAction={openSoon}

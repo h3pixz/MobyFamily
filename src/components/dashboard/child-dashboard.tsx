@@ -2,23 +2,16 @@ import { Text, View } from 'react-native';
 
 import { ChildSummaryCard } from '@/components/dashboard/child-summary-card';
 import { DecisionsSection } from '@/components/dashboard/decisions-section';
-import { QuickActions } from '@/components/dashboard/quick-actions';
 import { SavingsGoalCard } from '@/components/dashboard/savings-goal-card';
 import { TasksSection } from '@/components/dashboard/tasks-section';
-import type {
-  ChildProfile,
-  DecisionRequest,
-  QuickActionItem,
-  SavingsGoal,
-  Task,
-} from '@/types/dashboard';
+import type { ChildProfile, DecisionRequest, SavingsGoal, Task } from '@/types/dashboard';
 
 type ChildDashboardProps = {
+  greeting: string;
   child: ChildProfile;
   decisions: DecisionRequest[];
   tasks: Task[];
   goal: SavingsGoal;
-  cardSettings: QuickActionItem[];
   onApprove: (id: string) => void;
   onDecline: (id: string) => void;
   onPressAction: (label: string) => void;
@@ -27,11 +20,11 @@ type ChildDashboardProps = {
 };
 
 export function ChildDashboard({
+  greeting,
   child,
   decisions,
   tasks,
   goal,
-  cardSettings,
   onApprove,
   onDecline,
   onPressAction,
@@ -40,25 +33,24 @@ export function ChildDashboard({
 }: ChildDashboardProps) {
   return (
     <View className="gap-space-md">
-      <View className="flex-row items-center justify-between gap-2 px-0.5 pt-1">
-        <View className="min-w-0 flex-1 flex-row items-center gap-2">
-          <View className="h-2.5 w-2.5 rounded-full bg-tertiary" />
-          <Text className="flex-1 text-label-sm font-inter-medium text-on-surface">
+      <View className="px-0.5 pt-1">
+        <View className="flex-row items-center gap-1">
+          <Text className="text-headline-sm font-inter-semibold text-on-surface">{greeting}</Text>
+          <Text className="text-[16px]">✨</Text>
+        </View>
+        <View className="flex-row items-center gap-1.5 pt-0.5">
+          <View className="h-2 w-2 rounded-full bg-success" />
+          <Text className="text-label-sm font-inter-medium text-tertiary">
             Связь с картой ребёнка: онлайн
           </Text>
         </View>
-        <Text className="flex-shrink-0 text-label-sm font-inter-medium text-outline">
-          Обновлено сейчас
-        </Text>
       </View>
 
-      <ChildSummaryCard child={child} />
-      <DecisionsSection requests={decisions} onApprove={onApprove} onDecline={onDecline} />
-      <QuickActions
-        title="Быстрые настройки карты"
-        actions={cardSettings}
-        onPress={onPressAction}
+      <ChildSummaryCard
+        child={child}
+        onPressPocketMoney={() => onPressAction('Настройка карманных')}
       />
+      <DecisionsSection requests={decisions} onApprove={onApprove} onDecline={onDecline} />
       <TasksSection tasks={tasks} onNewTask={onNewTask} />
       <SavingsGoalCard goal={goal} onAddMoney={onAddMoney} />
     </View>
