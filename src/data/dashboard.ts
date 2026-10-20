@@ -105,7 +105,6 @@ export const quickPayments: QuickActionItem[] = [
 
 export const childQuickActions: ChildQuickAction[] = [
   { id: 'child-action-ask', label: 'Попросить деньги', icon: 'handshake', tone: 'primary' },
-  { id: 'child-action-goal', label: 'Пополнить цель', icon: 'savings', tone: 'secondary' },
   { id: 'child-action-qr', label: 'Оплатить по QR', icon: 'qr-code-scanner', tone: 'accent' },
 ];
 
