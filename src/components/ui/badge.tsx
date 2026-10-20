@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import { Icon } from '@/components/ui/icon';
 import type { IconName } from '@/types/icons';
 
-export type BadgeTone = 'primary' | 'secondary' | 'tertiary' | 'neutral';
+export type BadgeTone = 'primary' | 'secondary' | 'tertiary' | 'neutral' | 'success' | 'warning' | 'info';
 
 const tones: Record<BadgeTone, { container: string; text: string; color: string }> = {
   primary: { container: 'bg-primary-fixed', text: 'text-primary', color: '#004BC3' },
@@ -18,6 +18,9 @@ const tones: Record<BadgeTone, { container: string; text: string; color: string 
     text: 'text-on-surface-variant',
     color: '#424655',
   },
+  success: { container: 'bg-success-soft', text: 'text-success', color: '#00B856' },
+  warning: { container: 'bg-warning/15', text: 'text-warning', color: '#FF7A00' },
+  info: { container: 'bg-primary-soft', text: 'text-primary-container', color: '#1D63ED' },
 };
 
 type BadgeProps = {

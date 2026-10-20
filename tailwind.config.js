@@ -37,6 +37,8 @@ module.exports = {
         'moby-blue': '#2B73FA',
         accent: '#10B981',
         'accent-soft': '#ECFDF5',
+        success: '#00B856',
+        'success-soft': '#E6F7ED',
         warning: '#FF7A00',
         'warning-soft': '#FFF4EB',
         'warning-border': '#FFE0C3',
