@@ -22,7 +22,6 @@ type QrPaymentSheetProps = {
   galleryLoading: boolean;
   onPressSource: () => void;
   onPressGallery: () => void;
-  onPressMyQr: () => void;
 };
 
 export function QrPaymentSheet({
@@ -30,7 +29,6 @@ export function QrPaymentSheet({
   galleryLoading,
   onPressSource,
   onPressGallery,
-  onPressMyQr,
 }: QrPaymentSheetProps) {
   const insets = useSafeAreaInsets();
 
@@ -107,23 +105,14 @@ export function QrPaymentSheet({
         </Pressable>
       </Card>
 
-      <View className="flex-row gap-gutter">
-        <QrActionCard
-          icon="photo-library"
-          title="Из галереи"
-          subtitle="Выбрать фото с QR"
-          tone="primary"
-          loading={galleryLoading}
-          onPress={onPressGallery}
-        />
-        <QrActionCard
-          icon="qr-code-2"
-          title="Мой QR-код"
-          subtitle="Получить перевод"
-          tone="secondary"
-          onPress={onPressMyQr}
-        />
-      </View>
+      <QrActionCard
+        icon="photo-library"
+        title="Из галереи"
+        subtitle="Выбрать фото с QR"
+        tone="primary"
+        loading={galleryLoading}
+        onPress={onPressGallery}
+      />
 
       <View className="flex-row items-center justify-center gap-2 self-center rounded-full bg-surface-low px-3 py-2">
         <Icon name="verified-user" size={18} color="#004BC3" />

@@ -6,5 +6,3 @@ export const qrPaymentSource: QrPaymentSource = {
   last4: childProfile.cardLast4,
   balance: childProfile.purchaseBalance,
 };
-
-export const myQrValue = `mobyfamily://pay?card=${childProfile.cardLast4}&name=${encodeURIComponent(childProfile.name)}`;

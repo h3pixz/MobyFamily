@@ -5,12 +5,10 @@ import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 
-import { MyQrSheet } from '@/components/qr/my-qr-sheet';
 import { QrHeader } from '@/components/qr/qr-header';
 import { QrPaymentSheet } from '@/components/qr/qr-payment-sheet';
 import { QrViewfinder } from '@/components/qr/qr-viewfinder';
-import { childProfile } from '@/data/dashboard';
-import { myQrValue, qrPaymentSource } from '@/data/qr';
+import { qrPaymentSource } from '@/data/qr';
 
 const FEEDBACK_DURATION = 1600;
 
@@ -18,7 +16,6 @@ export default function QrScannerScreen() {
   const isFocused = useIsFocused();
   const [torchOn, setTorchOn] = useState(false);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
-  const [myQrVisible, setMyQrVisible] = useState(false);
   const [galleryLoading, setGalleryLoading] = useState(false);
   const feedbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -106,17 +103,8 @@ export default function QrScannerScreen() {
           galleryLoading={galleryLoading}
           onPressSource={() => openSoon('Выбор счёта')}
           onPressGallery={pickFromGallery}
-          onPressMyQr={() => setMyQrVisible(true)}
         />
       </ScrollView>
-
-      <MyQrSheet
-        visible={myQrVisible}
-        value={myQrValue}
-        name={childProfile.name}
-        last4={childProfile.cardLast4}
-        onClose={() => setMyQrVisible(false)}
-      />
     </View>
   );
 }

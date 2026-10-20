@@ -37,7 +37,7 @@ export function QrActionCard({
       accessibilityState={{ busy: loading }}
       disabled={loading}
       onPress={onPress}
-      className="flex-1"
+      className="w-full"
       style={({ pressed }) => (pressed || loading ? { opacity: 0.8 } : undefined)}>
       <Card className="h-28 justify-between p-space-md">
         <View className={`h-10 w-10 items-center justify-center rounded-xl ${container}`}>
