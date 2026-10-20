@@ -42,6 +42,19 @@ export interface ChildProfile {
   pocketMoneySchedule: string;
 }
 
+export type FamilyMemberKind = 'child' | 'parent';
+
+export interface FamilyMember {
+  id: string;
+  kind: FamilyMemberKind;
+  name: string;
+  roleLabel: string;
+  emoji: string;
+  age?: number;
+  balance?: number;
+  online: boolean;
+}
+
 export type AccountTone = 'primary' | 'tertiary';
 
 export interface Account {

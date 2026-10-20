@@ -2,6 +2,7 @@ import type {
   Account,
   ChildProfile,
   DecisionRequest,
+  FamilyMember,
   ParentCard,
   ParentProfile,
   QuickActionItem,
@@ -35,6 +36,27 @@ export const childProfile: ChildProfile = {
   pocketMoney: 25,
   pocketMoneySchedule: 'в пн',
 };
+
+export const familyMembers: FamilyMember[] = [
+  {
+    id: 'member-child-sasha',
+    kind: 'child',
+    name: childProfile.name,
+    roleLabel: 'Карта ребёнка',
+    emoji: '👦🏻',
+    age: childProfile.age,
+    balance: childProfile.purchaseBalance,
+    online: true,
+  },
+  {
+    id: 'member-parent-alexey',
+    kind: 'parent',
+    name: 'Алексей',
+    roleLabel: 'Совместный доступ',
+    emoji: '👨🏻',
+    online: true,
+  },
+];
 
 export const accounts: Account[] = [
   {

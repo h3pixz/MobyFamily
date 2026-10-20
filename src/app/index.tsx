@@ -11,6 +11,7 @@ import {
   accounts,
   childProfile,
   childTasks,
+  familyMembers,
   initialDecisions,
   parentCard,
   parentProfile,
@@ -61,8 +62,8 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}>
         {role === 'parent' ? (
           <ParentDashboard
-            profile={parentProfile}
             card={parentCard}
+            members={familyMembers}
             accounts={accounts}
             quickPayments={quickPayments}
             pendingCount={decisions.length}
