@@ -40,7 +40,7 @@ export const accounts: Account[] = [
   {
     id: 'account-deposit',
     title: 'Накопительный счет «Доходный»',
-    subtitle: 'МТБанк · 9.5% годовых',
+    subtitle: 'МТбанк · 9.5% годовых',
     amount: 12500,
     delta: 98.4,
     icon: 'savings',

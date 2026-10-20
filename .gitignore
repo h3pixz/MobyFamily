@@ -2,6 +2,7 @@ node_modules/
 
 CONTEXT.md
 DESIGN.md
+POLICY.md
 
 .expo/
 dist/

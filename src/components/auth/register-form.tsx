@@ -205,7 +205,7 @@ export function RegisterForm({ onSubmit, onOpenPolicy }: RegisterFormProps) {
                 className="font-inter-medium text-primary underline">
                 политикой конфиденциальности
               </Text>{' '}
-              МТБанка
+              МТбанка
             </Text>
           }
         />

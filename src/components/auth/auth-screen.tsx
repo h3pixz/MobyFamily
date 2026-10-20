@@ -59,7 +59,7 @@ export function AuthScreen({ initialTab }: AuthScreenProps) {
           <AuthWelcome
             title={isLogin ? 'С возвращением!' : 'Добро пожаловать!'}
             emoji={isLogin ? '👋' : '✨'}
-            subtitle="Единый вход в семейный банкинг МТБанка"
+            subtitle="Единый вход в семейный банкинг МТбанка"
           />
 
           <AuthTabs activeTab={tab} onChange={changeTab} />

@@ -39,7 +39,7 @@ export function DashboardHeader({
             <Text className="text-headline-sm font-inter-semibold tracking-tight text-on-surface">
               Moby Family
             </Text>
-            <Text className="-mt-0.5 text-label-sm font-inter-medium text-outline">МТБанк</Text>
+            <Text className="-mt-0.5 text-label-sm font-inter-medium text-outline">МТбанк</Text>
           </View>
         </View>
 
