@@ -1,7 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text, View } from 'react-native';
 
-import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { BynIcon } from '@/components/ui/byn-icon';
 import { Icon } from '@/components/ui/icon';
@@ -37,23 +36,18 @@ export function ChildSummaryCard({ child }: ChildSummaryCardProps) {
 
         <View className="gap-3.5">
           <View className="flex-row items-start justify-between gap-2">
-            <View className="flex-1 flex-row items-center gap-3">
-              <View className="h-11 w-11 overflow-hidden rounded-xl border-2 border-white/30">
-                <Avatar uri={child.avatarUrl} size={40} rounded="xl" label={child.name} />
-              </View>
-              <View className="flex-1">
-                <View className="flex-row items-center gap-1.5">
-                  <Text
-                    className="text-[17px] font-inter-bold tracking-tight text-white"
-                    numberOfLines={1}>
-                    {child.name}, {child.age} лет
-                  </Text>
-                  <Icon name="verified-user" size={16} color="#FFFFFF" />
-                </View>
-                <Text className="text-[12px] font-inter-medium text-white/80">
-                  Детская карта •• {child.cardLast4}
+            <View className="flex-1">
+              <View className="flex-row items-center gap-1.5">
+                <Text
+                  className="text-[17px] font-inter-bold tracking-tight text-white"
+                  numberOfLines={1}>
+                  {child.name}, {child.age} лет
                 </Text>
+                <Icon name="verified-user" size={16} color="#FFFFFF" />
               </View>
+              <Text className="text-[12px] font-inter-medium text-white/80">
+                Детская карта •• {child.cardLast4}
+              </Text>
             </View>
             <Badge label={child.ageGroup} tone="glass" icon="shield" />
           </View>

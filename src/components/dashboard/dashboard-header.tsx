@@ -1,20 +1,17 @@
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { Avatar } from '@/components/ui/avatar';
 import { Icon } from '@/components/ui/icon';
 import { IconTile } from '@/components/ui/icon-tile';
 
 type ProfileKey = 'parent' | 'child';
 
 type DashboardHeaderProps = {
-  avatarUrl: string;
   onPressNotifications: () => void;
   onPressProfile: () => void;
 };
 
 export function DashboardHeader({
-  avatarUrl,
   onPressNotifications,
   onPressProfile,
 }: DashboardHeaderProps) {
@@ -94,8 +91,12 @@ export function DashboardHeader({
             <View className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full border-2 border-card bg-red-500" />
           </Pressable>
 
-          <Pressable accessibilityRole="button" accessibilityLabel="Профиль" onPress={onPressProfile}>
-            <Avatar uri={avatarUrl} size={30} label="Профиль родителя" />
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Профиль"
+            onPress={onPressProfile}
+            className="h-8 w-8 items-center justify-center rounded-full border border-outline-soft bg-card">
+            <Icon name="person" size={18} />
           </Pressable>
         </View>
       </View>

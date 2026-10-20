@@ -27,7 +27,6 @@ export interface ActivityEvent {
 export interface ParentProfile {
   name: string;
   greeting: string;
-  avatarUrl: string;
 }
 
 export interface ChildProfile {
@@ -35,7 +34,6 @@ export interface ChildProfile {
   age: number;
   ageGroup: string;
   cardLast4: string;
-  avatarUrl: string;
   purchaseBalance: number;
   savingsBalance: number;
   activeGoals: number;

@@ -11,7 +11,6 @@ import { PointsCard } from '@/components/dashboard/points-card';
 import { QuickActions } from '@/components/dashboard/quick-actions';
 import { SavingsGoalCard } from '@/components/dashboard/savings-goal-card';
 import { TasksSection } from '@/components/dashboard/tasks-section';
-import { Avatar } from '@/components/ui/avatar';
 import { Icon } from '@/components/ui/icon';
 import {
   childProfile,
@@ -45,7 +44,6 @@ export default function HomeScreen() {
       edges={['top', 'bottom']}
       style={{ flex: 1, backgroundColor: '#F4F5F8' }}>
       <DashboardHeader
-        avatarUrl={parentProfile.avatarUrl}
         onPressNotifications={() => openSoon('Уведомления')}
         onPressProfile={() => openSoon('Профиль')}
       />
@@ -59,32 +57,18 @@ export default function HomeScreen() {
           paddingTop: 8,
         }}
         showsVerticalScrollIndicator={false}>
-        <View className="flex-row items-start justify-between gap-2 pt-0.5">
-          <View className="flex-1">
-            <View className="flex-row items-center gap-1.5">
-              <Text className="text-[22px] font-inter-bold tracking-tight text-on-surface">
-                {parentProfile.greeting}
-              </Text>
-              <Icon name="auto-awesome" size={18} color="#F59E0B" />
-            </View>
-            <View className="mt-0.5 flex-row items-center gap-1.5">
-              <View className="h-2 w-2 rounded-full bg-accent" />
-              <Text className="text-[13px] font-inter text-on-surface-variant">
-                Связь с картой ребёнка: онлайн
-              </Text>
-            </View>
+        <View className="pt-0.5">
+          <View className="flex-row items-center gap-1.5">
+            <Text className="text-[22px] font-inter-bold tracking-tight text-on-surface">
+              {parentProfile.greeting}
+            </Text>
+            <Icon name="auto-awesome" size={18} color="#F59E0B" />
           </View>
-
-          <View className="h-12 w-12 items-center justify-center rounded-2xl border border-outline-soft bg-card">
-            <Avatar
-              uri={parentProfile.avatarUrl}
-              size={44}
-              rounded="xl"
-              label={parentProfile.name}
-            />
-            <View className="absolute -bottom-1 -right-1 h-4 w-4 items-center justify-center rounded-full border border-outline-soft bg-card">
-              <View className="h-2.5 w-2.5 rounded-full bg-accent" />
-            </View>
+          <View className="mt-0.5 flex-row items-center gap-1.5">
+            <View className="h-2 w-2 rounded-full bg-accent" />
+            <Text className="text-[13px] font-inter text-on-surface-variant">
+              Связь с картой ребёнка: онлайн
+            </Text>
           </View>
         </View>
 

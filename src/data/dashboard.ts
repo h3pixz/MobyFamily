@@ -11,8 +11,6 @@ import type {
 export const parentProfile: ParentProfile = {
   name: "Елена",
   greeting: "Здравствуйте, Елена",
-  avatarUrl:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuAiO545l76QWuQmCHaZU-bGb03c5JLBEwo-BawjnoleKfqFTrV0NyzwWDQkfoSz1FtY6PMyS-bUZWhmeyk0_jTnCun2zCVzlsQm3u9cPOkDvra4R7Qk0R91x2_a-PbPx6RWufZ8dRtjyQs2nUEGtVyFK84emFNrJeixBioLz329BMuy7qPIY4oyVxa6q1MIeusuO1epSiIszSlBj4stSlW5tpggmyb3UWZabunxKLVv1cOPQpq7k_o_Kw",
 };
 
 export const childProfile: ChildProfile = {
@@ -20,8 +18,6 @@ export const childProfile: ChildProfile = {
   age: 12,
   ageGroup: "7–13 лет (под присмотром)",
   cardLast4: "4821",
-  avatarUrl:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuBYDgi0-yYQTnxB79tiMuxVEWPp-3nTCUvnVhUTbjTI-pcCeF6LDWSrv38Tf7nKJeFKqqQVNp25WimHCGMwtBQEXJdDG9P3j83dwh9RiQxum867SGPfIm_ttMHVOr-PKnculwKKYaY8gXCmXe60_oCTlv2zkz1iCcv8JRnAFb1idtu4PRpsfCc8SJLaSxDyWr8AlPJ4Qnq7CQvrYbpvUUmFuGRD2YA6DkuskXMXVis64TL9OVrCRSJgxA",
   purchaseBalance: 42,
   savingsBalance: 180,
   activeGoals: 1,
