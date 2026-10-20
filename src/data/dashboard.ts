@@ -81,7 +81,7 @@ export const accounts: Account[] = [
 
 export const quickPayments: QuickActionItem[] = [
   { id: 'payment-erip', label: 'ЕРИП', icon: 'account-balance-wallet', tone: 'primary' },
-  { id: 'payment-mobile', label: 'Мобильная связь', icon: 'phone-android', tone: 'secondary' },
+  { id: 'payment-mobile', label: 'Связь', icon: 'phone-android', tone: 'secondary' },
   { id: 'payment-by-number', label: 'По номеру', icon: 'send-to-mobile', tone: 'tertiary' },
 ];
 
