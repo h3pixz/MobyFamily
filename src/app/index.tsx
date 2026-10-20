@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { PanResponder, ScrollView, View } from 'react-native';
+import Animated, { FadeInLeft, FadeInRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BottomNav } from '@/components/dashboard/bottom-nav';
@@ -73,28 +74,32 @@ export default function HomeScreen() {
         }}
         showsVerticalScrollIndicator={false}>
         {role === 'parent' ? (
-          <ParentDashboard
-            card={parentCard}
-            members={familyMembers}
-            accounts={accounts}
-            quickPayments={quickPayments}
-            pendingCount={decisions.length}
-            onPressAction={openSoon}
-            onSwitchToChild={() => changeRole('child')}
-          />
+          <Animated.View key="parent" entering={FadeInLeft.duration(220)}>
+            <ParentDashboard
+              card={parentCard}
+              members={familyMembers}
+              accounts={accounts}
+              quickPayments={quickPayments}
+              pendingCount={decisions.length}
+              onPressAction={openSoon}
+              onSwitchToChild={() => changeRole('child')}
+            />
+          </Animated.View>
         ) : (
-          <ChildDashboard
-            greeting={parentProfile.greeting}
-            child={childProfile}
-            decisions={decisions}
-            tasks={childTasks}
-            goal={savingsGoal}
-            onApprove={resolveDecision}
-            onDecline={resolveDecision}
-            onPressAction={openSoon}
-            onNewTask={() => openSoon('Новое задание')}
-            onAddMoney={() => openSoon('Пополнение цели')}
-          />
+          <Animated.View key="child" entering={FadeInRight.duration(280)}>
+            <ChildDashboard
+              greeting={parentProfile.greeting}
+              child={childProfile}
+              decisions={decisions}
+              tasks={childTasks}
+              goal={savingsGoal}
+              onApprove={resolveDecision}
+              onDecline={resolveDecision}
+              onPressAction={openSoon}
+              onNewTask={() => openSoon('Новое задание')}
+              onAddMoney={() => openSoon('Пополнение цели')}
+            />
+          </Animated.View>
         )}
       </ScrollView>
 
