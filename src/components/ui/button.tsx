@@ -4,7 +4,7 @@ import { Pressable, Text } from 'react-native';
 import { Icon } from '@/components/ui/icon';
 import type { IconName } from '@/types/icons';
 
-type ButtonVariant = 'primary' | 'secondary' | 'soft' | 'card' | 'warning';
+type ButtonVariant = 'primary' | 'secondary' | 'soft' | 'warning';
 type ButtonSize = 'sm' | 'md';
 
 const variants: Record<ButtonVariant, { container: string; text: string; color: string }> = {
@@ -20,11 +20,6 @@ const variants: Record<ButtonVariant, { container: string; text: string; color: 
   },
   soft: {
     container: 'border border-outline-variant/40 bg-surface-low',
-    text: 'text-primary',
-    color: '#004BC3',
-  },
-  card: {
-    container: 'bg-surface-lowest',
     text: 'text-primary',
     color: '#004BC3',
   },

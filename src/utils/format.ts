@@ -5,11 +5,6 @@ export function formatBYN(value: number): string {
   return `${sign}${grouped},${decimals}`;
 }
 
-export function formatSignedBYN(value: number): string {
-  const sign = value > 0 ? '+' : '';
-  return `${sign}${formatBYN(value)}`;
-}
-
 export function formatPercent(value: number, total: number): number {
   if (total <= 0) {
     return 0;
