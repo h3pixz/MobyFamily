@@ -2,7 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body,
+#root {
+  background-color: #ffffff;
+}
+
 :root {
+  color-scheme: light;
   --font-display:
     Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
     Segoe UI Symbol, Noto Color Emoji;
