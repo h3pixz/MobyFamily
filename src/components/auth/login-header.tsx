@@ -1,5 +1,6 @@
 import { Pressable, Text, View } from 'react-native';
 
+import { BrandLogo } from '@/components/ui/brand-logo';
 import { Icon } from '@/components/ui/icon';
 
 const shadow = {
@@ -18,13 +19,7 @@ export function LoginHeader({ onPressSupport }: LoginHeaderProps) {
   return (
     <View className="flex-row items-center justify-between px-4 py-3">
       <View className="flex-row items-center gap-2">
-        <View
-          className="rounded-xl bg-primary-container px-2.5 py-1"
-          style={shadow}>
-          <Text className="text-headline-sm font-inter-semibold tracking-tight text-on-primary">
-            Moby
-          </Text>
-        </View>
+        <BrandLogo size={40} />
 
         <View>
           <View className="self-start rounded bg-secondary-fixed px-1.5 py-0.5">

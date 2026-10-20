@@ -1,5 +1,6 @@
 import { Pressable, Text, View } from 'react-native';
 
+import { BrandLogo } from '@/components/ui/brand-logo';
 import { Icon } from '@/components/ui/icon';
 import type { AppRole } from '@/types/dashboard';
 
@@ -32,11 +33,14 @@ export function DashboardHeader({
         elevation: 3,
       }}>
       <View className="h-12 flex-row items-center justify-between">
-        <View>
-          <Text className="text-headline-sm font-inter-semibold tracking-tight text-on-surface">
-            Moby Family
-          </Text>
-          <Text className="-mt-0.5 text-label-sm font-inter-medium text-outline">МТБанк</Text>
+        <View className="flex-row items-center gap-2">
+          <BrandLogo size={40} />
+          <View>
+            <Text className="text-headline-sm font-inter-semibold tracking-tight text-on-surface">
+              Moby Family
+            </Text>
+            <Text className="-mt-0.5 text-label-sm font-inter-medium text-outline">МТБанк</Text>
+          </View>
         </View>
 
         <View className="flex-row items-center gap-1">
