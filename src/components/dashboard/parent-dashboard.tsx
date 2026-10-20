@@ -37,7 +37,7 @@ export function ParentDashboard({
 }: ParentDashboardProps) {
   return (
     <View className="gap-space-md">
-      <ParentBalanceCard card={card} onPressAction={onPressAction} />
+      <ParentBalanceCard card={card} />
 
       <FamilyMembersSection
         members={members}

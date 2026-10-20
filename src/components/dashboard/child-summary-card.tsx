@@ -9,9 +9,14 @@ import { formatBYN, pluralize } from '@/utils/format';
 type ChildSummaryCardProps = {
   child: ChildProfile;
   onPressPocketMoney: () => void;
+  onPressHistory: () => void;
 };
 
-export function ChildSummaryCard({ child, onPressPocketMoney }: ChildSummaryCardProps) {
+export function ChildSummaryCard({
+  child,
+  onPressPocketMoney,
+  onPressHistory,
+}: ChildSummaryCardProps) {
   const dailyRemaining = child.dailyLimit - child.dailySpent;
   const goalsLabel = pluralize(child.activeGoals, [
     'активная цель',
@@ -112,6 +117,16 @@ export function ChildSummaryCard({ child, onPressPocketMoney }: ChildSummaryCard
             </Pressable>
           </View>
         </View>
+
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="История операций"
+          onPress={onPressHistory}
+          className="flex-row items-center justify-center gap-1.5 rounded-xl border border-white/20 bg-white/15 py-2.5"
+          style={({ pressed }) => (pressed ? { opacity: 0.85 } : undefined)}>
+          <Icon name="receipt-long" size={16} color="#FFFFFF" />
+          <Text className="text-[13px] font-inter-semibold text-white">История</Text>
+        </Pressable>
       </View>
     </BankCard>
   );

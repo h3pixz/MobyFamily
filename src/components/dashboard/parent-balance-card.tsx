@@ -1,17 +1,15 @@
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { BynIcon } from '@/components/ui/byn-icon';
-import { Icon } from '@/components/ui/icon';
 import { BankCard } from '@/components/dashboard/bank-card';
 import type { ParentCard } from '@/types/dashboard';
 import { formatBYN } from '@/utils/format';
 
 type ParentBalanceCardProps = {
   card: ParentCard;
-  onPressAction: (label: string) => void;
 };
 
-export function ParentBalanceCard({ card, onPressAction }: ParentBalanceCardProps) {
+export function ParentBalanceCard({ card }: ParentBalanceCardProps) {
   return (
     <BankCard colors={['#1D63ED', '#2B73FA']} padding={20}>
       <View className="gap-4">
@@ -36,15 +34,6 @@ export function ParentBalanceCard({ card, onPressAction }: ParentBalanceCardProp
             <BynIcon size={16} color="#FFFFFF" style={{ marginTop: 4 }} />
           </View>
         </View>
-
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => onPressAction('История')}
-          className="flex-row items-center justify-center gap-1.5 rounded-xl border border-white/20 bg-white/15 py-2.5"
-          style={({ pressed }) => (pressed ? { opacity: 0.85 } : undefined)}>
-          <Icon name="receipt-long" size={16} color="#FFFFFF" />
-          <Text className="text-label-md font-inter-semibold text-white">История</Text>
-        </Pressable>
       </View>
     </BankCard>
   );

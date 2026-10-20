@@ -49,6 +49,7 @@ export function ChildDashboard({
       <ChildSummaryCard
         child={child}
         onPressPocketMoney={() => onPressAction('Настройка карманных')}
+        onPressHistory={() => onPressAction('История')}
       />
       <DecisionsSection requests={decisions} onApprove={onApprove} onDecline={onDecline} />
       <TasksSection tasks={tasks} onNewTask={onNewTask} />
