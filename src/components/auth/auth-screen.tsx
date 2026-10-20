@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { isChildRole, loginWithPhone, registerAccount } from '@/api/auth';
 import { AuthBackground } from '@/components/auth/auth-background';
 import { AuthSwitch } from '@/components/auth/auth-switch';
 import { AuthTabs } from '@/components/auth/auth-tabs';
@@ -23,6 +24,10 @@ export function AuthScreen({ initialTab }: AuthScreenProps) {
 
   const openSoon = (title: string) => {
     router.push({ pathname: '/soon', params: { title } });
+  };
+
+  const openHome = (role: string) => {
+    router.replace(isChildRole(role) ? '/child' : '/');
   };
 
   const changeTab = (next: AuthTab) => {
@@ -67,15 +72,18 @@ export function AuthScreen({ initialTab }: AuthScreenProps) {
           <View className="px-4">
             {isLogin ? (
               <LoginForm
-                onSubmit={({ login, password }) => {
-                  const isChildDemo = login.toLowerCase() === 'child' && password === 'child';
-                  router.replace(isChildDemo ? '/child' : '/');
+                onSubmit={async ({ phone, password, remember }) => {
+                  const profile = await loginWithPhone(phone, password, remember);
+                  openHome(profile.role);
                 }}
                 onForgotPassword={() => openSoon('Восстановление пароля')}
               />
             ) : (
               <RegisterForm
-                onSubmit={() => router.replace('/')}
+                onSubmit={async (data) => {
+                  const profile = await registerAccount(data);
+                  openHome(profile.role);
+                }}
                 onOpenPolicy={() => router.push('/policy')}
               />
             )}

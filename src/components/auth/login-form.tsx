@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Keyboard, Pressable, Text, View } from 'react-native';
 
+import { getApiErrorMessage } from '@/api/error';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Field } from '@/components/ui/field';
 import { Icon } from '@/components/ui/icon';
+import { formatPhone, isPhoneComplete } from '@/utils/phone';
 
 const shadow = {
   shadowColor: '#0F172A',
@@ -14,20 +16,21 @@ const shadow = {
   elevation: 2,
 };
 
-type FieldKey = 'login' | 'password';
+type FieldKey = 'phone' | 'password';
 type FormErrors = Partial<Record<FieldKey, string>>;
 
 type LoginFormProps = {
-  onSubmit: (credentials: { login: string; password: string }) => void;
+  onSubmit: (credentials: { phone: string; password: string; remember: boolean }) => Promise<void>;
   onForgotPassword: () => void;
 };
 
 export function LoginForm({ onSubmit, onForgotPassword }: LoginFormProps) {
-  const [login, setLogin] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [remembered, setRemembered] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
 
   const clearError = (key: FieldKey) => {
@@ -36,11 +39,11 @@ export function LoginForm({ onSubmit, onForgotPassword }: LoginFormProps) {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const next: FormErrors = {};
 
-    if (!login.trim()) {
-      next.login = 'Введите логин или номер телефона';
+    if (!isPhoneComplete(phone)) {
+      next.phone = 'Введите номер телефона полностью';
     }
     if (!password) {
       next.password = 'Введите пароль';
@@ -54,27 +57,38 @@ export function LoginForm({ onSubmit, onForgotPassword }: LoginFormProps) {
 
     Keyboard.dismiss();
     setSubmitting(true);
-    setTimeout(() => {
+    setFormError(null);
+
+    try {
+      await onSubmit({ phone, password, remember: remembered });
+    } catch (error) {
+      setFormError(getApiErrorMessage(error));
+    } finally {
       setSubmitting(false);
-      onSubmit({ login: login.trim(), password });
-    }, 700);
+    }
   };
 
   return (
     <View className="gap-4 rounded-2xl bg-surface-lowest p-5" style={shadow}>
       <Field
-        label="Логин или номер телефона"
-        icon="alternate-email"
-        placeholder="Введите логин или телефон"
-        autoComplete="username"
-        autoCapitalize="none"
-        autoCorrect={false}
-        value={login}
+        label="Номер телефона"
+        placeholder="(29) 000-00-00"
+        keyboardType="phone-pad"
+        autoComplete="tel"
+        maxLength={15}
+        value={phone}
         onChangeText={(value) => {
-          setLogin(value);
-          clearError('login');
+          setPhone(formatPhone(value));
+          clearError('phone');
         }}
-        error={errors.login}
+        error={errors.phone}
+        prefix={
+          <View className="flex-row items-center">
+            <Text className="text-[16px] leading-none">🇧🇾</Text>
+            <Text className="ml-1.5 text-label-md font-inter-semibold text-on-surface">+375</Text>
+            <View className="mx-2 h-4 w-px bg-surface-highest" />
+          </View>
+        }
       />
 
       <Field
@@ -124,6 +138,13 @@ export function LoginForm({ onSubmit, onForgotPassword }: LoginFormProps) {
           <Text className="text-body-sm font-inter text-on-surface">Запомнить меня</Text>
         }
       />
+
+      {formError ? (
+        <View className="flex-row items-center gap-1.5 rounded-xl bg-error/10 px-3 py-2.5">
+          <Icon name="error-outline" size={16} color="#BA1A1A" />
+          <Text className="flex-1 text-label-sm font-inter text-error">{formError}</Text>
+        </View>
+      ) : null}
 
       <View className="pt-1">
         <Button

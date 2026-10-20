@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Keyboard, Pressable, Text, View } from 'react-native';
 
+import { getApiErrorMessage } from '@/api/error';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Field } from '@/components/ui/field';
 import { Icon } from '@/components/ui/icon';
-
-const PHONE_LENGTH = 9;
+import { formatPhone, isPhoneComplete } from '@/utils/phone';
 
 const shadow = {
   shadowColor: '#0F172A',
@@ -16,38 +16,64 @@ const shadow = {
   elevation: 2,
 };
 
-type FieldKey = 'fullName' | 'phone' | 'login' | 'password' | 'terms';
+type FieldKey = 'fullName' | 'phone' | 'birthDay' | 'password' | 'terms';
 type FormErrors = Partial<Record<FieldKey, string>>;
 
-function formatPhone(value: string) {
-  const digits = value.replace(/\D/g, '').slice(0, PHONE_LENGTH);
+type RegisterFormProps = {
+  onSubmit: (data: {
+    name: string;
+    phone: string;
+    birthDay: string;
+    password: string;
+  }) => Promise<void>;
+  onOpenPolicy: () => void;
+};
+
+function formatBirthDate(value: string) {
+  const digits = value.replace(/\D/g, '').slice(0, 8);
 
   if (digits.length <= 2) {
     return digits;
   }
-  if (digits.length <= 5) {
-    return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-  }
-  if (digits.length <= 7) {
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 5)}-${digits.slice(5)}`;
+  if (digits.length <= 4) {
+    return `${digits.slice(0, 2)}.${digits.slice(2)}`;
   }
 
-  return `(${digits.slice(0, 2)}) ${digits.slice(2, 5)}-${digits.slice(5, 7)}-${digits.slice(7)}`;
+  return `${digits.slice(0, 2)}.${digits.slice(2, 4)}.${digits.slice(4)}`;
 }
 
-type RegisterFormProps = {
-  onSubmit: () => void;
-  onOpenPolicy: () => void;
-};
+function toIsoDate(value: string) {
+  const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value);
+
+  if (!match) {
+    return null;
+  }
+
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
+  const date = new Date(year, month - 1, day);
+
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) {
+    return null;
+  }
+
+  return `${match[3]}-${match[2]}-${match[1]}`;
+}
 
 export function RegisterForm({ onSubmit, onOpenPolicy }: RegisterFormProps) {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
-  const [login, setLogin] = useState('');
+  const [birthDay, setBirthDay] = useState('');
   const [password, setPassword] = useState('');
   const [accepted, setAccepted] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
 
   const clearError = (key: FieldKey) => {
@@ -62,13 +88,11 @@ export function RegisterForm({ onSubmit, onOpenPolicy }: RegisterFormProps) {
     if (fullName.trim().length < 3) {
       next.fullName = 'Укажите имя и фамилию';
     }
-    if (phone.replace(/\D/g, '').length < PHONE_LENGTH) {
+    if (!isPhoneComplete(phone)) {
       next.phone = 'Введите номер полностью';
     }
-    if (login.trim().length < 3) {
-      next.login = 'Логин — минимум 3 символа';
-    } else if (/\s/.test(login.trim())) {
-      next.login = 'Логин без пробелов';
+    if (!toIsoDate(birthDay)) {
+      next.birthDay = 'Укажите дату в формате ДД.ММ.ГГГГ';
     }
     if (password.length < 8) {
       next.password = 'Пароль — минимум 8 символов';
@@ -82,7 +106,7 @@ export function RegisterForm({ onSubmit, onOpenPolicy }: RegisterFormProps) {
     return next;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const next = validate();
     setErrors(next);
 
@@ -90,12 +114,28 @@ export function RegisterForm({ onSubmit, onOpenPolicy }: RegisterFormProps) {
       return;
     }
 
+    const isoBirthDay = toIsoDate(birthDay);
+
+    if (!isoBirthDay) {
+      return;
+    }
+
     Keyboard.dismiss();
     setSubmitting(true);
-    setTimeout(() => {
+    setFormError(null);
+
+    try {
+      await onSubmit({
+        name: fullName.trim(),
+        phone,
+        birthDay: isoBirthDay,
+        password,
+      });
+    } catch (error) {
+      setFormError(getApiErrorMessage(error));
+    } finally {
       setSubmitting(false);
-      onSubmit();
-    }, 700);
+    }
   };
 
   return (
@@ -133,22 +173,20 @@ export function RegisterForm({ onSubmit, onOpenPolicy }: RegisterFormProps) {
             <View className="mx-2 h-4 w-px bg-surface-highest" />
           </View>
         }
-        trailing={<Icon name="phone-iphone" size={20} color="#737686" />}
       />
 
       <Field
-        label="Придумайте логин"
-        icon="alternate-email"
-        placeholder="login_user"
-        autoComplete="username"
-        autoCapitalize="none"
-        autoCorrect={false}
-        value={login}
+        label="Дата рождения"
+        icon="cake"
+        placeholder="ДД.ММ.ГГГГ"
+        keyboardType="number-pad"
+        maxLength={10}
+        value={birthDay}
         onChangeText={(value) => {
-          setLogin(value);
-          clearError('login');
+          setBirthDay(formatBirthDate(value));
+          clearError('birthDay');
         }}
-        error={errors.login}
+        error={errors.birthDay}
       />
 
       <Field
@@ -210,6 +248,13 @@ export function RegisterForm({ onSubmit, onOpenPolicy }: RegisterFormProps) {
           }
         />
       </View>
+
+      {formError ? (
+        <View className="flex-row items-center gap-1.5 rounded-xl bg-error/10 px-3 py-2.5">
+          <Icon name="error-outline" size={16} color="#BA1A1A" />
+          <Text className="flex-1 text-label-sm font-inter text-error">{formError}</Text>
+        </View>
+      ) : null}
 
       <View className="pt-1">
         <Button
