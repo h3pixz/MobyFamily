@@ -43,9 +43,7 @@ export function ChildDashboard({
       <View className="flex-row items-center justify-between gap-2 px-0.5 pt-1">
         <View className="min-w-0 flex-1 flex-row items-center gap-2">
           <View className="h-2.5 w-2.5 rounded-full bg-tertiary" />
-          <Text
-            className="text-label-md font-inter-medium text-on-surface"
-            numberOfLines={1}>
+          <Text className="flex-1 text-label-sm font-inter-medium text-on-surface">
             Связь с картой ребёнка: онлайн
           </Text>
         </View>

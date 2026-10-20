@@ -23,7 +23,7 @@ export function FamilyAlert({ count, onPress }: FamilyAlertProps) {
         </View>
         <View className="min-w-0 flex-1">
           <View className="flex-row items-center gap-1.5">
-            <Text className="text-label-sm font-inter-bold uppercase tracking-wider text-secondary">
+            <Text className="text-label-xs font-inter-bold uppercase tracking-wide text-secondary">
               Семейные уведомления
             </Text>
             <View className="h-1.5 w-1.5 rounded-full bg-secondary-container" />

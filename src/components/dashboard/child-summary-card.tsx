@@ -1,6 +1,5 @@
 import { Text, View } from 'react-native';
 
-import { Badge } from '@/components/ui/badge';
 import { BynIcon } from '@/components/ui/byn-icon';
 import { Icon } from '@/components/ui/icon';
 import { BankCard } from '@/components/dashboard/bank-card';
@@ -25,7 +24,11 @@ export function ChildSummaryCard({ child }: ChildSummaryCardProps) {
                 <Text className="text-label-lg font-inter-bold text-white">
                   {child.name}, {child.age} лет
                 </Text>
-                <Badge label={child.ageGroup} tone="glass" />
+                <View className="rounded-full bg-white/20 px-1.5 py-0.5">
+                  <Text className="text-label-xs font-inter-semibold text-white">
+                    {child.ageGroup}
+                  </Text>
+                </View>
               </View>
               <Text className="text-label-sm font-inter-medium text-white/80">
                 Детская карта · •• {child.cardLast4}

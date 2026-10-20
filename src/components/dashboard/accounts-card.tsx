@@ -47,7 +47,7 @@ export function AccountsCard({ accounts, onPress }: AccountsCardProps) {
               <View className="min-w-0 flex-1">
                 <Text
                   className="text-label-lg font-inter-semibold text-on-surface"
-                  numberOfLines={1}>
+                  numberOfLines={2}>
                   {account.title}
                 </Text>
                 <Text className="text-body-sm text-outline" numberOfLines={1}>
