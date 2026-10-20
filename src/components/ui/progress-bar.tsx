@@ -9,9 +9,9 @@ type ProgressBarProps = {
 
 export function ProgressBar({
   value,
-  trackClassName = 'bg-track',
-  barClassName = 'bg-accent',
-  heightClassName = 'h-2.5',
+  trackClassName = 'bg-surface-container',
+  barClassName = 'bg-primary-container',
+  heightClassName = 'h-2',
 }: ProgressBarProps) {
   const percent = Math.min(100, Math.max(0, value * 100));
 

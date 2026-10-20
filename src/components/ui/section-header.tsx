@@ -1,25 +1,37 @@
+import type { ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { Badge } from '@/components/ui/badge';
+import { Badge, type BadgeTone } from '@/components/ui/badge';
 
 type SectionHeaderProps = {
   title: string;
   badge?: string;
+  badgeTone?: BadgeTone;
+  trailing?: ReactNode;
   actionLabel?: string;
   onAction?: () => void;
 };
 
-export function SectionHeader({ title, badge, actionLabel, onAction }: SectionHeaderProps) {
+export function SectionHeader({
+  title,
+  badge,
+  badgeTone = 'neutral',
+  trailing,
+  actionLabel,
+  onAction,
+}: SectionHeaderProps) {
   return (
-    <View className="flex-row flex-wrap items-center justify-between gap-2 px-1">
+    <View className="flex-row flex-wrap items-center justify-between gap-2">
       <View className="flex-row items-center gap-2">
-        <Text className="text-[17px] font-inter-bold text-on-surface">{title}</Text>
-        {badge ? <Badge label={badge} tone="primary" /> : null}
+        <Text className="text-headline-sm font-inter-semibold text-on-surface">{title}</Text>
+        {badge ? <Badge label={badge} tone={badgeTone} /> : null}
       </View>
       {actionLabel ? (
         <Pressable accessibilityRole="button" onPress={onAction} className="ml-auto">
-          <Text className="text-[13px] font-inter-semibold text-primary">{actionLabel}</Text>
+          <Text className="text-label-sm font-inter-semibold text-primary">{actionLabel}</Text>
         </Pressable>
+      ) : trailing ? (
+        <View className="ml-auto">{trailing}</View>
       ) : null}
     </View>
   );

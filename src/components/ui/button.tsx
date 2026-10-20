@@ -4,22 +4,40 @@ import { Pressable, Text } from 'react-native';
 import { Icon } from '@/components/ui/icon';
 import type { IconName } from '@/types/icons';
 
-type ButtonVariant = 'primary' | 'secondary' | 'accent';
+type ButtonVariant = 'primary' | 'secondary' | 'soft' | 'card' | 'warning';
 type ButtonSize = 'sm' | 'md';
 
 const variants: Record<ButtonVariant, { container: string; text: string; color: string }> = {
-  primary: { container: 'bg-primary', text: 'text-white', color: '#FFFFFF' },
-  secondary: {
-    container: 'bg-card border border-outline-soft',
-    text: 'text-on-surface-variant',
-    color: '#64748B',
+  primary: {
+    container: 'bg-primary-container',
+    text: 'text-on-primary',
+    color: '#FFFFFF',
   },
-  accent: { container: 'bg-warning', text: 'text-white', color: '#FFFFFF' },
+  secondary: {
+    container: 'border border-outline-variant/40 bg-surface-lowest',
+    text: 'text-on-surface-variant',
+    color: '#424655',
+  },
+  soft: {
+    container: 'border border-outline-variant/40 bg-surface-low',
+    text: 'text-primary',
+    color: '#004BC3',
+  },
+  card: {
+    container: 'bg-surface-lowest',
+    text: 'text-primary',
+    color: '#004BC3',
+  },
+  warning: {
+    container: 'bg-secondary-container',
+    text: 'text-on-secondary',
+    color: '#FFFFFF',
+  },
 };
 
 const sizes: Record<ButtonSize, { container: string; text: string; icon: number }> = {
-  sm: { container: 'gap-1 rounded-lg px-3 py-1.5', text: 'text-[12px]', icon: 15 },
-  md: { container: 'gap-1.5 rounded-xl px-3 py-2.5', text: 'text-[13px]', icon: 18 },
+  sm: { container: 'h-9 gap-1 rounded-lg px-3', text: 'text-label-sm', icon: 16 },
+  md: { container: 'h-10 gap-1.5 rounded-lg px-3', text: 'text-label-md', icon: 18 },
 };
 
 type ButtonProps = {

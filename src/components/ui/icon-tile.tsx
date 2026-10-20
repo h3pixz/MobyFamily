@@ -3,30 +3,21 @@ import { View } from 'react-native';
 import { Icon } from '@/components/ui/icon';
 import type { IconName } from '@/types/icons';
 
-type IconTileTone =
-  | 'primary'
-  | 'accent'
-  | 'warning'
-  | 'amber'
-  | 'neutral'
-  | 'solidPrimary'
-  | 'outline';
+type IconTileTone = 'primary' | 'secondary' | 'tertiary' | 'neutral' | 'glass';
 
 type IconTileSize = 'sm' | 'md' | 'lg';
 
 const tones: Record<IconTileTone, { container: string; color: string }> = {
-  primary: { container: 'bg-primary-soft', color: '#1D63ED' },
-  accent: { container: 'bg-accent-soft', color: '#10B981' },
-  warning: { container: 'bg-warning-soft', color: '#FF7A00' },
-  amber: { container: 'bg-amber-100', color: '#D97706' },
-  neutral: { container: 'bg-track', color: '#141B2B' },
-  solidPrimary: { container: 'bg-primary', color: '#FFFFFF' },
-  outline: { container: 'bg-card border border-outline-soft', color: '#1D63ED' },
+  primary: { container: 'bg-primary-fixed', color: '#004BC3' },
+  secondary: { container: 'bg-secondary-fixed/50', color: '#994700' },
+  tertiary: { container: 'bg-tertiary-fixed/50', color: '#006242' },
+  neutral: { container: 'bg-surface-container', color: '#424655' },
+  glass: { container: 'bg-white/15', color: '#FFFFFF' },
 };
 
 const sizes: Record<IconTileSize, { container: string; icon: number }> = {
-  sm: { container: 'h-10 w-10 rounded-xl', icon: 20 },
-  md: { container: 'h-11 w-11 rounded-xl', icon: 22 },
+  sm: { container: 'h-9 w-9 rounded-lg', icon: 18 },
+  md: { container: 'h-10 w-10 rounded-xl', icon: 22 },
   lg: { container: 'h-12 w-12 rounded-2xl', icon: 24 },
 };
 
