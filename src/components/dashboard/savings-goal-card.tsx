@@ -19,43 +19,41 @@ export function SavingsGoalCard({ goal, onAddMoney }: SavingsGoalCardProps) {
   const remaining = goal.target - goal.saved;
 
   return (
-    <Card className="gap-space-sm p-space-md">
+    <Card className="gap-3 p-space-md">
       <View className="flex-row items-center justify-between gap-2">
         <View className="min-w-0 flex-1 flex-row items-center gap-2.5">
-          <IconTile icon="savings" tone="primary" size="md" />
+          <IconTile icon={goal.icon} tone="primary" size="md" />
           <View className="min-w-0 flex-1">
-            <View className="flex-row flex-wrap items-center gap-1.5">
-              <Text className="text-headline-sm font-inter-semibold text-on-surface">
-                {goal.title}
-              </Text>
-              <View className="flex-row items-center gap-1 rounded-full bg-tertiary-fixed px-2 py-0.5">
-                <Text className="text-label-xs font-inter-bold text-tertiary">
-                  +{formatBYN(goal.weeklyDelta)}
-                </Text>
-                <BynIcon size={8} color="#006242" />
-                <Text className="text-label-xs font-inter-bold text-tertiary">за неделю</Text>
-              </View>
-            </View>
-            <View className="flex-row flex-wrap items-center">
-              <Text className="text-body-sm text-outline">
-                {formatBYN(goal.saved)} / {formatBYN(goal.target)}
-              </Text>
-              <BynIcon size={9} color="#737686" style={{ marginHorizontal: 2 }} />
-              <Text className="text-body-sm text-outline">({percent}%)</Text>
-            </View>
+            <Text className="text-headline-sm font-inter-bold leading-tight text-on-surface">
+              {goal.title}
+            </Text>
+            <Text className="text-[12px] leading-4 text-outline">{goal.deadline}</Text>
           </View>
         </View>
-        <Badge label={`${percent}%`} tone="primary" />
+        <View className="flex-shrink-0 items-end">
+          <Badge label={`${percent}%`} tone="success" />
+          <View className="flex-row items-center pt-0.5">
+            <Text className="text-[12px] text-outline">{formatBYN(goal.saved)} / </Text>
+            <Text className="text-[12px] text-outline">{formatBYN(goal.target)}</Text>
+            <BynIcon size={9} color="#737686" style={{ marginLeft: 2 }} />
+          </View>
+        </View>
       </View>
 
-      <ProgressBar value={goal.saved / goal.target} />
+      <ProgressBar value={goal.saved / goal.target} heightClassName="h-2.5" />
 
-      <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center gap-1">
-          <Text className="text-label-sm font-inter-medium text-outline">Осталось {formatBYN(remaining)}</Text>
-          <BynIcon size={9} color="#737686" />
+      <View className="flex-row flex-wrap items-center justify-between gap-2">
+        <View className="flex-row flex-wrap items-center">
+          <Text className="text-[12px] font-inter-medium text-on-surface-variant">
+            +{formatBYN(goal.weeklyDelta)}
+          </Text>
+          <BynIcon size={9} color="#424655" style={{ marginHorizontal: 2 }} />
+          <Text className="text-[12px] font-inter-medium text-on-surface-variant">
+            за неделю · Осталось {formatBYN(remaining)}
+          </Text>
+          <BynIcon size={9} color="#424655" style={{ marginHorizontal: 2 }} />
         </View>
-        <Text className="text-label-sm font-inter-semibold text-primary">
+        <Text className="text-[12px] font-inter-semibold text-primary-container">
           ~{goal.monthsLeft} месяца
         </Text>
       </View>
@@ -64,7 +62,7 @@ export function SavingsGoalCard({ goal, onAddMoney }: SavingsGoalCardProps) {
         label="Пополнить цель"
         icon="add"
         variant="soft"
-        className="w-full"
+        className="w-full rounded-xl"
         onPress={onAddMoney}
       />
     </Card>
