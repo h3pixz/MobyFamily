@@ -23,7 +23,6 @@ type ParentDashboardProps = {
   pendingCount: number;
   onPressAction: (label: string) => void;
   onPressManageFamily: () => void;
-  onPressChild: () => void;
 };
 
 export function ParentDashboard({
@@ -35,7 +34,6 @@ export function ParentDashboard({
   pendingCount,
   onPressAction,
   onPressManageFamily,
-  onPressChild,
 }: ParentDashboardProps) {
   return (
     <View className="gap-space-md">
@@ -43,13 +41,15 @@ export function ParentDashboard({
 
       <FamilyMembersSection
         members={members}
-        onPressChild={onPressChild}
         onPressMember={(member) => onPressAction(`Профиль ${member.name}`)}
         onPressManage={onPressManageFamily}
         onPressAdd={() => onPressAction('Добавить члена семьи')}
       />
 
-      <FamilyAlert count={pendingCount} onPress={onPressChild} />
+      <FamilyAlert
+        count={pendingCount}
+        onPress={() => onPressAction('Семейные уведомления')}
+      />
       <BonusesCard members={bonuses} onPress={onPressAction} />
       <AccountsCard accounts={accounts} onPress={onPressAction} />
       <QuickActions title="Быстрый платеж" actions={quickPayments} onPress={onPressAction} />

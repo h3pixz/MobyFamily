@@ -48,7 +48,6 @@ export default function HomeScreen() {
           pendingCount={initialDecisions.length}
           onPressAction={openSoon}
           onPressManageFamily={() => router.push('/family')}
-          onPressChild={() => router.push('/child')}
         />
       </ScrollView>
 
