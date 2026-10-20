@@ -35,8 +35,8 @@ export function ChildSummaryCard({ child }: ChildSummaryCardProps) {
         <View className="absolute -left-12 -top-12 h-40 w-40 rounded-full bg-cyan-300/20" />
 
         <View className="gap-3.5">
-          <View className="flex-row items-start justify-between gap-2">
-            <View className="flex-1">
+          <View className="flex-row flex-wrap items-start justify-between gap-2">
+            <View className="flex-1 min-w-[130px]">
               <View className="flex-row items-center gap-1.5">
                 <Text
                   className="text-[17px] font-inter-bold tracking-tight text-white"
@@ -49,7 +49,7 @@ export function ChildSummaryCard({ child }: ChildSummaryCardProps) {
                 Детская карта •• {child.cardLast4}
               </Text>
             </View>
-            <Badge label={child.ageGroup} tone="glass" icon="shield" />
+            <Badge label={child.ageGroup} tone="glass" icon="shield" className="ml-auto shrink-0" />
           </View>
 
           <View className="flex-row gap-2.5">
@@ -59,11 +59,15 @@ export function ChildSummaryCard({ child }: ChildSummaryCardProps) {
                 <Text className="text-[12px] font-inter-medium text-white/80">Для покупок</Text>
               </View>
               <View className="mt-2">
-                <View className="flex-row items-baseline gap-1">
+                <View className="flex-row items-end gap-1">
                   <Text className="text-[26px] font-inter-bold leading-none tracking-tight text-white">
                     {formatBYN(child.purchaseBalance)}
                   </Text>
-                  <BynIcon size={10} color="rgba(255,255,255,0.9)" />
+                  <BynIcon
+                    size={10}
+                    color="rgba(255,255,255,0.9)"
+                    style={{ marginBottom: 6 }}
+                  />
                 </View>
                 <View className="mt-2 flex-row items-center gap-1.5">
                   <View className="h-1.5 w-1.5 rounded-full border border-white/20 bg-accent" />
@@ -78,11 +82,15 @@ export function ChildSummaryCard({ child }: ChildSummaryCardProps) {
                 <Text className="text-[12px] font-inter-medium text-white/80">В копилке</Text>
               </View>
               <View className="mt-2">
-                <View className="flex-row items-baseline gap-1">
+                <View className="flex-row items-end gap-1">
                   <Text className="text-[26px] font-inter-bold leading-none tracking-tight text-white">
                     {formatBYN(child.savingsBalance)}
                   </Text>
-                  <BynIcon size={10} color="rgba(255,255,255,0.9)" />
+                  <BynIcon
+                    size={10}
+                    color="rgba(255,255,255,0.9)"
+                    style={{ marginBottom: 6 }}
+                  />
                 </View>
                 <Text className="mt-2 text-[11px] font-inter-medium text-white/85">
                   {child.activeGoals} активная цель

@@ -20,8 +20,8 @@ export function SavingsGoalCard({ goal, onAddMoney }: SavingsGoalCardProps) {
 
   return (
     <Card className="gap-3 p-4">
-      <View className="flex-row items-center justify-between gap-2">
-        <View className="flex-1 flex-row items-center gap-3">
+      <View className="flex-row flex-wrap items-center justify-between gap-2">
+        <View className="flex-1 min-w-[224px] flex-row items-center gap-3">
           <IconTile icon="smartphone" tone="primary" size="md" />
           <View className="flex-1">
             <View className="flex-row flex-wrap items-center gap-2">
@@ -31,12 +31,12 @@ export function SavingsGoalCard({ goal, onAddMoney }: SavingsGoalCardProps) {
             <Text className="text-[12px] font-inter text-on-surface-variant">{goal.subtitle}</Text>
           </View>
         </View>
-        <View className="flex-row items-baseline gap-0.5">
+        <View className="ml-auto shrink-0 flex-row items-end gap-1">
           <Text className="text-[17px] font-inter-bold text-on-surface">{goal.saved}</Text>
           <Text className="text-[12px] font-inter-medium text-on-surface-variant">
             / {goal.target}
           </Text>
-          <BynIcon size={10} color="#64748B" />
+          <BynIcon size={10} color="#64748B" style={{ marginBottom: 3 }} />
         </View>
       </View>
 

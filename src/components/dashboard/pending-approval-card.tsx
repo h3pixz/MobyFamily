@@ -44,33 +44,38 @@ export function PendingApprovalCard({
             <Text className="text-[15px] font-inter-bold leading-tight text-on-surface">
               {purchase.title}
             </Text>
-            <View className="mt-0.5 flex-row items-center gap-1">
+            <View className="mt-0.5 flex-row flex-wrap items-center">
               <Text className="text-[12px] font-inter-medium text-on-surface-variant">
-                {purchase.merchant} • {formatBYN(purchase.amount)}
+                {purchase.merchant} •
               </Text>
-              <BynIcon size={10} color="#64748B" />
+              <View className="ml-1 flex-row items-center gap-1">
+                <Text className="text-[12px] font-inter-medium text-on-surface-variant">
+                  {formatBYN(purchase.amount)}
+                </Text>
+                <BynIcon size={10} color="#64748B" />
+              </View>
             </View>
           </View>
         </View>
-        <View className="flex-row items-baseline gap-0.5">
+        <View className="flex-row items-end gap-1">
           <Text className="text-[17px] font-inter-bold text-primary">
             {formatBYN(purchase.amount)}
           </Text>
-          <BynIcon size={12} color="#1D63ED" />
+          <BynIcon size={12} color="#1D63ED" style={{ marginBottom: 4 }} />
         </View>
       </View>
 
       <View className="flex-row items-center gap-2 rounded-xl border border-outline-soft bg-slate-50 px-3 py-2">
         <Icon name="info-outline" size={16} color="#EF4444" />
-        <View className="flex-1 flex-row flex-wrap items-center gap-1">
+        <View className="flex-1 flex-row flex-wrap items-center">
           <Text className="text-[12px] font-inter text-on-surface-variant">
             Превышен дневной лимит ({formatBYN(purchase.dailyLimit)}
           </Text>
-          <BynIcon size={10} color="#64748B" />
+          <BynIcon size={10} color="#64748B" style={{ marginLeft: 3 }} />
           <Text className="text-[12px] font-inter text-on-surface-variant">
             ). Доступно: {formatBYN(purchase.available)}
           </Text>
-          <BynIcon size={10} color="#64748B" />
+          <BynIcon size={10} color="#64748B" style={{ marginLeft: 3 }} />
         </View>
       </View>
 
@@ -78,11 +83,11 @@ export function PendingApprovalCard({
         <Button
           label={`Одобрить (${purchase.amount} BYN)`}
           labelNode={
-            <View className="flex-row items-center gap-1">
+            <View className="flex-row items-center">
               <Text className="text-[13px] font-inter-semibold text-white">
                 Одобрить ({purchase.amount}
               </Text>
-              <BynIcon size={10} color="#FFFFFF" />
+              <BynIcon size={10} color="#FFFFFF" style={{ marginLeft: 3 }} />
               <Text className="text-[13px] font-inter-semibold text-white">)</Text>
             </View>
           }

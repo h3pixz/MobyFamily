@@ -19,7 +19,7 @@ export function DashboardHeader({
 
   return (
     <View className="border-b border-outline-soft/70 bg-background px-4 pb-2.5 pt-1">
-      <View className="mt-1 flex-row items-center justify-between gap-2">
+      <View className="mt-1 flex-row flex-wrap items-center justify-between gap-2">
         <View className="flex-shrink flex-row items-center gap-2">
           <IconTile icon="account-balance-wallet" tone="solidPrimary" size="sm" />
           <View className="flex-shrink">
@@ -38,7 +38,7 @@ export function DashboardHeader({
           </View>
         </View>
 
-        <View className="flex-row items-center gap-1.5">
+        <View className="ml-auto flex-row items-center gap-1.5">
           <View className="flex-row items-center rounded-full bg-slate-200/70 p-0.5">
             <Pressable
               accessibilityRole="button"
