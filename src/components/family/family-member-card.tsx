@@ -8,27 +8,20 @@ import { formatBYN } from '@/utils/format';
 
 type FamilyMemberCardProps = {
   member: FamilyMember;
-  onPressEdit: () => void;
   onPressRemove: () => void;
 };
 
-export function FamilyMemberCard({
-  member,
-  onPressEdit,
-  onPressRemove,
-}: FamilyMemberCardProps) {
+export function FamilyMemberCard({ member, onPressRemove }: FamilyMemberCardProps) {
   const child = member.kind === 'child';
 
   return (
     <Card className="flex-row items-center justify-between gap-space-md p-space-md">
       <View className="min-w-0 flex-1 flex-row items-center gap-space-sm">
-        <View className="relative flex-shrink-0">
-          <View
-            className={`h-12 w-12 items-center justify-center rounded-full border ${
-              child ? 'border-primary-fixed bg-primary-soft' : 'border-outline-variant/40 bg-surface-low'
-            }`}>
-            <Text className="text-[22px]">{member.emoji}</Text>
-          </View>
+        <View
+          className={`h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border ${
+            child ? 'border-primary-fixed bg-primary-soft' : 'border-outline-variant/40 bg-surface-low'
+          }`}>
+          <Text className="text-[22px]">{member.emoji}</Text>
         </View>
 
         <View className="min-w-0 flex-1">
@@ -54,18 +47,6 @@ export function FamilyMemberCard({
       </View>
 
       <View className="flex-shrink-0 flex-row items-center gap-2">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={
-            child ? `Редактировать профиль ${member.name}` : `Настройки прав ${member.name}`
-          }
-          hitSlop={4}
-          onPress={onPressEdit}
-          className="h-10 w-10 items-center justify-center rounded-xl bg-surface-low"
-          style={({ pressed }) => (pressed ? { opacity: 0.85 } : undefined)}>
-          <Icon name={child ? 'edit' : 'manage-accounts'} size={20} color="#424655" />
-        </Pressable>
-
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={

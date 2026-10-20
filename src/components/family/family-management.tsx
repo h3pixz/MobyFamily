@@ -3,7 +3,6 @@ import { View } from 'react-native';
 import { AddFamilyMemberCard } from '@/components/family/add-family-member-card';
 import { FamilyMemberCard } from '@/components/family/family-member-card';
 import { FamilySectionHeader } from '@/components/family/family-section-header';
-import { FamilySecurityCard } from '@/components/family/family-security-card';
 import type { FamilyMember } from '@/types/dashboard';
 
 type FamilyManagementProps = {
@@ -32,7 +31,6 @@ export function FamilyManagement({ members, onPressAdd, onPressAction }: FamilyM
           <FamilyMemberCard
             key={member.id}
             member={member}
-            onPressEdit={() => onPressAction(`Профиль ${member.name}`)}
             onPressRemove={() => onPressAction(`Удалить профиль ${member.name}`)}
           />
         ))}
@@ -51,13 +49,10 @@ export function FamilyManagement({ members, onPressAdd, onPressAction }: FamilyM
           <FamilyMemberCard
             key={member.id}
             member={member}
-            onPressEdit={() => onPressAction(`Настройки прав ${member.name}`)}
             onPressRemove={() => onPressAction(`Исключить ${member.name} из семьи`)}
           />
         ))}
       </View>
-
-      <FamilySecurityCard />
     </View>
   );
 }
