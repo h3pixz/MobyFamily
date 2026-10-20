@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BottomNav } from '@/components/dashboard/bottom-nav';
 import { ChildDashboard } from '@/components/dashboard/child-dashboard';
@@ -24,6 +24,7 @@ export default function HomeScreen() {
   const [role, setRole] = useState<AppRole>('parent');
   const [decisions, setDecisions] = useState<DecisionRequest[]>(initialDecisions);
   const scrollRef = useRef<ScrollView>(null);
+  const insets = useSafeAreaInsets();
 
   const openSoon = (title: string) => {
     router.push({ pathname: '/soon', params: { title } });
@@ -39,17 +40,19 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1, backgroundColor: '#F8F9FB' }}>
-      <DashboardHeader
-        role={role}
-        onChangeRole={changeRole}
-        onPressNotifications={() => openSoon('Уведомления')}
-        onPressProfile={() => openSoon('Профиль')}
-      />
+    <View style={{ flex: 1, backgroundColor: '#F8F9FB' }}>
+      <View style={{ backgroundColor: '#FFFFFF', paddingTop: insets.top }}>
+        <DashboardHeader
+          role={role}
+          onChangeRole={changeRole}
+          onPressNotifications={() => openSoon('Уведомления')}
+          onPressProfile={() => openSoon('Профиль')}
+        />
+      </View>
 
       <ScrollView
         ref={scrollRef}
-        className="flex-1"
+        className="flex-1 bg-surface"
         contentContainerStyle={{
           gap: 16,
           paddingBottom: 24,
@@ -91,6 +94,6 @@ export default function HomeScreen() {
           }
         }}
       />
-    </SafeAreaView>
+    </View>
   );
 }
