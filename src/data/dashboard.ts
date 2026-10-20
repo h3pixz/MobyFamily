@@ -148,6 +148,7 @@ export const childTasks: Task[] = [
 export const savingsGoal: SavingsGoal = {
   id: 'goal-phone',
   title: 'Новый телефон',
+  subtitle: 'Копилка мечты',
   icon: 'smartphone',
   deadline: 'Цель до 1 сентября',
   saved: 180,

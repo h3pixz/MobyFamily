@@ -114,6 +114,7 @@ export interface DecisionRequest {
 export interface SavingsGoal {
   id: string;
   title: string;
+  subtitle: string;
   icon: IconName;
   deadline: string;
   saved: number;
