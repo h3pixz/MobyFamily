@@ -46,7 +46,7 @@ export default function HomeScreen() {
           role={role}
           onChangeRole={changeRole}
           onPressNotifications={() => openSoon('Уведомления')}
-          onPressProfile={() => openSoon('Профиль')}
+          onPressProfile={() => router.push('/register')}
         />
       </View>
 
@@ -89,7 +89,9 @@ export default function HomeScreen() {
       <BottomNav
         activeTab="family"
         onPress={(tab) => {
-          if (tab.key !== 'family') {
+          if (tab.key === 'profile') {
+            router.push('/register');
+          } else if (tab.key !== 'family') {
             openSoon(tab.label);
           }
         }}
