@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { BankCard } from '@/components/dashboard/bank-card';
@@ -8,18 +9,22 @@ import { formatBYN } from '@/utils/format';
 type TeenBalanceCardProps = {
   ageLabel: string;
   cardLast4: string;
+  cardNumberMask?: string;
   balance: number;
   savings: number;
-  onPressDetails: () => void;
 };
 
 export function TeenBalanceCard({
   ageLabel,
   cardLast4,
+  cardNumberMask,
   balance,
   savings,
-  onPressDetails,
 }: TeenBalanceCardProps) {
+  const [numberVisible, setNumberVisible] = useState(false);
+  const shortNumber = `•• ${cardLast4}`;
+  const fullNumber = cardNumberMask ?? shortNumber;
+
   return (
     <BankCard colors={['#1D63ED', '#0D5CE5']} padding={20}>
       <View className="flex-row items-center justify-between gap-2">
@@ -35,7 +40,7 @@ export function TeenBalanceCard({
       </View>
 
       <Text className="mt-1 text-[11px] font-inter-medium tracking-wider text-white/75">
-        •• {cardLast4}
+        {numberVisible ? fullNumber : shortNumber}
       </Text>
 
       <View className="mt-4 flex-row gap-3">
@@ -64,15 +69,26 @@ export function TeenBalanceCard({
 
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="Реквизиты карты"
-        onPress={onPressDetails}
+        accessibilityLabel={numberVisible ? 'Скрыть номер карты' : 'Показать реквизиты карты'}
+        accessibilityState={{ expanded: numberVisible }}
+        onPress={() => setNumberVisible((visible) => !visible)}
         className="mt-3.5 flex-row items-center justify-between border-t border-white/15 pt-3"
         style={({ pressed }) => (pressed ? { opacity: 0.75 } : undefined)}>
         <View className="flex-row items-center gap-1.5">
-          <Icon name="visibility" size={15} color="rgba(255,255,255,0.8)" />
-          <Text className="text-label-md font-inter-medium text-white/90">Реквизиты карты</Text>
+          <Icon
+            name={numberVisible ? 'visibility-off' : 'visibility'}
+            size={15}
+            color="rgba(255,255,255,0.8)"
+          />
+          <Text className="text-label-md font-inter-medium text-white/90">
+            {numberVisible ? 'Скрыть реквизиты карты' : 'Реквизиты карты'}
+          </Text>
         </View>
-        <Icon name="chevron-right" size={18} color="rgba(255,255,255,0.8)" />
+        <Icon
+          name={numberVisible ? 'expand-less' : 'chevron-right'}
+          size={18}
+          color="rgba(255,255,255,0.8)"
+        />
       </Pressable>
     </BankCard>
   );
