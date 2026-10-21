@@ -1,5 +1,7 @@
 export function getFirstName(name?: string) {
-  return name?.trim().split(/\s+/)[0] ?? '';
+  const parts = name?.trim().split(/\s+/).filter(Boolean) ?? [];
+
+  return parts[1] ?? parts[0] ?? '';
 }
 
 export function getGreeting(name?: string) {
