@@ -68,6 +68,16 @@ export interface ChildQuickAction {
   tone: ChildActionTone;
 }
 
+export type TeenActionTone = 'primary' | 'blue' | 'warning' | 'tertiary';
+
+export interface TeenQuickAction {
+  id: string;
+  label: string;
+  subtitle: string;
+  icon: IconName;
+  tone: TeenActionTone;
+}
+
 export type DecisionKind = 'purchase' | 'task';
 
 export interface DecisionRequest {
