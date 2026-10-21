@@ -4,11 +4,15 @@ import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { fetchFamily } from '@/api/family';
+import type { DetailedTransactionDto } from '@/api/gen/models/DetailedTransactionDto';
+import { fetchMemberTransactions } from '@/api/payments';
 import { fetchPiggyBanks } from '@/api/piggy-banks';
 import { FamilyHeader } from '@/components/family/family-header';
 import { ChildHistorySummary } from '@/components/history/child-history-summary';
 import { TopUpHistory } from '@/components/history/top-up-history';
 import { TopUpsSummary } from '@/components/history/top-ups-summary';
+import { TransactionHistory } from '@/components/history/transaction-history';
+import { TransactionSummaryCard } from '@/components/history/transaction-summary-card';
 import { Icon } from '@/components/ui/icon';
 import type { ChildProfile } from '@/types/dashboard';
 import type { TopUpEntry } from '@/types/history';
@@ -19,11 +23,13 @@ import {
   groupByDay,
   toTopUpEntries,
 } from '@/utils/history';
+import { filterTransactions, getMonthlySpending } from '@/utils/transactions';
 
 export default function ChildHistoryScreen() {
   const { childId } = useLocalSearchParams<{ childId?: string }>();
   const insets = useSafeAreaInsets();
   const [child, setChild] = useState<ChildProfile | null>(null);
+  const [transactions, setTransactions] = useState<DetailedTransactionDto[]>([]);
   const [entries, setEntries] = useState<TopUpEntry[]>([]);
   const [loading, setLoading] = useState(Boolean(childId));
   const [error, setError] = useState<string | null>(childId ? null : 'Ребёнок не найден');
@@ -35,8 +41,8 @@ export default function ChildHistoryScreen() {
 
     let cancelled = false;
 
-    Promise.allSettled([fetchFamily(), fetchPiggyBanks()]).then(
-      ([familyResult, piggyBanksResult]) => {
+    Promise.allSettled([fetchFamily(), fetchPiggyBanks(), fetchMemberTransactions(childId)]).then(
+      ([familyResult, piggyBanksResult, transactionsResult]) => {
         if (cancelled) {
           return;
         }
@@ -51,8 +57,16 @@ export default function ChildHistoryScreen() {
 
         if (piggyBanksResult.status === 'fulfilled') {
           setEntries(toTopUpEntries(piggyBanksResult.value, childId));
+        }
+
+        if (transactionsResult.status === 'fulfilled') {
+          setTransactions(
+            [...transactionsResult.value.transactions].sort(
+              (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+            ),
+          );
         } else {
-          setError('Не удалось загрузить историю пополнений');
+          setError('Не удалось загрузить историю операций');
         }
 
         setLoading(false);
@@ -64,7 +78,9 @@ export default function ChildHistoryScreen() {
     };
   }, [childId]);
 
-  const groups = groupByDay(entries);
+  const purchases = groupByDay(filterTransactions(transactions, 'purchases'));
+  const topUpGroups = groupByDay(entries);
+  const spending = getMonthlySpending(transactions);
   const monthTopUps = getCurrentMonthTopUps(entries);
   const monthLabel = getMonthLabelPrepositional(new Date());
 
@@ -110,6 +126,16 @@ export default function ChildHistoryScreen() {
           <>
             {child ? <ChildHistorySummary child={child} /> : null}
 
+            {spending.count > 0 ? (
+              <TransactionSummaryCard monthLabel={monthLabel} spending={spending} />
+            ) : null}
+
+            <TransactionHistory
+              groups={purchases}
+              emptyTitle="Покупок пока нет"
+              emptySubtitle="Оплаты картой ребёнка появятся здесь."
+            />
+
             {monthTopUps.count > 0 ? (
               <TopUpsSummary
                 monthLabel={monthLabel}
@@ -118,7 +144,7 @@ export default function ChildHistoryScreen() {
               />
             ) : null}
 
-            <TopUpHistory groups={groups} />
+            <TopUpHistory groups={topUpGroups} />
           </>
         )}
       </ScrollView>

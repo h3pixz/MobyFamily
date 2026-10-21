@@ -124,7 +124,7 @@ export function ChildSummaryCard({
 
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="История пополнений копилки"
+          accessibilityLabel="История операций ребёнка"
           onPress={onPressHistory}
           className="flex-row items-center justify-center gap-1.5 rounded-xl border border-white/20 bg-white/15 py-2.5"
           style={({ pressed }) => (pressed ? { opacity: 0.85 } : undefined)}>
