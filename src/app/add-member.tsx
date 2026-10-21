@@ -4,15 +4,17 @@ import { useEffect, useRef, useState } from 'react';
 import { Keyboard, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { getApiErrorMessage } from '@/api/error';
+import { linkChild, type PassportFile } from '@/api/family';
 import { AddMemberIntro } from '@/components/family/add-member-intro';
 import { BankSecurityNote } from '@/components/family/bank-security-note';
 import { ChildContactCard } from '@/components/family/child-contact-card';
 import { ChildVerificationCard } from '@/components/family/child-verification-card';
 import { FamilyHeader } from '@/components/family/family-header';
 import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
 import { isPhoneComplete } from '@/utils/phone';
 
-const VERIFY_DURATION = 1200;
 const SUCCESS_DURATION = 1600;
 
 type SubmitState = 'idle' | 'verifying' | 'done';
@@ -26,8 +28,9 @@ const submitLabels: Record<SubmitState, string> = {
 export default function AddMemberScreen() {
   const insets = useSafeAreaInsets();
   const [phone, setPhone] = useState('');
-  const [fileName, setFileName] = useState<string | null>(null);
+  const [passport, setPassport] = useState<PassportFile | null>(null);
   const [state, setState] = useState<SubmitState>('idle');
+  const [formError, setFormError] = useState<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -47,28 +50,49 @@ export default function AddMemberScreen() {
   };
 
   const pickDocument = async () => {
-    const picked = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      quality: 1,
-    });
+    try {
+      const picked = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        quality: 1,
+      });
 
-    if (picked.canceled) {
+      if (picked.canceled) {
+        return;
+      }
+
+      const asset = picked.assets[0];
+
+      setPassport({
+        uri: asset.uri,
+        name: asset.fileName ?? 'Документ.jpg',
+        type: asset.mimeType ?? 'image/jpeg',
+      });
+      setFormError(null);
+    } catch {
+      setFormError('Не удалось выбрать файл. Попробуйте ещё раз.');
+    }
+  };
+
+  const submit = async () => {
+    if (!passport) {
       return;
     }
 
-    setFileName(picked.assets[0].fileName ?? 'Документ.jpg');
-  };
-
-  const submit = () => {
     Keyboard.dismiss();
     setState('verifying');
-    timer.current = setTimeout(() => {
+    setFormError(null);
+
+    try {
+      await linkChild({ phone, passport });
       setState('done');
       timer.current = setTimeout(goBack, SUCCESS_DURATION);
-    }, VERIFY_DURATION);
+    } catch (error) {
+      setState('idle');
+      setFormError(getApiErrorMessage(error));
+    }
   };
 
-  const ready = isPhoneComplete(phone) && Boolean(fileName);
+  const ready = isPhoneComplete(phone) && Boolean(passport);
 
   return (
     <View className="flex-1 bg-surface">
@@ -98,11 +122,18 @@ export default function AddMemberScreen() {
           onChangePhone={setPhone}
         />
 
-        <ChildVerificationCard fileName={fileName} onPressPick={pickDocument} />
+        <ChildVerificationCard fileName={passport?.name ?? null} onPressPick={pickDocument} />
 
         <BankSecurityNote />
 
         <View className="gap-3">
+          {formError ? (
+            <View className="flex-row items-center gap-1.5 rounded-xl bg-error/10 px-3 py-2.5">
+              <Icon name="error-outline" size={16} color="#BA1A1A" />
+              <Text className="flex-1 text-label-sm font-inter text-error">{formError}</Text>
+            </View>
+          ) : null}
+
           <Button
             label={submitLabels[state]}
             icon={state === 'verifying' ? undefined : state === 'done' ? 'check' : 'person-add'}
