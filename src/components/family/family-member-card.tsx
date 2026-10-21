@@ -8,7 +8,7 @@ import { formatBYN } from '@/utils/format';
 
 type FamilyMemberCardProps = {
   member: FamilyMember;
-  onPressRemove: () => void;
+  onPressRemove?: () => void;
 };
 
 export function FamilyMemberCard({ member, onPressRemove }: FamilyMemberCardProps) {
@@ -46,19 +46,21 @@ export function FamilyMemberCard({ member, onPressRemove }: FamilyMemberCardProp
         </View>
       </View>
 
-      <View className="flex-shrink-0 flex-row items-center gap-2">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={
-            child ? `Удалить профиль ${member.name}` : `Исключить ${member.name} из семьи`
-          }
-          hitSlop={4}
-          onPress={onPressRemove}
-          className="h-10 w-10 items-center justify-center rounded-xl bg-error/10"
-          style={({ pressed }) => (pressed ? { opacity: 0.85 } : undefined)}>
-          <Icon name={child ? 'delete' : 'person-remove'} size={20} color="#BA1A1A" />
-        </Pressable>
-      </View>
+      {onPressRemove ? (
+        <View className="flex-shrink-0 flex-row items-center gap-2">
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={
+              child ? `Удалить профиль ${member.name}` : `Исключить ${member.name} из семьи`
+            }
+            hitSlop={4}
+            onPress={onPressRemove}
+            className="h-10 w-10 items-center justify-center rounded-xl bg-error/10"
+            style={({ pressed }) => (pressed ? { opacity: 0.85 } : undefined)}>
+            <Icon name={child ? 'delete' : 'person-remove'} size={20} color="#BA1A1A" />
+          </Pressable>
+        </View>
+      ) : null}
     </Card>
   );
 }

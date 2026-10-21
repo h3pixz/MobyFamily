@@ -15,43 +15,14 @@ import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
 import { Icon } from '@/components/ui/icon';
 import { ModalSheet } from '@/components/ui/modal-sheet';
+import { formatDateInput, toIsoDate } from '@/utils/date-input';
 import { getFirstName } from '@/utils/greeting';
 import { parseAmountInput } from '@/utils/piggy-bank';
 
-function formatDateInput(value: string) {
-  const digits = value.replace(/\D/g, '').slice(0, 8);
-
-  if (digits.length <= 2) {
-    return digits;
-  }
-  if (digits.length <= 4) {
-    return `${digits.slice(0, 2)}.${digits.slice(2)}`;
-  }
-
-  return `${digits.slice(0, 2)}.${digits.slice(2, 4)}.${digits.slice(4)}`;
-}
-
 function toDeadline(value: string) {
-  const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value);
+  const iso = toIsoDate(value);
 
-  if (!match) {
-    return null;
-  }
-
-  const day = Number(match[1]);
-  const month = Number(match[2]);
-  const year = Number(match[3]);
-  const date = new Date(year, month - 1, day, 18, 0, 0);
-
-  if (
-    date.getFullYear() !== year ||
-    date.getMonth() !== month - 1 ||
-    date.getDate() !== day
-  ) {
-    return null;
-  }
-
-  return date.toISOString();
+  return iso ? new Date(`${iso}T18:00:00`).toISOString() : null;
 }
 
 export default function NewTaskScreen() {

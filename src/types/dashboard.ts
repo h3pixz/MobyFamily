@@ -45,6 +45,7 @@ export interface FamilyMember {
   emoji: string;
   age?: number;
   balance?: number;
+  removable?: boolean;
 }
 
 export interface BonusMember {

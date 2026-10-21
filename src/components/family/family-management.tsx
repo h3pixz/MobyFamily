@@ -8,10 +8,10 @@ import type { FamilyMember } from '@/types/dashboard';
 type FamilyManagementProps = {
   members: FamilyMember[];
   onPressAdd: () => void;
-  onPressAction: (label: string) => void;
+  onRemove: (member: FamilyMember) => void;
 };
 
-export function FamilyManagement({ members, onPressAdd, onPressAction }: FamilyManagementProps) {
+export function FamilyManagement({ members, onPressAdd, onRemove }: FamilyManagementProps) {
   const children = members.filter((member) => member.kind === 'child');
   const parents = members.filter((member) => member.kind === 'parent');
 
@@ -31,7 +31,7 @@ export function FamilyManagement({ members, onPressAdd, onPressAction }: FamilyM
           <FamilyMemberCard
             key={member.id}
             member={member}
-            onPressRemove={() => onPressAction(`Удалить профиль ${member.name}`)}
+            onPressRemove={member.removable === false ? undefined : () => onRemove(member)}
           />
         ))}
       </View>
@@ -49,7 +49,7 @@ export function FamilyManagement({ members, onPressAdd, onPressAction }: FamilyM
           <FamilyMemberCard
             key={member.id}
             member={member}
-            onPressRemove={() => onPressAction(`Исключить ${member.name} из семьи`)}
+            onPressRemove={member.removable === false ? undefined : () => onRemove(member)}
           />
         ))}
       </View>

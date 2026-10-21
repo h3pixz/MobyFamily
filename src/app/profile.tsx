@@ -1,11 +1,17 @@
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { isChildRole } from '@/api/auth';
+import { getApiErrorMessage } from '@/api/error';
+import { fetchFamily, removeParent } from '@/api/family';
+import type { ParentSummaryDto } from '@/api/gen/models/ParentSummaryDto';
 import { useAuth } from '@/auth/auth-context';
+import { FamilyMemberCard } from '@/components/family/family-member-card';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
+import { toLinkedParentMember } from '@/utils/family';
 import { formatStoredPhone } from '@/utils/phone';
 
 const shadow = {
@@ -34,6 +40,24 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { profile, signOut } = useAuth();
   const [signingOut, setSigningOut] = useState(false);
+  const [parents, setParents] = useState<ParentSummaryDto[]>([]);
+  const isChild = isChildRole(profile?.role ?? '');
+
+  const loadParents = useCallback(() => {
+    if (!isChild) {
+      return;
+    }
+
+    fetchFamily()
+      .then((family) => setParents(family.user.parents ?? []))
+      .catch(() => {});
+  }, [isChild]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadParents();
+    }, [loadParents]),
+  );
 
   const handleSignOut = async () => {
     setSigningOut(true);
@@ -43,6 +67,28 @@ export default function ProfileScreen() {
     } finally {
       setSigningOut(false);
     }
+  };
+
+  const handleRemoveParent = (parent: ParentSummaryDto) => {
+    Alert.alert(
+      'Отвязать родителя?',
+      `${parent.name} потеряет доступ к вашему профилю.`,
+      [
+        { text: 'Отмена', style: 'cancel' },
+        {
+          text: 'Отвязать',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await removeParent(parent.id);
+              setParents((current) => current.filter((item) => item.id !== parent.id));
+            } catch (removeError) {
+              Alert.alert('Не удалось отвязать родителя', getApiErrorMessage(removeError));
+            }
+          },
+        },
+      ],
+    );
   };
 
   return (
@@ -95,6 +141,21 @@ export default function ProfileScreen() {
             </Text>
           </View>
         </View>
+
+        {isChild && parents.length > 0 ? (
+          <View className="gap-2">
+            <Text className="text-headline-sm font-inter-semibold text-on-surface">
+              Родители с доступом
+            </Text>
+            {parents.map((parent) => (
+              <FamilyMemberCard
+                key={parent.id}
+                member={toLinkedParentMember(parent)}
+                onPressRemove={() => handleRemoveParent(parent)}
+              />
+            ))}
+          </View>
+        ) : null}
 
         <Button
           label="Выйти из аккаунта"

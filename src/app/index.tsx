@@ -18,12 +18,7 @@ import { BottomNav } from '@/components/dashboard/bottom-nav';
 import { ChildDashboard } from '@/components/dashboard/child-dashboard';
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 import { ParentDashboard } from '@/components/dashboard/parent-dashboard';
-import {
-  childBonusMember,
-  familyParentMember,
-  parentBonusMember,
-  parentCard,
-} from '@/data/dashboard';
+import { childBonusMember, parentBonusMember, parentCard } from '@/data/dashboard';
 import { useUnreadCount } from '@/hooks/use-unread-count';
 import type { AppRole, BonusMember, DecisionRequest } from '@/types/dashboard';
 import {
@@ -31,6 +26,7 @@ import {
   toChildTasks,
   toFamilyMember,
   toSavingsGoal,
+  toSelfParentMember,
   toTaskDecision,
   toTransferDecision,
 } from '@/utils/family';
@@ -112,7 +108,9 @@ export default function HomeScreen() {
     0,
   );
   const childName = childProfile?.name ?? 'Ребёнок';
-  const members = [...children.map(toFamilyMember), familyParentMember];
+  const members = family
+    ? [...children.map(toFamilyMember), toSelfParentMember(family.user)]
+    : children.map(toFamilyMember);
   const bonuses = [
     parentBonusMember,
     ...children.map((child) => ({

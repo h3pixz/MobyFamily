@@ -1,4 +1,6 @@
 import type { ChildUserWithCardsDto } from '@/api/gen/models/ChildUserWithCardsDto';
+import type { FamilyMemberUserDto } from '@/api/gen/models/FamilyMemberUserDto';
+import type { ParentSummaryDto } from '@/api/gen/models/ParentSummaryDto';
 import type { PiggyBankResponseDto } from '@/api/gen/models/PiggyBankResponseDto';
 import type { TaskResponseDto } from '@/api/gen/models/TaskResponseDto';
 import type { TransferRequestListItemDto } from '@/api/gen/models/TransferRequestListItemDto';
@@ -172,5 +174,28 @@ export function toFamilyMember(child: ChildUserWithCardsDto): FamilyMember {
     emoji: child.role === 'TEEN_14_17' ? '🧑🏻' : '👦🏻',
     age: profile.age,
     balance: profile.purchaseBalance,
+    removable: true,
+  };
+}
+
+export function toSelfParentMember(user: FamilyMemberUserDto): FamilyMember {
+  return {
+    id: user.id,
+    kind: 'parent',
+    name: user.name,
+    roleLabel: 'Текущий родитель',
+    emoji: '🧑🏻',
+    removable: false,
+  };
+}
+
+export function toLinkedParentMember(parent: ParentSummaryDto): FamilyMember {
+  return {
+    id: parent.id,
+    kind: 'parent',
+    name: parent.name,
+    roleLabel: 'Родитель',
+    emoji: '🧑🏻',
+    removable: true,
   };
 }
