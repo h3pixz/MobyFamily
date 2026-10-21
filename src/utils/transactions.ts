@@ -94,9 +94,6 @@ export function getMonthlySpending(transactions: DetailedTransactionDto[]): Mont
 }
 
 export function getTransactionBadge(transaction: DetailedTransactionDto): TransactionBadge {
-  if (transaction.status === 'PENDING_PARENT_APPROVAL') {
-    return { label: 'Ждёт одобрения', tone: 'warning', icon: 'schedule' };
-  }
   if (transaction.status === 'DECLINED_BY_BANK') {
     return { label: 'Отклонено банком', tone: 'neutral', icon: 'block' };
   }

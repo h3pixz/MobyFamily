@@ -12,9 +12,6 @@ type TeenTransactionsProps = {
 };
 
 function statusLabel(transaction: DetailedTransactionDto, incoming: boolean) {
-  if (transaction.status === 'PENDING_PARENT_APPROVAL') {
-    return 'Ждёт одобрения';
-  }
   if (transaction.status === 'DECLINED_BY_LIMIT') {
     return 'Отклонено по лимиту';
   }
