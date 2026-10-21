@@ -11,7 +11,7 @@ type ChildDashboardProps = {
   child: ChildProfile;
   decisions: DecisionRequest[];
   tasks: Task[];
-  goal: SavingsGoal;
+  goal: SavingsGoal | null;
   onApprove: (id: string) => void;
   onDecline: (id: string) => void;
   onPressAction: (label: string) => void;
@@ -52,7 +52,7 @@ export function ChildDashboard({
         onDecline={onDecline}
       />
       <TasksSection tasks={tasks} childName={child.name} onNewTask={onNewTask} />
-      <SavingsGoalCard goal={goal} onAddMoney={onAddMoney} />
+      {goal ? <SavingsGoalCard goal={goal} onAddMoney={onAddMoney} /> : null}
     </View>
   );
 }

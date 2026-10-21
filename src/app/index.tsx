@@ -6,6 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { fetchFamily } from '@/api/family';
 import type { FamilyResponseDto } from '@/api/gen/models/FamilyResponseDto';
+import type { PiggyBankResponseDto } from '@/api/gen/models/PiggyBankResponseDto';
+import { fetchPiggyBanks } from '@/api/piggy-banks';
 import { useAuth } from '@/auth/auth-context';
 import { BottomNav } from '@/components/dashboard/bottom-nav';
 import { ChildDashboard } from '@/components/dashboard/child-dashboard';
@@ -18,10 +20,9 @@ import {
   getInitialDecisions,
   parentBonusMember,
   parentCard,
-  savingsGoal,
 } from '@/data/dashboard';
 import type { AppRole } from '@/types/dashboard';
-import { toChildProfile, toFamilyMember } from '@/utils/family';
+import { toChildProfile, toFamilyMember, toSavingsGoal } from '@/utils/family';
 import { getFirstName, getGreeting } from '@/utils/greeting';
 
 export default function HomeScreen() {
@@ -29,6 +30,7 @@ export default function HomeScreen() {
   const [role, setRole] = useState<AppRole>('parent');
   const [resolvedDecisions, setResolvedDecisions] = useState<string[]>([]);
   const [family, setFamily] = useState<FamilyResponseDto | null>(null);
+  const [piggyBanks, setPiggyBanks] = useState<PiggyBankResponseDto[]>([]);
   const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
   const scrollRef = useRef<ScrollView>(null);
   const insets = useSafeAreaInsets();
@@ -40,13 +42,20 @@ export default function HomeScreen() {
 
     let cancelled = false;
 
-    fetchFamily()
-      .then((data) => {
-        if (!cancelled) {
-          setFamily(data);
+    Promise.allSettled([fetchFamily(), fetchPiggyBanks()]).then(
+      ([familyResult, piggyBanksResult]) => {
+        if (cancelled) {
+          return;
         }
-      })
-      .catch(() => {});
+
+        if (familyResult.status === 'fulfilled') {
+          setFamily(familyResult.value);
+        }
+        if (piggyBanksResult.status === 'fulfilled') {
+          setPiggyBanks(piggyBanksResult.value);
+        }
+      },
+    );
 
     return () => {
       cancelled = true;
@@ -57,6 +66,12 @@ export default function HomeScreen() {
   const selectedChild =
     children.find((child) => child.id === selectedChildId) ?? children[0] ?? null;
   const childProfile = selectedChild ? toChildProfile(selectedChild) : null;
+  const activeGoal = selectedChild
+    ? piggyBanks.find(
+        (piggyBank) => piggyBank.owner.id === selectedChild.id && piggyBank.status === 'ACTIVE',
+      )
+    : undefined;
+  const savingsGoal = activeGoal ? toSavingsGoal(activeGoal) : null;
   const childName = childProfile?.name ?? 'Ребёнок';
   const members = [...children.map(toFamilyMember), familyParentMember];
   const bonuses = [
