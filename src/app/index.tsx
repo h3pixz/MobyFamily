@@ -22,13 +22,14 @@ import {
 } from '@/data/dashboard';
 import type { AppRole } from '@/types/dashboard';
 import { toChildProfile, toFamilyMember } from '@/utils/family';
-import { getGreeting } from '@/utils/greeting';
+import { getFirstName, getGreeting } from '@/utils/greeting';
 
 export default function HomeScreen() {
   const { profile } = useAuth();
   const [role, setRole] = useState<AppRole>('parent');
   const [resolvedDecisions, setResolvedDecisions] = useState<string[]>([]);
   const [family, setFamily] = useState<FamilyResponseDto | null>(null);
+  const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
   const scrollRef = useRef<ScrollView>(null);
   const insets = useSafeAreaInsets();
 
@@ -52,15 +53,21 @@ export default function HomeScreen() {
     };
   }, [profile]);
 
-  const familyChild = family?.children[0];
-  const childProfile = familyChild ? toChildProfile(familyChild) : null;
+  const children = family?.children ?? [];
+  const selectedChild =
+    children.find((child) => child.id === selectedChildId) ?? children[0] ?? null;
+  const childProfile = selectedChild ? toChildProfile(selectedChild) : null;
   const childName = childProfile?.name ?? 'Ребёнок';
-  const members = familyChild
-    ? [toFamilyMember(familyChild), familyParentMember]
-    : [familyParentMember];
-  const bonuses = childProfile
-    ? [parentBonusMember, { ...childBonusMember, name: childProfile.name }]
-    : [parentBonusMember];
+  const members = [...children.map(toFamilyMember), familyParentMember];
+  const bonuses = [
+    parentBonusMember,
+    ...children.map((child) => ({
+      ...childBonusMember,
+      id: `bonus-${child.id}`,
+      name: getFirstName(child.name),
+      points: child.mobiksBalance,
+    })),
+  ];
   const decisions = getInitialDecisions(childName).filter(
     (request) => !resolvedDecisions.includes(request.id),
   );
@@ -76,6 +83,19 @@ export default function HomeScreen() {
 
   const resolveDecision = (id: string) => {
     setResolvedDecisions((current) => [...current, id]);
+  };
+
+  const switchToChild = (childId?: string) => {
+    const target = childId
+      ? children.find((child) => child.id === childId)
+      : selectedChild;
+
+    if (!target) {
+      return;
+    }
+
+    setSelectedChildId(target.id);
+    changeRole('child');
   };
 
   const swipeBack = useRef(
@@ -121,17 +141,13 @@ export default function HomeScreen() {
               pendingCount={decisions.length}
               onPressAction={openSoon}
               onPressManageFamily={() => router.push('/family')}
-              onSwitchToChild={() => {
-                if (childProfile) {
-                  changeRole('child');
-                }
-              }}
+              onSwitchToChild={switchToChild}
             />
           </Animated.View>
         ) : childProfile ? (
           <Animated.View key="child" entering={FadeInRight.duration(280)}>
             <ChildDashboard
-              greeting={getGreeting(familyChild?.name)}
+              greeting={getGreeting(selectedChild?.name)}
               child={childProfile}
               decisions={decisions}
               tasks={childTasks}

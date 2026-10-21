@@ -109,8 +109,8 @@ export function toFamilyMember(child: ChildUserWithCardsDto): FamilyMember {
     id: child.id,
     kind: 'child',
     name: profile.name,
-    roleLabel: 'Карта ребёнка',
-    emoji: '👦🏻',
+    roleLabel: child.role === 'TEEN_14_17' ? 'Карта подростка' : 'Карта ребёнка',
+    emoji: child.role === 'TEEN_14_17' ? '🧑🏻' : '👦🏻',
     age: profile.age,
     balance: profile.purchaseBalance,
   };

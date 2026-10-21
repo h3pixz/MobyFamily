@@ -14,7 +14,7 @@ const shadow = {
 
 type FamilyMembersSectionProps = {
   members: FamilyMember[];
-  onPressChild: () => void;
+  onPressChild: (member: FamilyMember) => void;
   onPressMember: (member: FamilyMember) => void;
   onPressManage: () => void;
 };
@@ -56,7 +56,7 @@ export function FamilyMembersSection({
               key={member.id}
               accessibilityRole="button"
               accessibilityLabel={child ? `Открыть вкладку ${member.name}` : `Профиль ${member.name}`}
-              onPress={() => (child ? onPressChild() : onPressMember(member))}
+              onPress={() => (child ? onPressChild(member) : onPressMember(member))}
               className={`w-[150px] flex-col justify-between rounded-card bg-surface-lowest p-3.5 ${
                 child ? 'border-2 border-primary-container' : 'border border-outline-variant/30'
               }`}
