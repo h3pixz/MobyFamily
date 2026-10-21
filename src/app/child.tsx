@@ -121,6 +121,10 @@ export default function ChildScreen() {
       router.push('/qr');
       return;
     }
+    if (action.id === 'child-action-history') {
+      router.push('/transaction-history');
+      return;
+    }
     openSoon(action.label);
   };
 
