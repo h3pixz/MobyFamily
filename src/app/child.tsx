@@ -198,7 +198,7 @@ export default function ChildScreen() {
               <TeenQuestCard
                 status={graduation}
                 monthsLeft={family ? getMonthsUntilAge(family.user.birthDay, 18) : 0}
-                onPress={() => openSoon('Квесты')}
+                onPress={() => router.push('/quests')}
               />
             ) : null}
 
@@ -256,6 +256,8 @@ export default function ChildScreen() {
               router.push('/profile');
             } else if (tab.key === 'analytics') {
               router.push('/transaction-history');
+            } else if (tab.key === 'quests') {
+              router.push('/quests');
             } else if (tab.key !== 'home') {
               openSoon(tab.label);
             }
