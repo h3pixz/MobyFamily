@@ -25,6 +25,7 @@ import { PiggyBankSummaryCard } from '@/components/piggy-bank/piggy-bank-summary
 import { Button } from '@/components/ui/button';
 import { BynIcon } from '@/components/ui/byn-icon';
 import { Icon } from '@/components/ui/icon';
+import { parentCard } from '@/data/dashboard';
 import { formatBYN } from '@/utils/format';
 import { getWeeklyContributions, parseAmountInput } from '@/utils/piggy-bank';
 
@@ -87,7 +88,7 @@ export default function PiggyBankTopUpScreen() {
   };
 
   const parsedAmount = parseAmountInput(amount);
-  const balance = card?.balance ?? 0;
+  const balance = isChild ? (card?.balance ?? 0) : parentCard.balance;
   const amountError = !card
     ? 'Нет карты для пополнения'
     : parsedAmount < MIN_AMOUNT
@@ -100,9 +101,8 @@ export default function PiggyBankTopUpScreen() {
   const cardTitle = card
     ? isChild
       ? `Moby Junior •• ${card.cardNumberMask.slice(-4)}`
-      : card.cardholderName || 'Карта родителя'
+      : `${parentCard.title} •• ${parentCard.last4}`
     : 'Карта не найдена';
-  const cardNumberMask = card && !isChild ? card.cardNumberMask : undefined;
 
   const handleSubmit = async () => {
     if (!piggyBank || !card || !canSubmit) {
@@ -194,11 +194,7 @@ export default function PiggyBankTopUpScreen() {
             ) : (
               <>
                 <PiggyBankSummaryCard piggyBank={piggyBank} weeklyDelta={weeklyDelta} />
-                <PiggyBankSourceCard
-                  title={cardTitle}
-                  cardNumberMask={cardNumberMask}
-                  balance={balance}
-                />
+                <PiggyBankSourceCard title={cardTitle} balance={balance} />
                 <PiggyBankAmountCard
                   amount={amount}
                   remainingAmount={piggyBank.remainingAmount}
