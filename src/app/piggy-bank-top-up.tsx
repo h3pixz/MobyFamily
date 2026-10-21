@@ -35,6 +35,7 @@ export default function PiggyBankTopUpScreen() {
   const { profile } = useAuth();
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = useWindowDimensions();
+  const isChild = isChildRole(profile?.role ?? '');
   const [piggyBank, setPiggyBank] = useState<PiggyBankResponseDto | null>(null);
   const [card, setCard] = useState<CardDto | null>(null);
   const [amount, setAmount] = useState('10,00');
@@ -82,7 +83,7 @@ export default function PiggyBankTopUpScreen() {
       router.back();
       return;
     }
-    router.replace(isChildRole(profile?.role ?? '') ? '/child' : '/');
+    router.replace(isChild ? '/child' : '/');
   };
 
   const parsedAmount = parseAmountInput(amount);
@@ -96,9 +97,12 @@ export default function PiggyBankTopUpScreen() {
         : null;
   const canSubmit = Boolean(piggyBank && card) && !amountError && !submitting;
   const weeklyDelta = piggyBank ? getWeeklyContributions(piggyBank.contributions) : 0;
-  const cardLabel = card
-    ? `${isChildRole(profile?.role ?? '') ? 'Moby Junior' : 'Moby Card'} •• ${card.cardNumberMask.slice(-4)}`
+  const cardTitle = card
+    ? isChild
+      ? `Moby Junior •• ${card.cardNumberMask.slice(-4)}`
+      : card.cardholderName || 'Карта родителя'
     : 'Карта не найдена';
+  const cardNumberMask = card && !isChild ? card.cardNumberMask : undefined;
 
   const handleSubmit = async () => {
     if (!piggyBank || !card || !canSubmit) {
@@ -190,7 +194,11 @@ export default function PiggyBankTopUpScreen() {
             ) : (
               <>
                 <PiggyBankSummaryCard piggyBank={piggyBank} weeklyDelta={weeklyDelta} />
-                <PiggyBankSourceCard cardLabel={cardLabel} balance={balance} />
+                <PiggyBankSourceCard
+                  title={cardTitle}
+                  cardNumberMask={cardNumberMask}
+                  balance={balance}
+                />
                 <PiggyBankAmountCard
                   amount={amount}
                   remainingAmount={piggyBank.remainingAmount}

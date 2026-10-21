@@ -5,11 +5,16 @@ import { Icon } from '@/components/ui/icon';
 import { formatBYN } from '@/utils/format';
 
 type PiggyBankSourceCardProps = {
-  cardLabel: string;
+  title: string;
+  cardNumberMask?: string;
   balance: number;
 };
 
-export function PiggyBankSourceCard({ cardLabel, balance }: PiggyBankSourceCardProps) {
+export function PiggyBankSourceCard({
+  title,
+  cardNumberMask,
+  balance,
+}: PiggyBankSourceCardProps) {
   return (
     <View className="mb-4 flex-row items-center justify-between gap-3 rounded-xl bg-surface-low p-3">
       <View className="min-w-0 flex-1 flex-row items-center gap-3">
@@ -18,9 +23,14 @@ export function PiggyBankSourceCard({ cardLabel, balance }: PiggyBankSourceCardP
         </View>
         <View className="min-w-0 flex-1">
           <Text numberOfLines={1} className="text-label-lg font-inter-semibold text-on-surface">
-            {cardLabel}
+            {title}
           </Text>
-          <View className="flex-row items-center">
+          {cardNumberMask ? (
+            <Text numberOfLines={1} className="mt-0.5 text-label-sm font-inter text-outline">
+              {cardNumberMask}
+            </Text>
+          ) : null}
+          <View className="mt-0.5 flex-row items-center">
             <Text className="text-body-sm font-inter text-on-surface-variant">
               Доступно: {formatBYN(balance)}
             </Text>
