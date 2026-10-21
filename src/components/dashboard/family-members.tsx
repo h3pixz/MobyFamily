@@ -1,7 +1,6 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { BynIcon } from '@/components/ui/byn-icon';
-import { Icon } from '@/components/ui/icon';
 import type { FamilyMember } from '@/types/dashboard';
 import { formatBYN } from '@/utils/format';
 
@@ -18,7 +17,6 @@ type FamilyMembersSectionProps = {
   onPressChild: () => void;
   onPressMember: (member: FamilyMember) => void;
   onPressManage: () => void;
-  onPressAdd: () => void;
 };
 
 export function FamilyMembersSection({
@@ -26,7 +24,6 @@ export function FamilyMembersSection({
   onPressChild,
   onPressMember,
   onPressManage,
-  onPressAdd,
 }: FamilyMembersSectionProps) {
   return (
     <View className="gap-2.5">
@@ -102,20 +99,6 @@ export function FamilyMembersSection({
             </Pressable>
           );
         })}
-
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Добавить члена семьи"
-          onPress={onPressAdd}
-          className="w-[140px] items-center justify-center gap-2 rounded-card border-2 border-dashed border-outline-variant bg-surface-lowest p-3.5"
-          style={({ pressed }) => (pressed ? { opacity: 0.85 } : undefined)}>
-          <View className="h-9 w-9 items-center justify-center rounded-full bg-surface-low">
-            <Icon name="add" size={20} color="#737686" />
-          </View>
-          <Text className="text-center text-label-sm font-inter-semibold leading-snug text-on-surface-variant">
-            Добавить члена семьи
-          </Text>
-        </Pressable>
       </ScrollView>
     </View>
   );

@@ -34,7 +34,6 @@ export function ParentDashboard({
         onPressChild={onSwitchToChild}
         onPressMember={(member) => onPressAction(`Профиль ${member.name}`)}
         onPressManage={onPressManageFamily}
-        onPressAdd={() => onPressAction('Добавить члена семьи')}
       />
 
       <FamilyAlert count={pendingCount} onPress={onSwitchToChild} />
