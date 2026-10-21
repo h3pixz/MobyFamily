@@ -28,6 +28,7 @@ import { TeenQuickActions } from '@/components/teen/teen-quick-actions';
 import { TeenTransactions } from '@/components/teen/teen-transactions';
 import { childQuickActions } from '@/data/dashboard';
 import { teenQuickActions } from '@/data/teen';
+import { useUnreadCount } from '@/hooks/use-unread-count';
 import type { ChildQuickAction, TeenQuickAction } from '@/types/dashboard';
 import { toChildProfile, toChildTasks, toSavingsGoal } from '@/utils/family';
 import { getFirstName } from '@/utils/greeting';
@@ -35,6 +36,7 @@ import { getMonthsUntilAge } from '@/utils/teen';
 
 export default function ChildScreen() {
   const { profile } = useAuth();
+  const unreadCount = useUnreadCount();
   const insets = useSafeAreaInsets();
   const isTeen = profile?.role === 'TEEN_14_17';
   const [family, setFamily] = useState<FamilyResponseDto | null>(null);
@@ -156,7 +158,8 @@ export default function ChildScreen() {
     <View className="flex-1 bg-surface">
       <View style={{ backgroundColor: '#FFFFFF', paddingTop: insets.top }}>
         <DashboardHeader
-          onPressNotifications={() => openSoon('Уведомления')}
+          unreadCount={unreadCount}
+          onPressNotifications={() => router.push('/notifications')}
           onPressProfile={() => router.push('/profile')}
         />
       </View>

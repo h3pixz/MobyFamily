@@ -11,6 +11,7 @@ import { TasksBottomNav } from '@/components/tasks/tasks-bottom-nav';
 import { TasksHeader } from '@/components/tasks/tasks-header';
 import { Card } from '@/components/ui/card';
 import { Icon } from '@/components/ui/icon';
+import { useUnreadCount } from '@/hooks/use-unread-count';
 import type { TaskFilter, TaskItem } from '@/types/tasks';
 import {
   filterTasksByStatus,
@@ -36,6 +37,7 @@ const EMPTY_STATES: Record<TaskFilter, { title: string; subtitle: string }> = {
 
 export default function TasksScreen() {
   const insets = useSafeAreaInsets();
+  const unreadCount = useUnreadCount();
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [filter, setFilter] = useState<TaskFilter>('active');
   const [loading, setLoading] = useState(true);
@@ -113,10 +115,9 @@ export default function TasksScreen() {
     <View className="flex-1 bg-surface">
       <View style={{ backgroundColor: '#FFFFFF', paddingTop: insets.top }}>
         <TasksHeader
+          unreadCount={unreadCount}
           onPressBack={goBack}
-          onPressNotifications={() =>
-            router.push({ pathname: '/soon', params: { title: 'Уведомления' } })
-          }
+          onPressNotifications={() => router.push('/notifications')}
           onPressProfile={() => router.push('/profile')}
         />
       </View>

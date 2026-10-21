@@ -11,12 +11,14 @@ const shadow = {
 };
 
 type TasksHeaderProps = {
+  unreadCount?: number;
   onPressBack: () => void;
   onPressNotifications: () => void;
   onPressProfile: () => void;
 };
 
 export function TasksHeader({
+  unreadCount = 0,
   onPressBack,
   onPressNotifications,
   onPressProfile,
@@ -48,7 +50,13 @@ export function TasksHeader({
             onPress={onPressNotifications}
             className="relative h-11 w-11 items-center justify-center rounded-full">
             <Icon name="notifications" size={22} color="#424655" />
-            <View className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full border-2 border-surface-lowest bg-secondary-container" />
+            {unreadCount > 0 ? (
+              <View className="absolute right-1 top-1 h-[18px] min-w-[18px] items-center justify-center rounded-full border-2 border-surface-lowest bg-secondary-container px-1">
+                <Text className="text-[10px] font-inter-bold leading-none text-white">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </Text>
+              </View>
+            ) : null}
           </Pressable>
 
           <Pressable

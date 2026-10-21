@@ -4,11 +4,16 @@ import { BrandLogo } from '@/components/ui/brand-logo';
 import { Icon } from '@/components/ui/icon';
 
 type DashboardHeaderProps = {
+  unreadCount?: number;
   onPressNotifications: () => void;
   onPressProfile: () => void;
 };
 
-export function DashboardHeader({ onPressNotifications, onPressProfile }: DashboardHeaderProps) {
+export function DashboardHeader({
+  unreadCount = 0,
+  onPressNotifications,
+  onPressProfile,
+}: DashboardHeaderProps) {
   return (
     <View
       className="gap-space-xs bg-surface-lowest px-margin pb-2 pt-2"
@@ -37,7 +42,13 @@ export function DashboardHeader({ onPressNotifications, onPressProfile }: Dashbo
             onPress={onPressNotifications}
             className="relative h-11 w-11 items-center justify-center rounded-full">
             <Icon name="notifications" size={24} color="#424655" />
-            <View className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full border-2 border-surface-lowest bg-secondary-container" />
+            {unreadCount > 0 ? (
+              <View className="absolute right-1 top-1 h-[18px] min-w-[18px] items-center justify-center rounded-full border-2 border-surface-lowest bg-secondary-container px-1">
+                <Text className="text-[10px] font-inter-bold leading-none text-white">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </Text>
+              </View>
+            ) : null}
           </Pressable>
 
           <Pressable

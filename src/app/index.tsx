@@ -21,12 +21,14 @@ import {
   parentBonusMember,
   parentCard,
 } from '@/data/dashboard';
+import { useUnreadCount } from '@/hooks/use-unread-count';
 import type { AppRole } from '@/types/dashboard';
 import { toChildProfile, toFamilyMember, toSavingsGoal } from '@/utils/family';
 import { getFirstName } from '@/utils/greeting';
 
 export default function HomeScreen() {
   const { profile } = useAuth();
+  const unreadCount = useUnreadCount();
   const [role, setRole] = useState<AppRole>('parent');
   const [resolvedDecisions, setResolvedDecisions] = useState<string[]>([]);
   const [family, setFamily] = useState<FamilyResponseDto | null>(null);
@@ -173,7 +175,8 @@ export default function HomeScreen() {
       {...(role === 'child' ? swipeBack.panHandlers : {})}>
       <View style={{ backgroundColor: '#FFFFFF', paddingTop: insets.top }}>
         <DashboardHeader
-          onPressNotifications={() => openSoon('Уведомления')}
+          unreadCount={unreadCount}
+          onPressNotifications={() => router.push('/notifications')}
           onPressProfile={() => router.push('/profile')}
         />
       </View>
