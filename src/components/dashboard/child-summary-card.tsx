@@ -8,17 +8,21 @@ import { formatBYN, pluralize } from '@/utils/format';
 
 type ChildSummaryCardProps = {
   child: ChildProfile;
+  savingsBalance: number;
+  activeGoals: number;
   onPressPocketMoney: () => void;
   onPressHistory: () => void;
 };
 
 export function ChildSummaryCard({
   child,
+  savingsBalance,
+  activeGoals,
   onPressPocketMoney,
   onPressHistory,
 }: ChildSummaryCardProps) {
   const dailyRemaining = child.dailyLimit - child.dailySpent;
-  const goalsLabel = pluralize(child.activeGoals, [
+  const goalsLabel = pluralize(activeGoals, [
     'активная цель',
     'активные цели',
     'активных целей',
@@ -69,12 +73,12 @@ export function ChildSummaryCard({
             </View>
             <View className="flex-row items-center gap-1 pt-0.5">
               <Text className="text-[24px] font-inter-bold tracking-tight text-white">
-                {formatBYN(child.savingsBalance)}
+                {formatBYN(savingsBalance)}
               </Text>
               <BynIcon size={10} color="#FFFFFF" style={{ marginTop: 4 }} />
             </View>
             <Text className="text-[10px] font-inter text-white/70">
-              {child.activeGoals} {goalsLabel}
+              {activeGoals} {goalsLabel}
             </Text>
           </View>
         </View>

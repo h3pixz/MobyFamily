@@ -22,8 +22,6 @@ export const childProfile: ChildProfile = {
   ageGroup: '7–13 лет (под присмотром)',
   cardLast4: '4821',
   purchaseBalance: 42,
-  savingsBalance: 180,
-  activeGoals: 1,
   dailyLimit: 15,
   dailySpent: 0,
   pocketMoney: 25,

@@ -29,8 +29,6 @@ export interface ChildProfile {
   ageGroup: string;
   cardLast4: string;
   purchaseBalance: number;
-  savingsBalance: number;
-  activeGoals: number;
   dailyLimit: number;
   dailySpent: number;
   pocketMoney: number;

@@ -168,7 +168,10 @@ export default function ChildScreen() {
                 ageLabel="14–17 лет (Самостоятельный)"
                 cardLast4={child.cardLast4}
                 balance={child.purchaseBalance}
-                savings={activePiggyBank?.currentAmount ?? 0}
+                savings={activePiggyBanks.reduce(
+                  (sum, piggyBank) => sum + piggyBank.currentAmount,
+                  0,
+                )}
                 onPressDetails={() => openSoon('Реквизиты карты')}
               />
             ) : null}

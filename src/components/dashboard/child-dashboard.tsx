@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
 import { ChildSummaryCard } from '@/components/dashboard/child-summary-card';
 import { DecisionsSection } from '@/components/dashboard/decisions-section';
@@ -7,8 +7,9 @@ import { TasksSection } from '@/components/dashboard/tasks-section';
 import type { ChildProfile, DecisionRequest, SavingsGoal, Task } from '@/types/dashboard';
 
 type ChildDashboardProps = {
-  greeting: string;
   child: ChildProfile;
+  savingsBalance: number;
+  activeGoals: number;
   decisions: DecisionRequest[];
   tasks: Task[];
   goal: SavingsGoal | null;
@@ -20,8 +21,9 @@ type ChildDashboardProps = {
 };
 
 export function ChildDashboard({
-  greeting,
   child,
+  savingsBalance,
+  activeGoals,
   decisions,
   tasks,
   goal,
@@ -33,15 +35,10 @@ export function ChildDashboard({
 }: ChildDashboardProps) {
   return (
     <View className="gap-space-md">
-      <View className="px-0.5 pt-1">
-        <View className="flex-row items-center gap-1">
-          <Text className="text-headline-sm font-inter-semibold text-on-surface">{greeting}</Text>
-          <Text className="text-[16px]">✨</Text>
-        </View>
-      </View>
-
       <ChildSummaryCard
         child={child}
+        savingsBalance={savingsBalance}
+        activeGoals={activeGoals}
         onPressPocketMoney={() => onPressAction('Настройка карманных')}
         onPressHistory={() => onPressAction('История')}
       />

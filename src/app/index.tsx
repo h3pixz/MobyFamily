@@ -23,7 +23,7 @@ import {
 } from '@/data/dashboard';
 import type { AppRole } from '@/types/dashboard';
 import { toChildProfile, toFamilyMember, toSavingsGoal } from '@/utils/family';
-import { getFirstName, getGreeting } from '@/utils/greeting';
+import { getFirstName } from '@/utils/greeting';
 
 export default function HomeScreen() {
   const { profile } = useAuth();
@@ -76,12 +76,17 @@ export default function HomeScreen() {
   const selectedChild =
     children.find((child) => child.id === selectedChildId) ?? children[0] ?? null;
   const childProfile = selectedChild ? toChildProfile(selectedChild) : null;
-  const activeGoal = selectedChild
-    ? piggyBanks.find(
+  const activePiggyBanks = selectedChild
+    ? piggyBanks.filter(
         (piggyBank) => piggyBank.owner.id === selectedChild.id && piggyBank.status === 'ACTIVE',
       )
-    : undefined;
+    : [];
+  const activeGoal = activePiggyBanks[0];
   const savingsGoal = activeGoal ? toSavingsGoal(activeGoal) : null;
+  const savingsBalance = activePiggyBanks.reduce(
+    (sum, piggyBank) => sum + piggyBank.currentAmount,
+    0,
+  );
   const childName = childProfile?.name ?? 'Ребёнок';
   const members = [...children.map(toFamilyMember), familyParentMember];
   const bonuses = [
@@ -180,8 +185,9 @@ export default function HomeScreen() {
         ) : childProfile ? (
           <Animated.View key="child" entering={FadeInRight.duration(280)}>
             <ChildDashboard
-              greeting={getGreeting(selectedChild?.name)}
               child={childProfile}
+              savingsBalance={savingsBalance}
+              activeGoals={activePiggyBanks.length}
               decisions={decisions}
               tasks={childTasks}
               goal={savingsGoal}
