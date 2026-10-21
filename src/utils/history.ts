@@ -1,5 +1,5 @@
 import type { PiggyBankResponseDto } from '@/api/gen/models/PiggyBankResponseDto';
-import type { TopUpDayGroup, TopUpEntry } from '@/types/history';
+import type { DayGroup, TopUpEntry } from '@/types/history';
 import { getGenitiveName } from '@/utils/family';
 import { getFirstName } from '@/utils/greeting';
 
@@ -43,10 +43,6 @@ const WEEKDAYS = [
   'суббота',
 ];
 
-function pad(value: number) {
-  return value.toString().padStart(2, '0');
-}
-
 function startOfDay(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
 }
@@ -59,13 +55,7 @@ export function getMonthLabelPrepositional(date: Date) {
   return MONTHS_PREPOSITIONAL[date.getMonth()];
 }
 
-export function formatTopUpTime(value: string) {
-  const date = new Date(value);
-
-  return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
-
-export function formatTopUpDayLabel(value: string) {
+export function formatDayLabel(value: string) {
   const date = new Date(value);
   const today = new Date();
   const diffDays = Math.round((startOfDay(today) - startOfDay(date)) / (24 * 60 * 60 * 1000));
@@ -112,8 +102,8 @@ export function toTopUpEntries(
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }
 
-export function groupTopUpsByDay(entries: TopUpEntry[]): TopUpDayGroup[] {
-  const groups = new Map<string, TopUpEntry[]>();
+export function groupByDay<T extends { createdAt: string }>(entries: T[]): DayGroup<T>[] {
+  const groups = new Map<string, T[]>();
 
   entries.forEach((entry) => {
     const date = new Date(entry.createdAt);
@@ -130,7 +120,7 @@ export function groupTopUpsByDay(entries: TopUpEntry[]): TopUpDayGroup[] {
 
   return Array.from(groups.entries()).map(([key, groupEntries]) => ({
     key,
-    label: formatTopUpDayLabel(groupEntries[0].createdAt),
+    label: formatDayLabel(groupEntries[0].createdAt),
     entries: groupEntries,
   }));
 }

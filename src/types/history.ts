@@ -1,3 +1,11 @@
+export type HistoryFilter = 'all' | 'purchases' | 'requests' | 'income' | 'savings';
+
+export interface DayGroup<T> {
+  key: string;
+  label: string;
+  entries: T[];
+}
+
 export interface TopUpEntry {
   id: string;
   amount: number;
@@ -8,8 +16,4 @@ export interface TopUpEntry {
   isChildSelf: boolean;
 }
 
-export interface TopUpDayGroup {
-  key: string;
-  label: string;
-  entries: TopUpEntry[];
-}
+export type TopUpDayGroup = DayGroup<TopUpEntry>;

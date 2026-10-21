@@ -16,7 +16,7 @@ import { toChildProfile } from '@/utils/family';
 import {
   getCurrentMonthTopUps,
   getMonthLabelPrepositional,
-  groupTopUpsByDay,
+  groupByDay,
   toTopUpEntries,
 } from '@/utils/history';
 
@@ -64,7 +64,7 @@ export default function ChildHistoryScreen() {
     };
   }, [childId]);
 
-  const groups = groupTopUpsByDay(entries);
+  const groups = groupByDay(entries);
   const monthTopUps = getCurrentMonthTopUps(entries);
   const monthLabel = getMonthLabelPrepositional(new Date());
 

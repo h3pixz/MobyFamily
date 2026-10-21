@@ -5,8 +5,8 @@ import { BynIcon } from '@/components/ui/byn-icon';
 import { Card } from '@/components/ui/card';
 import { Icon } from '@/components/ui/icon';
 import type { TopUpEntry } from '@/types/history';
-import { formatBYN } from '@/utils/format';
-import { formatTopUpTime, getTopUpSourceLabel } from '@/utils/history';
+import { formatBYN, formatTime } from '@/utils/format';
+import { getTopUpSourceLabel } from '@/utils/history';
 
 type TopUpCardProps = {
   entry: TopUpEntry;
@@ -43,7 +43,7 @@ export function TopUpCard({ entry }: TopUpCardProps) {
             </Text>
             <Text className="text-body-sm text-outline-variant">•</Text>
             <Text className="text-body-sm font-inter text-on-surface-variant">
-              {formatTopUpTime(entry.createdAt)}
+              {formatTime(entry.createdAt)}
             </Text>
           </View>
 
