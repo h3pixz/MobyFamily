@@ -15,7 +15,7 @@ type ChildDashboardProps = {
   goal: SavingsGoal | null;
   onApprove: (id: string) => void;
   onDecline: (id: string) => void;
-  onPressAction: (label: string) => void;
+  onPressHistory: () => void;
   onPressPocketMoney: () => void;
   onNewTask: () => void;
   onAddMoney: () => void;
@@ -30,7 +30,7 @@ export function ChildDashboard({
   goal,
   onApprove,
   onDecline,
-  onPressAction,
+  onPressHistory,
   onPressPocketMoney,
   onNewTask,
   onAddMoney,
@@ -42,7 +42,7 @@ export function ChildDashboard({
         savingsBalance={savingsBalance}
         activeGoals={activeGoals}
         onPressPocketMoney={onPressPocketMoney}
-        onPressHistory={() => onPressAction('История')}
+        onPressHistory={onPressHistory}
       />
       <DecisionsSection
         requests={decisions}

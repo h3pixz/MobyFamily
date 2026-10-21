@@ -114,6 +114,14 @@ export default function HomeScreen() {
     openSoon('Пополнение цели');
   };
 
+  const openChildHistory = () => {
+    if (!selectedChild) {
+      return;
+    }
+
+    router.push({ pathname: '/child-history', params: { childId: selectedChild.id } });
+  };
+
   const openLimitSettings = () => {
     const card = selectedChild?.cards[0];
 
@@ -204,7 +212,7 @@ export default function HomeScreen() {
               goal={savingsGoal}
               onApprove={resolveDecision}
               onDecline={resolveDecision}
-              onPressAction={openSoon}
+              onPressHistory={openChildHistory}
               onPressPocketMoney={openLimitSettings}
               onNewTask={() => openSoon('Новое задание')}
               onAddMoney={openTopUp}
