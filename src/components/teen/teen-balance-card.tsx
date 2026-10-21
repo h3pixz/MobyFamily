@@ -9,7 +9,7 @@ import { formatBYN } from '@/utils/format';
 type TeenBalanceCardProps = {
   ageLabel: string;
   cardLast4: string;
-  cardNumberMask?: string;
+  cardNumber?: string;
   balance: number;
   savings: number;
 };
@@ -17,13 +17,13 @@ type TeenBalanceCardProps = {
 export function TeenBalanceCard({
   ageLabel,
   cardLast4,
-  cardNumberMask,
+  cardNumber,
   balance,
   savings,
 }: TeenBalanceCardProps) {
   const [numberVisible, setNumberVisible] = useState(false);
   const shortNumber = `•• ${cardLast4}`;
-  const fullNumber = cardNumberMask ?? shortNumber;
+  const fullNumber = cardNumber ?? shortNumber;
 
   return (
     <BankCard colors={['#1D63ED', '#0D5CE5']} padding={20}>
@@ -39,7 +39,10 @@ export function TeenBalanceCard({
         </View>
       </View>
 
-      <Text className="mt-1 text-[11px] font-inter-medium tracking-wider text-white/75">
+      <Text
+        className={`mt-1 text-[11px] tracking-wider ${
+          numberVisible ? 'font-inter-semibold text-white' : 'font-inter-medium text-white/75'
+        }`}>
         {numberVisible ? fullNumber : shortNumber}
       </Text>
 

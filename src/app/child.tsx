@@ -29,6 +29,7 @@ import { TeenTransactions } from '@/components/teen/teen-transactions';
 import { childQuickActions } from '@/data/dashboard';
 import { teenQuickActions } from '@/data/teen';
 import type { ChildQuickAction, TeenQuickAction } from '@/types/dashboard';
+import { getFullCardNumber } from '@/utils/cards';
 import { toChildProfile, toChildTasks, toSavingsGoal } from '@/utils/family';
 import { getFirstName } from '@/utils/greeting';
 import { getMonthsUntilAge } from '@/utils/teen';
@@ -106,6 +107,10 @@ export default function ChildScreen() {
   const activePiggyBanks = piggyBanks.filter((piggyBank) => piggyBank.status === 'ACTIVE');
   const activePiggyBank = activePiggyBanks[0];
   const firstName = getFirstName(family?.user.name ?? profile?.name);
+  const teenCard = family?.user.cards[0];
+  const teenCardNumber = teenCard
+    ? getFullCardNumber(teenCard.cardNumberMask, teenCard.id)
+    : undefined;
 
   const openSoon = (title: string) => {
     router.push({ pathname: '/soon', params: { title } });
@@ -171,7 +176,7 @@ export default function ChildScreen() {
               <TeenBalanceCard
                 ageLabel="14–17 лет (Самостоятельный)"
                 cardLast4={child.cardLast4}
-                cardNumberMask={family?.user.cards[0]?.cardNumberMask}
+                cardNumber={teenCardNumber}
                 balance={child.purchaseBalance}
                 savings={activePiggyBanks.reduce(
                   (sum, piggyBank) => sum + piggyBank.currentAmount,
