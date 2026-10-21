@@ -16,6 +16,20 @@ export function getAge(birthDay: string) {
   return age;
 }
 
+export function getGenitiveName(name: string) {
+  if (name.endsWith('а')) {
+    return `${name.slice(0, -1)}ы`;
+  }
+  if (name.endsWith('я')) {
+    return `${name.slice(0, -1)}и`;
+  }
+  if (name.endsWith('й')) {
+    return `${name.slice(0, -1)}я`;
+  }
+
+  return `${name}а`;
+}
+
 export function getInitials(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   const first = parts[0]?.charAt(0) ?? '';

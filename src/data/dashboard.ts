@@ -16,8 +16,8 @@ export const parentCard: ParentCard = {
 };
 
 export const childProfile: ChildProfile = {
-  name: 'Саша',
-  initials: 'СМ',
+  name: 'Павел',
+  initials: 'ПП',
   age: 12,
   ageGroup: '7–13 лет (под присмотром)',
   cardLast4: '4821',
@@ -41,7 +41,7 @@ export const familyParentMember: FamilyMember = {
 export const parentBonusMember: BonusMember = {
   id: 'bonus-parent',
   kind: 'parent',
-  name: 'Анна',
+  name: 'Ольга',
   roleLabel: 'Родитель',
   points: 1240,
 };

@@ -7,17 +7,23 @@ import { Icon } from '@/components/ui/icon';
 import { IconTile } from '@/components/ui/icon-tile';
 import { SectionHeader } from '@/components/ui/section-header';
 import type { Task } from '@/types/dashboard';
+import { getGenitiveName } from '@/utils/family';
 import { formatBYN } from '@/utils/format';
 
 type TasksSectionProps = {
   tasks: Task[];
+  childName: string;
   onNewTask: () => void;
 };
 
-export function TasksSection({ tasks, onNewTask }: TasksSectionProps) {
+export function TasksSection({ tasks, childName, onNewTask }: TasksSectionProps) {
   return (
     <Card className="gap-space-sm p-space-md">
-      <SectionHeader title="Задания Саши" actionLabel="+ Новое задание" onAction={onNewTask} />
+      <SectionHeader
+        title={childName ? `Задания ${getGenitiveName(childName)}` : 'Задания'}
+        actionLabel="+ Новое задание"
+        onAction={onNewTask}
+      />
 
       {tasks.length === 0 ? (
         <Text className="py-2 text-center text-body-sm font-inter text-on-surface-variant">

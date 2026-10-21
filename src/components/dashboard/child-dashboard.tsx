@@ -51,7 +51,7 @@ export function ChildDashboard({
         onApprove={onApprove}
         onDecline={onDecline}
       />
-      <TasksSection tasks={tasks} onNewTask={onNewTask} />
+      <TasksSection tasks={tasks} childName={child.name} onNewTask={onNewTask} />
       <SavingsGoalCard goal={goal} onAddMoney={onAddMoney} />
     </View>
   );
