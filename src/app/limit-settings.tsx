@@ -2,6 +2,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -13,12 +14,14 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getApiErrorMessage } from '@/api/error';
-import { fetchFamily, updateCardLimits } from '@/api/family';
+import { fetchFamily, resetSpentToday, updateCardLimits } from '@/api/family';
 import type { CardDto } from '@/api/gen/models/CardDto';
+import { CardControlsCard } from '@/components/limits/card-controls-card';
 import { DailyLimitCard } from '@/components/limits/daily-limit-card';
 import { PocketMoneyCard } from '@/components/limits/pocket-money-card';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
+import { formatBYN } from '@/utils/format';
 import { clampDailyLimit } from '@/utils/limits';
 import { getFirstName } from '@/utils/greeting';
 import { formatAmountInput, parseAmountInput } from '@/utils/piggy-bank';
@@ -32,6 +35,10 @@ export default function LimitSettingsScreen() {
   const [dailyLimit, setDailyLimit] = useState(15);
   const [pocketMoneyAmount, setPocketMoneyAmount] = useState('25,00');
   const [pocketMoneyDay, setPocketMoneyDay] = useState(1);
+  const [allowOnlinePurchases, setAllowOnlinePurchases] = useState(true);
+  const [allowCashWithdrawal, setAllowCashWithdrawal] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [resetting, setResetting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -66,8 +73,13 @@ export default function LimitSettingsScreen() {
           setCard(foundCard);
           setChildName(getFirstName(child?.name ?? ''));
           setDailyLimit(clampDailyLimit(foundCard.dailyLimit));
-          setPocketMoneyAmount(formatAmountInput(foundCard.pocketMoneyAmount));
-          setPocketMoneyDay(foundCard.pocketMoneyDay);
+          setPocketMoneyAmount(
+            formatAmountInput(Number.isFinite(foundCard.pocketMoneyAmount) ? foundCard.pocketMoneyAmount : 0),
+          );
+          setPocketMoneyDay(Number.isFinite(foundCard.pocketMoneyDay) ? foundCard.pocketMoneyDay : 1);
+          setAllowOnlinePurchases(foundCard.allowOnlinePurchases ?? true);
+          setAllowCashWithdrawal(foundCard.allowCashWithdrawal ?? false);
+          setIsBlocked(foundCard.isBlocked ?? false);
         }
 
         setLoading(false);
@@ -106,6 +118,9 @@ export default function LimitSettingsScreen() {
         dailyLimit,
         pocketMoneyAmount: parseAmountInput(pocketMoneyAmount),
         pocketMoneyDay,
+        allowOnlinePurchases,
+        allowCashWithdrawal,
+        isBlocked,
       });
       setSubmitting(false);
       setSaved(true);
@@ -114,6 +129,67 @@ export default function LimitSettingsScreen() {
       setSubmitError(getApiErrorMessage(error));
       setSubmitting(false);
     }
+  };
+
+  const handleResetSpent = () => {
+    if (!card || resetting) {
+      return;
+    }
+
+    Alert.alert(
+      'Сбросить траты?',
+      `Доступный остаток снова станет ${formatBYN(dailyLimit)}.`,
+      [
+        { text: 'Отмена', style: 'cancel' },
+        {
+          text: 'Сбросить',
+          onPress: async () => {
+            setResetting(true);
+
+            try {
+              const response = await resetSpentToday(card.id);
+
+              setCard((current) =>
+                current
+                  ? {
+                      ...current,
+                      dailyLimit: response.card.dailyLimit,
+                      spentToday: response.card.spentToday,
+                      remainingDailyLimit: response.card.remainingDailyLimit,
+                    }
+                  : current,
+              );
+              setDailyLimit(clampDailyLimit(response.card.dailyLimit));
+              Alert.alert('Готово', response.message);
+            } catch (resetError) {
+              Alert.alert('Не удалось сбросить', getApiErrorMessage(resetError));
+            } finally {
+              setResetting(false);
+            }
+          },
+        },
+      ],
+    );
+  };
+
+  const handleBlockedChange = (value: boolean) => {
+    if (!value) {
+      setIsBlocked(false);
+      return;
+    }
+
+    Alert.alert(
+      'Заблокировать карту?',
+      'Все операции по карте будут отклонены до разблокировки.',
+      [
+        { text: 'Отмена', style: 'cancel' },
+        {
+          text: 'Заблокировать',
+          style: 'destructive',
+          onPress: () => setIsBlocked(true),
+        },
+      ],
+    );
   };
 
   return (
@@ -195,6 +271,18 @@ export default function LimitSettingsScreen() {
                       setSubmitError(null);
                     }}
                     onChangeDay={setPocketMoneyDay}
+                  />
+                  <CardControlsCard
+                    allowOnlinePurchases={allowOnlinePurchases}
+                    allowCashWithdrawal={allowCashWithdrawal}
+                    isBlocked={isBlocked}
+                    spentToday={card.spentToday}
+                    dailyLimit={dailyLimit}
+                    resetting={resetting}
+                    onChangeOnline={setAllowOnlinePurchases}
+                    onChangeCash={setAllowCashWithdrawal}
+                    onChangeBlocked={handleBlockedChange}
+                    onResetSpent={handleResetSpent}
                   />
                 </View>
 
