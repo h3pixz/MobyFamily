@@ -112,7 +112,11 @@ export default function HomeScreen() {
     ? [...children.map(toFamilyMember), toSelfParentMember(family.user)]
     : children.map(toFamilyMember);
   const bonuses = [
-    parentBonusMember,
+    {
+      ...parentBonusMember,
+      name: profile?.name ?? parentBonusMember.name,
+      points: profile?.mobiksBalance ?? 0,
+    },
     ...children.map((child) => ({
       ...childBonusMember,
       id: child.id,
@@ -190,6 +194,11 @@ export default function HomeScreen() {
         pathname: '/transfer',
         params: { mode: 'child', childId: member.id },
       });
+      return;
+    }
+
+    if (label === 'Потратить бонусы') {
+      router.push('/bonuses');
       return;
     }
 
