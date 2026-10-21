@@ -9,7 +9,6 @@ import { ChildDashboard } from '@/components/dashboard/child-dashboard';
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 import { ParentDashboard } from '@/components/dashboard/parent-dashboard';
 import {
-  accounts,
   bonusMembers,
   childProfile,
   childTasks,
@@ -17,7 +16,6 @@ import {
   initialDecisions,
   parentCard,
   parentProfile,
-  quickPayments,
   savingsGoal,
 } from '@/data/dashboard';
 import type { AppRole, DecisionRequest } from '@/types/dashboard';
@@ -80,8 +78,6 @@ export default function HomeScreen() {
               card={parentCard}
               members={familyMembers}
               bonuses={bonusMembers}
-              accounts={accounts}
-              quickPayments={quickPayments}
               pendingCount={decisions.length}
               onPressAction={openSoon}
               onPressManageFamily={() => router.push('/family')}

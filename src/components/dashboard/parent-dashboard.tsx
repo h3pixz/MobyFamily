@@ -1,25 +1,15 @@
 import { View } from 'react-native';
 
-import { AccountsCard } from '@/components/dashboard/accounts-card';
 import { BonusesCard } from '@/components/dashboard/bonuses-card';
 import { FamilyAlert } from '@/components/dashboard/family-alert';
 import { FamilyMembersSection } from '@/components/dashboard/family-members';
 import { ParentBalanceCard } from '@/components/dashboard/parent-balance-card';
-import { QuickActions } from '@/components/dashboard/quick-actions';
-import type {
-  Account,
-  BonusMember,
-  FamilyMember,
-  ParentCard,
-  QuickActionItem,
-} from '@/types/dashboard';
+import type { BonusMember, FamilyMember, ParentCard } from '@/types/dashboard';
 
 type ParentDashboardProps = {
   card: ParentCard;
   members: FamilyMember[];
   bonuses: BonusMember[];
-  accounts: Account[];
-  quickPayments: QuickActionItem[];
   pendingCount: number;
   onPressAction: (label: string) => void;
   onPressManageFamily: () => void;
@@ -30,8 +20,6 @@ export function ParentDashboard({
   card,
   members,
   bonuses,
-  accounts,
-  quickPayments,
   pendingCount,
   onPressAction,
   onPressManageFamily,
@@ -51,8 +39,6 @@ export function ParentDashboard({
 
       <FamilyAlert count={pendingCount} onPress={onSwitchToChild} />
       <BonusesCard members={bonuses} onPress={onPressAction} />
-      <AccountsCard accounts={accounts} onPress={onPressAction} />
-      <QuickActions title="Быстрый платеж" actions={quickPayments} onPress={onPressAction} />
     </View>
   );
 }

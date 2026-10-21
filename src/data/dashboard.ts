@@ -1,5 +1,4 @@
 import type {
-  Account,
   BonusMember,
   ChildProfile,
   ChildQuickAction,
@@ -7,7 +6,6 @@ import type {
   FamilyMember,
   ParentCard,
   ParentProfile,
-  QuickActionItem,
   SavingsGoal,
   Task,
 } from '@/types/dashboard';
@@ -74,33 +72,6 @@ export const bonusMembers: BonusMember[] = [
     points: 350,
     goal: 500,
   },
-];
-
-export const accounts: Account[] = [
-  {
-    id: 'account-deposit',
-    title: 'Накопительный счет «Доходный»',
-    subtitle: 'МТбанк · 9.5% годовых',
-    amount: 12500,
-    delta: 98.4,
-    icon: 'savings',
-    tone: 'tertiary',
-  },
-  {
-    id: 'account-salary',
-    title: 'Зарплатная карта',
-    subtitle: 'Visa Gold · •• 1042',
-    amount: 860.2,
-    note: 'Основная',
-    icon: 'credit-card',
-    tone: 'primary',
-  },
-];
-
-export const quickPayments: QuickActionItem[] = [
-  { id: 'payment-erip', label: 'ЕРИП', icon: 'account-balance-wallet', tone: 'primary' },
-  { id: 'payment-mobile', label: 'Связь', icon: 'phone-android', tone: 'secondary' },
-  { id: 'payment-by-number', label: 'По номеру', icon: 'send-to-mobile', tone: 'tertiary' },
 ];
 
 export const childQuickActions: ChildQuickAction[] = [

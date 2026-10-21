@@ -65,28 +65,6 @@ export interface BonusMember {
   goal?: number;
 }
 
-export type AccountTone = 'primary' | 'tertiary';
-
-export interface Account {
-  id: string;
-  title: string;
-  subtitle: string;
-  amount: number;
-  note?: string;
-  delta?: number;
-  icon: IconName;
-  tone: AccountTone;
-}
-
-export type ActionTone = 'primary' | 'secondary' | 'tertiary';
-
-export interface QuickActionItem {
-  id: string;
-  label: string;
-  icon: IconName;
-  tone: ActionTone;
-}
-
 export type ChildActionTone = 'primary' | 'secondary' | 'accent';
 
 export interface ChildQuickAction {
