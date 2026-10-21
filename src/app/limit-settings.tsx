@@ -39,16 +39,16 @@ export default function LimitSettingsScreen() {
   const [allowCashWithdrawal, setAllowCashWithdrawal] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
   const [resetting, setResetting] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(Boolean(cardId));
   const [submitting, setSubmitting] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(
+    cardId ? null : 'Карта не найдена',
+  );
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!cardId) {
-      setLoadError('Карта не найдена');
-      setLoading(false);
       return;
     }
 

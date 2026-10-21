@@ -83,6 +83,7 @@ export default function QrScannerScreen() {
   );
 
   const selectedCard = cards.find((card) => card.id === selectedCardId) ?? null;
+  const paymentCardId = selectedCard?.id ?? null;
   const paymentSource = selectedCard
     ? {
         title: isChildRole(profile?.role ?? '') ? 'Moby Junior' : 'Moby карта',
@@ -119,7 +120,7 @@ export default function QrScannerScreen() {
       try {
         const result = await payByQr({
           ...payload,
-          cardId: payload.cardId ?? selectedCard?.id,
+          cardId: payload.cardId ?? paymentCardId ?? undefined,
         });
         showScanFeedback();
 
@@ -137,7 +138,7 @@ export default function QrScannerScreen() {
         scanCooldownUntil.current = Date.now() + 3000;
       }
     },
-    [selectedCard?.id, showAlert, showScanFeedback],
+    [paymentCardId, showAlert, showScanFeedback],
   );
 
   const handleScanned = useCallback(

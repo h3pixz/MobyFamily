@@ -1,5 +1,5 @@
 import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, PanResponder, ScrollView, View } from 'react-native';
 import Animated, { FadeInLeft, FadeInRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,7 +18,6 @@ import { BottomNav } from '@/components/dashboard/bottom-nav';
 import { ChildDashboard } from '@/components/dashboard/child-dashboard';
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 import { ParentDashboard } from '@/components/dashboard/parent-dashboard';
-import { childBonusMember, parentBonusMember, parentCard } from '@/data/dashboard';
 import { useUnreadCount } from '@/hooks/use-unread-count';
 import type { AppRole, BonusMember, DecisionRequest } from '@/types/dashboard';
 import {
@@ -51,6 +50,8 @@ export default function HomeScreen() {
       if (!profile) {
         return;
       }
+
+      void reloadKey;
 
       let cancelled = false;
 
@@ -85,13 +86,11 @@ export default function HomeScreen() {
   );
 
   const parentApiCard = family?.user.cards[0];
-  const parentCardData = parentApiCard
-    ? {
-        ...parentCard,
-        last4: parentApiCard.cardNumberMask.slice(-4),
-        balance: parentApiCard.balance,
-      }
-    : parentCard;
+  const parentCardData = {
+    title: 'Moby карта',
+    last4: parentApiCard ? parentApiCard.cardNumberMask.slice(-4) : '••••',
+    balance: parentApiCard?.balance ?? 0,
+  };
   const children = family?.children ?? [];
   const selectedChild =
     children.find((child) => child.id === selectedChildId) ?? children[0] ?? null;
@@ -107,19 +106,21 @@ export default function HomeScreen() {
     (sum, piggyBank) => sum + piggyBank.currentAmount,
     0,
   );
-  const childName = childProfile?.name ?? 'Ребёнок';
   const members = family
     ? [...children.map(toFamilyMember), toSelfParentMember(family.user)]
     : children.map(toFamilyMember);
   const bonuses = [
     {
-      ...parentBonusMember,
-      name: profile?.name ?? parentBonusMember.name,
+      id: 'bonus-parent',
+      kind: 'parent' as const,
+      name: profile?.name ?? 'Родитель',
+      roleLabel: 'Родитель',
       points: profile?.mobiksBalance ?? 0,
     },
     ...children.map((child) => ({
-      ...childBonusMember,
       id: child.id,
+      kind: 'child' as const,
+      emoji: '👦🏻',
       name: getFirstName(child.name),
       points: child.mobiksBalance,
     })),
@@ -161,7 +162,7 @@ export default function HomeScreen() {
       router.push({ pathname: '/piggy-bank-top-up', params: { id: activeGoal.id } });
       return;
     }
-    openSoon('Пополнение цели');
+    router.push('/piggy-banks');
   };
 
   const openChildHistory = () => {
@@ -185,8 +186,11 @@ export default function HomeScreen() {
 
   const changeRole = (next: AppRole) => {
     setRole(next);
-    scrollRef.current?.scrollTo({ y: 0, animated: false });
   };
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+  }, [role]);
 
   const handleParentAction = (label: string, member?: BonusMember) => {
     if (member?.kind === 'child') {
@@ -199,6 +203,11 @@ export default function HomeScreen() {
 
     if (label === 'Потратить бонусы') {
       router.push('/bonuses');
+      return;
+    }
+
+    if (label.startsWith('Профиль')) {
+      router.push('/profile');
       return;
     }
 
@@ -251,17 +260,19 @@ export default function HomeScreen() {
     changeRole('child');
   };
 
-  const swipeBack = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponderCapture: (_, gesture) =>
-        gesture.dx > 12 && Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.5,
-      onPanResponderRelease: (_, gesture) => {
-        if (gesture.dx > 70) {
-          changeRole('parent');
-        }
-      },
-    }),
-  ).current;
+  const swipeBack = useMemo(
+    () =>
+      PanResponder.create({
+        onMoveShouldSetPanResponderCapture: (_, gesture) =>
+          gesture.dx > 12 && Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.5,
+        onPanResponderRelease: (_, gesture) => {
+          if (gesture.dx > 70) {
+            setRole('parent');
+          }
+        },
+      }),
+    [],
+  );
 
   return (
     <View

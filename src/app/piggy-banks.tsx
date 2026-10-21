@@ -29,6 +29,8 @@ export default function PiggyBanksScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      void reloadKey;
+
       let cancelled = false;
 
       setLoading(true);

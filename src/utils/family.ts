@@ -4,7 +4,6 @@ import type { ParentSummaryDto } from '@/api/gen/models/ParentSummaryDto';
 import type { PiggyBankResponseDto } from '@/api/gen/models/PiggyBankResponseDto';
 import type { TaskResponseDto } from '@/api/gen/models/TaskResponseDto';
 import type { TransferRequestListItemDto } from '@/api/gen/models/TransferRequestListItemDto';
-import { childProfile as demoChildProfile } from '@/data/dashboard';
 import type {
   ChildProfile,
   DecisionRequest,
@@ -66,16 +65,15 @@ export function toChildProfile(child: ChildUserWithCardsDto): ChildProfile {
   const age = getAge(child.birthDay);
 
   return {
-    ...demoChildProfile,
     name: getFirstName(child.name),
     initials: getInitials(child.name),
     age,
     ageGroup: child.role === 'TEEN_14_17' ? '14–17 лет' : '7–13 лет (под присмотром)',
-    cardLast4: card?.cardNumberMask.slice(-4) ?? demoChildProfile.cardLast4,
+    cardLast4: card ? card.cardNumberMask.slice(-4) : '••••',
     purchaseBalance: card?.balance ?? 0,
-    dailyLimit: card?.dailyLimit ?? demoChildProfile.dailyLimit,
+    dailyLimit: card?.dailyLimit ?? 0,
     dailySpent: card?.spentToday ?? 0,
-    pocketMoney: card?.pocketMoneyAmount ?? demoChildProfile.pocketMoney,
+    pocketMoney: card?.pocketMoneyAmount ?? 0,
     pocketMoneySchedule: `по ${getPocketMoneySchedule(card?.pocketMoneyDay ?? 1)}`,
   };
 }

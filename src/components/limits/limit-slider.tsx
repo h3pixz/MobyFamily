@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useMemo, useState } from 'react';
 import { PanResponder, View } from 'react-native';
 
 type LimitSliderProps = {
@@ -10,31 +10,27 @@ type LimitSliderProps = {
 };
 
 export function LimitSlider({ value, min = 0, max = 100, step = 5, onChange }: LimitSliderProps) {
-  const widthRef = useRef(0);
-  const onChangeRef = useRef(onChange);
-  onChangeRef.current = onChange;
+  const [width, setWidth] = useState(0);
 
-  const updateFromX = (x: number) => {
-    const width = widthRef.current;
+  const panResponder = useMemo(() => {
+    const updateFromX = (x: number) => {
+      if (width <= 0) {
+        return;
+      }
 
-    if (width <= 0) {
-      return;
-    }
+      const ratio = Math.min(1, Math.max(0, x / width));
+      const next = Math.round((min + ratio * (max - min)) / step) * step;
 
-    const ratio = Math.min(1, Math.max(0, x / width));
-    const next = Math.round((min + ratio * (max - min)) / step) * step;
+      onChange(Math.min(max, Math.max(min, next)));
+    };
 
-    onChangeRef.current(Math.min(max, Math.max(min, next)));
-  };
-
-  const panResponder = useRef(
-    PanResponder.create({
+    return PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: (event) => updateFromX(event.nativeEvent.locationX),
       onPanResponderMove: (event) => updateFromX(event.nativeEvent.locationX),
-    }),
-  ).current;
+    });
+  }, [width, min, max, step, onChange]);
 
   const percent = ((value - min) / (max - min)) * 100;
 
@@ -48,13 +44,13 @@ export function LimitSlider({ value, min = 0, max = 100, step = 5, onChange }: L
       accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
       onAccessibilityAction={(event) => {
         if (event.nativeEvent.actionName === 'increment') {
-          onChangeRef.current(Math.min(max, value + step));
+          onChange(Math.min(max, value + step));
         } else if (event.nativeEvent.actionName === 'decrement') {
-          onChangeRef.current(Math.max(min, value - step));
+          onChange(Math.max(min, value - step));
         }
       }}
       onLayout={(event) => {
-        widthRef.current = event.nativeEvent.layout.width;
+        setWidth(event.nativeEvent.layout.width);
       }}
       className="h-8 w-full items-stretch justify-center">
       <View pointerEvents="none" className="h-2 w-full overflow-hidden rounded-full bg-surface-container">

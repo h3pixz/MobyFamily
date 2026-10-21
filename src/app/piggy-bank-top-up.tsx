@@ -25,7 +25,6 @@ import { PiggyBankSummaryCard } from '@/components/piggy-bank/piggy-bank-summary
 import { Button } from '@/components/ui/button';
 import { BynIcon } from '@/components/ui/byn-icon';
 import { Icon } from '@/components/ui/icon';
-import { parentCard } from '@/data/dashboard';
 import { formatBYN } from '@/utils/format';
 import { getWeeklyContributions, parseAmountInput } from '@/utils/piggy-bank';
 
@@ -40,15 +39,15 @@ export default function PiggyBankTopUpScreen() {
   const [piggyBank, setPiggyBank] = useState<PiggyBankResponseDto | null>(null);
   const [card, setCard] = useState<CardDto | null>(null);
   const [amount, setAmount] = useState('10,00');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(Boolean(id));
   const [submitting, setSubmitting] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(
+    id ? null : 'Копилка не найдена',
+  );
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) {
-      setLoadError('Копилка не найдена');
-      setLoading(false);
       return;
     }
 
@@ -101,7 +100,7 @@ export default function PiggyBankTopUpScreen() {
   const cardTitle = card
     ? isChild
       ? `Moby Junior •• ${card.cardNumberMask.slice(-4)}`
-      : `${parentCard.title} •• ${card.cardNumberMask.slice(-4)}`
+      : `Moby карта •• ${card.cardNumberMask.slice(-4)}`
     : 'Карта не найдена';
 
   const handleSubmit = async () => {

@@ -34,13 +34,13 @@ export default function SubmitTaskScreen() {
   const [cardId, setCardId] = useState<string | null>(null);
   const [loading, setLoading] = useState(Boolean(id));
   const [submitting, setSubmitting] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(
+    id ? null : 'Задание не найдено',
+  );
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) {
-      setLoadError('Задание не найдено');
-      setLoading(false);
       return;
     }
 
@@ -54,6 +54,10 @@ export default function SubmitTaskScreen() {
 
         if (taskResult.status === 'fulfilled') {
           setTitle(taskResult.value.title);
+        } else {
+          setLoadError(getApiErrorMessage(taskResult.reason));
+          setLoading(false);
+          return;
         }
 
         if (familyResult.status === 'fulfilled') {

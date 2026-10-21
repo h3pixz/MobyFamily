@@ -28,13 +28,13 @@ export default function PiggyBankWithdrawScreen() {
   const [breakPiggyBank, setBreakPiggyBank] = useState(false);
   const [loading, setLoading] = useState(Boolean(id));
   const [submitting, setSubmitting] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(
+    id ? null : 'Копилка не найдена',
+  );
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) {
-      setLoadError('Копилка не найдена');
-      setLoading(false);
       return;
     }
 

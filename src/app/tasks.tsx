@@ -38,6 +38,8 @@ export default function TasksScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      void reloadKey;
+
       let cancelled = false;
 
       setLoading(true);
