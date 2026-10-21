@@ -5,16 +5,9 @@ import type {
   DecisionRequest,
   FamilyMember,
   ParentCard,
-  ParentProfile,
   SavingsGoal,
   Task,
 } from '@/types/dashboard';
-
-export const parentProfile: ParentProfile = {
-  name: 'Анна',
-  greeting: 'Доброе утро, Анна',
-  roleLabel: 'Личный кабинет родителя',
-};
 
 export const parentCard: ParentCard = {
   title: 'Mastercard Platinum',

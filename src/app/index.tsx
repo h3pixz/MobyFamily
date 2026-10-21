@@ -4,6 +4,7 @@ import { PanResponder, ScrollView, View } from 'react-native';
 import Animated, { FadeInLeft, FadeInRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useAuth } from '@/auth/auth-context';
 import { BottomNav } from '@/components/dashboard/bottom-nav';
 import { ChildDashboard } from '@/components/dashboard/child-dashboard';
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
@@ -15,12 +16,13 @@ import {
   familyMembers,
   initialDecisions,
   parentCard,
-  parentProfile,
   savingsGoal,
 } from '@/data/dashboard';
 import type { AppRole, DecisionRequest } from '@/types/dashboard';
+import { getGreeting } from '@/utils/greeting';
 
 export default function HomeScreen() {
+  const { profile } = useAuth();
   const [role, setRole] = useState<AppRole>('parent');
   const [decisions, setDecisions] = useState<DecisionRequest[]>(initialDecisions);
   const scrollRef = useRef<ScrollView>(null);
@@ -87,7 +89,7 @@ export default function HomeScreen() {
         ) : (
           <Animated.View key="child" entering={FadeInRight.duration(280)}>
             <ChildDashboard
-              greeting={parentProfile.greeting}
+              greeting={getGreeting(profile?.name)}
               child={childProfile}
               decisions={decisions}
               tasks={childTasks}

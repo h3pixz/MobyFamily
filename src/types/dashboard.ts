@@ -16,12 +16,6 @@ export interface Task {
   status: TaskStatus;
 }
 
-export interface ParentProfile {
-  name: string;
-  greeting: string;
-  roleLabel: string;
-}
-
 export interface ParentCard {
   title: string;
   last4: string;

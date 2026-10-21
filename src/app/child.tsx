@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useAuth } from '@/auth/auth-context';
 import { ChildBalanceCard } from '@/components/child/child-balance-card';
 import { ChildGoalCard } from '@/components/child/child-goal-card';
 import { ChildQuickActions } from '@/components/child/child-quick-actions';
@@ -11,9 +12,12 @@ import { BottomNav } from '@/components/dashboard/bottom-nav';
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 import { childProfile, childQuickActions, childTasks, savingsGoal } from '@/data/dashboard';
 import type { ChildQuickAction } from '@/types/dashboard';
+import { getFirstName } from '@/utils/greeting';
 
 export default function ChildScreen() {
+  const { profile } = useAuth();
   const insets = useSafeAreaInsets();
+  const firstName = getFirstName(profile?.name) || childProfile.name;
 
   const openSoon = (title: string) => {
     router.push({ pathname: '/soon', params: { title } });
@@ -48,7 +52,7 @@ export default function ChildScreen() {
         <View className="gap-space-md">
           <View className="pt-1">
             <Text className="text-headline-md font-inter-semibold text-on-surface">
-              Привет, {childProfile.name}! 👋
+              Привет, {firstName}! 👋
             </Text>
           </View>
 
