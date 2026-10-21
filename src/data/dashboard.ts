@@ -90,7 +90,7 @@ export const initialDecisions: DecisionRequest[] = [
     note: 'Превышен дневной лимит',
     noteAmount: 15,
     available: 42,
-    hint: 'Сценарий КРОК. Запрос отправлен в 1 клик через QR',
+    hint: 'Запрос на одобрение отправлен в 1 клик через QR',
   },
   {
     id: 'decision-task',
