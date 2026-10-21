@@ -12,6 +12,7 @@ import {
   getAccessToken,
   getStoredProfileName,
   loadSession,
+  onSessionExpired,
 } from '@/api/session';
 
 type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';
@@ -39,6 +40,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
+
+    const stopListening = onSessionExpired(() => {
+      if (!cancelled) {
+        setProfile(null);
+        setStatus('unauthenticated');
+      }
+    });
 
     const restore = async () => {
       await loadSession();
@@ -76,6 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       cancelled = true;
+      stopListening();
     };
   }, []);
 

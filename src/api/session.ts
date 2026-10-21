@@ -13,6 +13,9 @@ const PROFILE_NAME_KEY = 'moby.profileName';
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
 let profileName: string | null = null;
+let persistSession = false;
+
+const sessionExpiredListeners = new Set<() => void>();
 
 async function readItem(key: string) {
   if (Platform.OS === 'web') {
@@ -56,25 +59,40 @@ export function getStoredProfileName() {
   return profileName;
 }
 
+async function deleteStoredItems() {
+  await Promise.all([
+    deleteItem(ACCESS_TOKEN_KEY),
+    deleteItem(REFRESH_TOKEN_KEY),
+    deleteItem(PROFILE_NAME_KEY),
+  ]);
+}
+
+async function writeTokens(tokens: Tokens) {
+  await Promise.all([
+    writeItem(ACCESS_TOKEN_KEY, tokens.accessToken),
+    writeItem(REFRESH_TOKEN_KEY, tokens.refreshToken),
+  ]);
+}
+
 export async function loadSession() {
   accessToken = await readItem(ACCESS_TOKEN_KEY);
   refreshToken = await readItem(REFRESH_TOKEN_KEY);
   profileName = await readItem(PROFILE_NAME_KEY);
+  persistSession = Boolean(accessToken);
 }
 
 export async function saveSession(tokens: Tokens, persist = true, name?: string) {
   accessToken = tokens.accessToken;
   refreshToken = tokens.refreshToken;
   profileName = name ?? null;
+  persistSession = persist;
 
   if (!persist) {
+    await deleteStoredItems();
     return;
   }
 
-  const writes = [
-    writeItem(ACCESS_TOKEN_KEY, tokens.accessToken),
-    writeItem(REFRESH_TOKEN_KEY, tokens.refreshToken),
-  ];
+  const writes = [writeTokens(tokens)];
 
   if (name) {
     writes.push(writeItem(PROFILE_NAME_KEY, name));
@@ -83,14 +101,33 @@ export async function saveSession(tokens: Tokens, persist = true, name?: string)
   await Promise.all(writes);
 }
 
+export async function updateSessionTokens(tokens: Tokens) {
+  accessToken = tokens.accessToken;
+  refreshToken = tokens.refreshToken;
+
+  if (persistSession) {
+    await writeTokens(tokens);
+  }
+}
+
 export async function clearSession() {
   accessToken = null;
   refreshToken = null;
   profileName = null;
+  persistSession = false;
 
-  await Promise.all([
-    deleteItem(ACCESS_TOKEN_KEY),
-    deleteItem(REFRESH_TOKEN_KEY),
-    deleteItem(PROFILE_NAME_KEY),
-  ]);
+  await deleteStoredItems();
+}
+
+export async function expireSession() {
+  await clearSession();
+  sessionExpiredListeners.forEach((listener) => listener());
+}
+
+export function onSessionExpired(listener: () => void) {
+  sessionExpiredListeners.add(listener);
+
+  return () => {
+    sessionExpiredListeners.delete(listener);
+  };
 }
