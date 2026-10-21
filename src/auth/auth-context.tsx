@@ -29,6 +29,7 @@ type AuthContextValue = {
   signIn: (phone: string, password: string, remember: boolean) => Promise<AuthProfile>;
   signUp: (input: RegisterInput) => Promise<AuthProfile>;
   signOut: () => Promise<void>;
+  refreshProfile: () => Promise<AuthProfile>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -106,8 +107,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setStatus('unauthenticated');
   };
 
+  const refreshProfile = async () => {
+    const next = await fetchProfile();
+    setProfile(next);
+    return next;
+  };
+
   return (
-    <AuthContext.Provider value={{ status, profile, signIn, signUp, signOut }}>
+    <AuthContext.Provider
+      value={{ status, profile, signIn, signUp, signOut, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

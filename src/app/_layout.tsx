@@ -29,6 +29,16 @@ const CHILD_ROUTES = new Set([
   'piggy-bank-top-up',
   'transaction-history',
   'tasks',
+  'notifications',
+  'transfer-request',
+  'transfer',
+  'submit-task',
+  'request-task',
+  'piggy-banks',
+  'piggy-bank-form',
+  'piggy-bank-withdraw',
+  'bonuses',
+  'quests',
 ]);
 
 function RootNavigator({ fontsReady }: { fontsReady: boolean }) {
