@@ -64,6 +64,14 @@ export default function HomeScreen() {
     }, [profile]),
   );
 
+  const parentApiCard = family?.user.cards[0];
+  const parentCardData = parentApiCard
+    ? {
+        ...parentCard,
+        last4: parentApiCard.cardNumberMask.slice(-4),
+        balance: parentApiCard.balance,
+      }
+    : parentCard;
   const children = family?.children ?? [];
   const selectedChild =
     children.find((child) => child.id === selectedChildId) ?? children[0] ?? null;
@@ -159,7 +167,7 @@ export default function HomeScreen() {
         {role === 'parent' ? (
           <Animated.View key="parent" entering={FadeInLeft.duration(220)}>
             <ParentDashboard
-              card={parentCard}
+              card={parentCardData}
               members={members}
               bonuses={bonuses}
               childName={childProfile?.name}

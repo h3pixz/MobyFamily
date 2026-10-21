@@ -88,7 +88,7 @@ export default function PiggyBankTopUpScreen() {
   };
 
   const parsedAmount = parseAmountInput(amount);
-  const balance = isChild ? (card?.balance ?? 0) : parentCard.balance;
+  const balance = card?.balance ?? 0;
   const amountError = !card
     ? 'Нет карты для пополнения'
     : parsedAmount < MIN_AMOUNT
@@ -101,7 +101,7 @@ export default function PiggyBankTopUpScreen() {
   const cardTitle = card
     ? isChild
       ? `Moby Junior •• ${card.cardNumberMask.slice(-4)}`
-      : `${parentCard.title} •• ${parentCard.last4}`
+      : `${parentCard.title} •• ${card.cardNumberMask.slice(-4)}`
     : 'Карта не найдена';
 
   const handleSubmit = async () => {
