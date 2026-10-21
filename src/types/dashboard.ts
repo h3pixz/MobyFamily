@@ -81,6 +81,9 @@ export type DecisionKind = 'purchase' | 'task';
 export interface DecisionRequest {
   id: string;
   kind: DecisionKind;
+  source?: 'transfer' | 'task';
+  rawId?: string;
+  childId?: string;
   title: string;
   subtitle: string;
   amount: number;

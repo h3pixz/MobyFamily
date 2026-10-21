@@ -12,13 +12,15 @@ import { formatBYN } from '@/utils/format';
 type DecisionsSectionProps = {
   requests: DecisionRequest[];
   childName: string;
-  onApprove: (id: string) => void;
-  onDecline: (id: string) => void;
+  busyId?: string | null;
+  onApprove: (request: DecisionRequest) => void;
+  onDecline: (request: DecisionRequest) => void;
 };
 
 export function DecisionsSection({
   requests,
   childName,
+  busyId,
   onApprove,
   onDecline,
 }: DecisionsSectionProps) {
@@ -48,8 +50,9 @@ export function DecisionsSection({
             <DecisionCard
               key={request.id}
               request={request}
-              onApprove={() => onApprove(request.id)}
-              onDecline={() => onDecline(request.id)}
+              busy={request.id === busyId}
+              onApprove={() => onApprove(request)}
+              onDecline={() => onDecline(request)}
             />
           ))}
         </View>
@@ -60,11 +63,12 @@ export function DecisionsSection({
 
 type DecisionCardProps = {
   request: DecisionRequest;
+  busy?: boolean;
   onApprove: () => void;
   onDecline: () => void;
 };
 
-function DecisionCard({ request, onApprove, onDecline }: DecisionCardProps) {
+function DecisionCard({ request, busy, onApprove, onDecline }: DecisionCardProps) {
   const purchase = request.kind === 'purchase';
 
   return (
@@ -144,6 +148,7 @@ function DecisionCard({ request, onApprove, onDecline }: DecisionCardProps) {
           label="Отклонить"
           variant="secondary"
           className="flex-1 rounded-xl"
+          disabled={busy}
           onPress={onDecline}
         />
         {purchase ? (
@@ -151,6 +156,7 @@ function DecisionCard({ request, onApprove, onDecline }: DecisionCardProps) {
             label="Одобрить"
             variant="primary"
             className="flex-1 rounded-xl"
+            loading={busy}
             onPress={onApprove}
             labelNode={
               <View className="flex-row items-center">
@@ -168,6 +174,7 @@ function DecisionCard({ request, onApprove, onDecline }: DecisionCardProps) {
             icon="check-circle"
             variant="primary"
             className="flex-1 rounded-xl"
+            loading={busy}
             onPress={onApprove}
           />
         )}

@@ -127,6 +127,10 @@ export default function ChildScreen() {
       router.push('/transaction-history');
       return;
     }
+    if (action.id === 'child-action-ask') {
+      router.push('/transfer-request');
+      return;
+    }
     openSoon(action.label);
   };
 
@@ -137,6 +141,14 @@ export default function ChildScreen() {
     }
     if (action.id === 'teen-tasks') {
       router.push('/tasks');
+      return;
+    }
+    if (action.id === 'teen-transfer') {
+      router.push({ pathname: '/transfer', params: { mode: 'phone' } });
+      return;
+    }
+    if (action.id === 'teen-analytics') {
+      router.push('/transaction-history');
       return;
     }
     openSoon(action.label);
@@ -250,6 +262,8 @@ export default function ChildScreen() {
           onPress={(tab) => {
             if (tab.key === 'profile') {
               router.push('/profile');
+            } else if (tab.key === 'analytics') {
+              router.push('/transaction-history');
             } else if (tab.key !== 'home') {
               openSoon(tab.label);
             }

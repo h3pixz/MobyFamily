@@ -1,8 +1,16 @@
 import type { ChildUserWithCardsDto } from '@/api/gen/models/ChildUserWithCardsDto';
 import type { PiggyBankResponseDto } from '@/api/gen/models/PiggyBankResponseDto';
 import type { TaskResponseDto } from '@/api/gen/models/TaskResponseDto';
+import type { TransferRequestListItemDto } from '@/api/gen/models/TransferRequestListItemDto';
 import { childProfile as demoChildProfile } from '@/data/dashboard';
-import type { ChildProfile, FamilyMember, SavingsGoal, Task } from '@/types/dashboard';
+import type {
+  ChildProfile,
+  DecisionRequest,
+  FamilyMember,
+  SavingsGoal,
+  Task,
+} from '@/types/dashboard';
+import { asString } from '@/utils/dto';
 import { getFirstName } from '@/utils/greeting';
 import { getPocketMoneySchedule } from '@/utils/limits';
 
@@ -112,6 +120,44 @@ export function toSavingsGoal(piggyBank: PiggyBankResponseDto): SavingsGoal {
     target: piggyBank.targetAmount,
     weeklyDelta,
     monthsLeft: 0,
+  };
+}
+
+export function toTransferDecision(request: TransferRequestListItemDto): DecisionRequest {
+  const childName = request.child ? getFirstName(request.child.name) : 'Ребёнок';
+  const cardLast4 = request.card?.cardNumberMask.slice(-4);
+
+  return {
+    id: `transfer-${request.id}`,
+    kind: 'purchase',
+    source: 'transfer',
+    rawId: request.id,
+    childId: request.child?.id,
+    title: `${childName} просит перевести деньги`,
+    subtitle: request.comment,
+    amount: request.amount,
+    icon: 'swap-horiz',
+    note: `Запрос от ${childName}`,
+    noteDetail: cardLast4 ? `на карту •• ${cardLast4}` : undefined,
+  };
+}
+
+export function toTaskDecision(task: TaskResponseDto): DecisionRequest {
+  const child = task.completedBy ?? task.assignedChild;
+  const childName = child ? getFirstName(child.name) : 'Ребёнок';
+
+  return {
+    id: `task-${task.id}`,
+    kind: 'task',
+    source: 'task',
+    rawId: task.id,
+    childId: child?.id,
+    title: task.title,
+    subtitle: `${childName} отметил выполнение`,
+    amount: task.rewardAmount,
+    icon: 'assignment',
+    note: 'Ждёт подтверждения',
+    noteDetail: asString(task.submissionComment) ?? undefined,
   };
 }
 

@@ -104,6 +104,30 @@ function RootNavigator({ fontsReady }: { fontsReady: boolean }) {
             contentStyle: { backgroundColor: 'transparent' },
           }}
         />
+        <Stack.Screen
+          name="transfer-request"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'fade',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <Stack.Screen
+          name="transfer"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'fade',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <Stack.Screen
+          name="decision-reason"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'fade',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
       </Stack>
     </>
   );

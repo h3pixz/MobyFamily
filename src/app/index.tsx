@@ -1,13 +1,18 @@
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
-import { PanResponder, ScrollView, View } from 'react-native';
+import { Alert, PanResponder, ScrollView, View } from 'react-native';
 import Animated, { FadeInLeft, FadeInRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { getApiErrorMessage } from '@/api/error';
 import { fetchFamily } from '@/api/family';
 import type { FamilyResponseDto } from '@/api/gen/models/FamilyResponseDto';
 import type { PiggyBankResponseDto } from '@/api/gen/models/PiggyBankResponseDto';
+import type { TaskResponseDto } from '@/api/gen/models/TaskResponseDto';
+import type { TransferRequestListItemDto } from '@/api/gen/models/TransferRequestListItemDto';
+import { approveTransferRequest, fetchTransferRequests } from '@/api/payments';
 import { fetchPiggyBanks } from '@/api/piggy-banks';
+import { approveTask, fetchTasks } from '@/api/tasks';
 import { useAuth } from '@/auth/auth-context';
 import { BottomNav } from '@/components/dashboard/bottom-nav';
 import { ChildDashboard } from '@/components/dashboard/child-dashboard';
@@ -15,24 +20,32 @@ import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 import { ParentDashboard } from '@/components/dashboard/parent-dashboard';
 import {
   childBonusMember,
-  childTasks,
   familyParentMember,
-  getInitialDecisions,
   parentBonusMember,
   parentCard,
 } from '@/data/dashboard';
 import { useUnreadCount } from '@/hooks/use-unread-count';
-import type { AppRole } from '@/types/dashboard';
-import { toChildProfile, toFamilyMember, toSavingsGoal } from '@/utils/family';
+import type { AppRole, BonusMember, DecisionRequest } from '@/types/dashboard';
+import {
+  toChildProfile,
+  toChildTasks,
+  toFamilyMember,
+  toSavingsGoal,
+  toTaskDecision,
+  toTransferDecision,
+} from '@/utils/family';
 import { getFirstName } from '@/utils/greeting';
 
 export default function HomeScreen() {
   const { profile } = useAuth();
   const unreadCount = useUnreadCount();
   const [role, setRole] = useState<AppRole>('parent');
-  const [resolvedDecisions, setResolvedDecisions] = useState<string[]>([]);
   const [family, setFamily] = useState<FamilyResponseDto | null>(null);
   const [piggyBanks, setPiggyBanks] = useState<PiggyBankResponseDto[]>([]);
+  const [transferRequests, setTransferRequests] = useState<TransferRequestListItemDto[]>([]);
+  const [apiTasks, setApiTasks] = useState<TaskResponseDto[]>([]);
+  const [busyDecisionId, setBusyDecisionId] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
   const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
   const scrollRef = useRef<ScrollView>(null);
   const insets = useSafeAreaInsets();
@@ -45,25 +58,34 @@ export default function HomeScreen() {
 
       let cancelled = false;
 
-      Promise.allSettled([fetchFamily(), fetchPiggyBanks()]).then(
-        ([familyResult, piggyBanksResult]) => {
-          if (cancelled) {
-            return;
-          }
+      Promise.allSettled([
+        fetchFamily(),
+        fetchPiggyBanks(),
+        fetchTransferRequests(),
+        fetchTasks(),
+      ]).then(([familyResult, piggyBanksResult, requestsResult, tasksResult]) => {
+        if (cancelled) {
+          return;
+        }
 
-          if (familyResult.status === 'fulfilled') {
-            setFamily(familyResult.value);
-          }
-          if (piggyBanksResult.status === 'fulfilled') {
-            setPiggyBanks(piggyBanksResult.value);
-          }
-        },
-      );
+        if (familyResult.status === 'fulfilled') {
+          setFamily(familyResult.value);
+        }
+        if (piggyBanksResult.status === 'fulfilled') {
+          setPiggyBanks(piggyBanksResult.value);
+        }
+        if (requestsResult.status === 'fulfilled') {
+          setTransferRequests(requestsResult.value);
+        }
+        if (tasksResult.status === 'fulfilled') {
+          setApiTasks(tasksResult.value);
+        }
+      });
 
       return () => {
         cancelled = true;
       };
-    }, [profile]),
+    }, [profile, reloadKey]),
   );
 
   const parentApiCard = family?.user.cards[0];
@@ -95,14 +117,38 @@ export default function HomeScreen() {
     parentBonusMember,
     ...children.map((child) => ({
       ...childBonusMember,
-      id: `bonus-${child.id}`,
+      id: child.id,
       name: getFirstName(child.name),
       points: child.mobiksBalance,
     })),
   ];
-  const decisions = getInitialDecisions(childName).filter(
-    (request) => !resolvedDecisions.includes(request.id),
-  );
+  const pendingTransfers = transferRequests.filter((request) => request.status === 'PENDING');
+  const submittedTasks = apiTasks.filter((task) => task.status === 'SUBMITTED');
+  const allPendingCount = pendingTransfers.length + submittedTasks.length;
+  const visibleTransfers =
+    role === 'parent'
+      ? pendingTransfers
+      : pendingTransfers.filter((request) => request.child?.id === selectedChild?.id);
+  const visibleTasks =
+    role === 'parent'
+      ? submittedTasks
+      : submittedTasks.filter(
+          (task) => (task.completedBy?.id ?? task.assignedChild?.id) === selectedChild?.id,
+        );
+  const decisions = [
+    ...visibleTransfers.map(toTransferDecision),
+    ...visibleTasks.map(toTaskDecision),
+  ];
+  const previewTasks = selectedChild
+    ? toChildTasks(
+        apiTasks.filter(
+          (task) =>
+            task.assignedChild?.id === selectedChild.id ||
+            task.completedBy?.id === selectedChild.id ||
+            (!task.assignedChild && !task.completedBy),
+        ),
+      )
+    : [];
 
   const openSoon = (title: string) => {
     router.push({ pathname: '/soon', params: { title } });
@@ -140,8 +186,49 @@ export default function HomeScreen() {
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   };
 
-  const resolveDecision = (id: string) => {
-    setResolvedDecisions((current) => [...current, id]);
+  const handleParentAction = (label: string, member?: BonusMember) => {
+    if (member?.kind === 'child') {
+      router.push({
+        pathname: '/transfer',
+        params: { mode: 'child', childId: member.id },
+      });
+      return;
+    }
+
+    openSoon(label);
+  };
+
+  const handleApproveDecision = async (decision: DecisionRequest) => {
+    if (!decision.source || !decision.rawId) {
+      return;
+    }
+
+    setBusyDecisionId(decision.id);
+
+    try {
+      if (decision.source === 'transfer') {
+        await approveTransferRequest(decision.rawId, parentApiCard?.id);
+      } else {
+        await approveTask(decision.rawId);
+      }
+
+      setReloadKey((current) => current + 1);
+    } catch (error) {
+      Alert.alert('Не удалось подтвердить', getApiErrorMessage(error));
+    } finally {
+      setBusyDecisionId(null);
+    }
+  };
+
+  const handleDeclineDecision = (decision: DecisionRequest) => {
+    if (!decision.source || !decision.rawId) {
+      return;
+    }
+
+    router.push({
+      pathname: '/decision-reason',
+      params: { kind: decision.source, id: decision.rawId, title: decision.title },
+    });
   };
 
   const switchToChild = (childId?: string) => {
@@ -198,8 +285,8 @@ export default function HomeScreen() {
               members={members}
               bonuses={bonuses}
               childName={childProfile?.name}
-              pendingCount={decisions.length}
-              onPressAction={openSoon}
+              pendingCount={allPendingCount}
+              onPressAction={handleParentAction}
               onPressManageFamily={() => router.push('/family')}
               onSwitchToChild={switchToChild}
             />
@@ -211,10 +298,11 @@ export default function HomeScreen() {
               savingsBalance={savingsBalance}
               activeGoals={activePiggyBanks.length}
               decisions={decisions}
-              tasks={childTasks}
+              tasks={previewTasks}
               goal={savingsGoal}
-              onApprove={resolveDecision}
-              onDecline={resolveDecision}
+              busyDecisionId={busyDecisionId}
+              onApprove={handleApproveDecision}
+              onDecline={handleDeclineDecision}
               onPressHistory={openChildHistory}
               onPressPocketMoney={openLimitSettings}
               onNewTask={() => openSoon('Новое задание')}

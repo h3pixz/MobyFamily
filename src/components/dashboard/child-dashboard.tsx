@@ -13,8 +13,9 @@ type ChildDashboardProps = {
   decisions: DecisionRequest[];
   tasks: Task[];
   goal: SavingsGoal | null;
-  onApprove: (id: string) => void;
-  onDecline: (id: string) => void;
+  busyDecisionId?: string | null;
+  onApprove: (request: DecisionRequest) => void;
+  onDecline: (request: DecisionRequest) => void;
   onPressHistory: () => void;
   onPressPocketMoney: () => void;
   onNewTask: () => void;
@@ -28,6 +29,7 @@ export function ChildDashboard({
   decisions,
   tasks,
   goal,
+  busyDecisionId,
   onApprove,
   onDecline,
   onPressHistory,
@@ -47,6 +49,7 @@ export function ChildDashboard({
       <DecisionsSection
         requests={decisions}
         childName={child.name}
+        busyId={busyDecisionId}
         onApprove={onApprove}
         onDecline={onDecline}
       />

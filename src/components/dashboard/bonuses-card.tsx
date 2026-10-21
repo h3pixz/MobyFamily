@@ -9,7 +9,7 @@ import { formatPoints } from '@/utils/format';
 
 type BonusesCardProps = {
   members: BonusMember[];
-  onPress: (label: string) => void;
+  onPress: (label: string, member?: BonusMember) => void;
 };
 
 export function BonusesCard({ members, onPress }: BonusesCardProps) {
@@ -102,7 +102,7 @@ export function BonusesCard({ members, onPress }: BonusesCardProps) {
                 variant="warning"
                 size="sm"
                 className="flex-shrink-0"
-                onPress={() => onPress(`Поощрить ${member.name}`)}
+                onPress={() => onPress(`Поощрить ${member.name}`, member)}
               />
             )}
           </View>

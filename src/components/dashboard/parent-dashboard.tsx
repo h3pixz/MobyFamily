@@ -12,7 +12,7 @@ type ParentDashboardProps = {
   bonuses: BonusMember[];
   childName?: string;
   pendingCount: number;
-  onPressAction: (label: string) => void;
+  onPressAction: (label: string, member?: BonusMember) => void;
   onPressManageFamily: () => void;
   onSwitchToChild: (childId?: string) => void;
 };
