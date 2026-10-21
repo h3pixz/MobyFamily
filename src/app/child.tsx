@@ -3,10 +3,15 @@ import { useEffect, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { fetchFamily } from '@/api/family';
+import { fetchFamily, fetchGraduationStatus } from '@/api/family';
+import type { CashbackCategoriesResponseDto } from '@/api/gen/models/CashbackCategoriesResponseDto';
 import type { FamilyResponseDto } from '@/api/gen/models/FamilyResponseDto';
+import type { GraduationStatusResponseDto } from '@/api/gen/models/GraduationStatusResponseDto';
+import type { MemberTransactionsResponseDto } from '@/api/gen/models/MemberTransactionsResponseDto';
 import type { PiggyBankResponseDto } from '@/api/gen/models/PiggyBankResponseDto';
 import type { TaskResponseDto } from '@/api/gen/models/TaskResponseDto';
+import { fetchCashbackCategories } from '@/api/loyalty';
+import { fetchMyTransactions } from '@/api/payments';
 import { fetchPiggyBanks } from '@/api/piggy-banks';
 import { fetchTasks, submitTask } from '@/api/tasks';
 import { useAuth } from '@/auth/auth-context';
@@ -17,17 +22,30 @@ import { ChildTasksSection } from '@/components/child/child-tasks-section';
 import { FinanceAcademyCard } from '@/components/child/finance-academy-card';
 import { BottomNav } from '@/components/dashboard/bottom-nav';
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
+import { TeenBalanceCard } from '@/components/teen/teen-balance-card';
+import { TeenBottomNav } from '@/components/teen/teen-bottom-nav';
+import { TeenCashbackCard } from '@/components/teen/teen-cashback-card';
+import { TeenGoalCard } from '@/components/teen/teen-goal-card';
+import { TeenQuestCard } from '@/components/teen/teen-quest-card';
+import { TeenQuickActions } from '@/components/teen/teen-quick-actions';
+import { TeenTransactions } from '@/components/teen/teen-transactions';
 import { childQuickActions } from '@/data/dashboard';
-import type { ChildQuickAction } from '@/types/dashboard';
+import { teenQuickActions } from '@/data/teen';
+import type { ChildQuickAction, TeenQuickAction } from '@/types/dashboard';
 import { toChildProfile, toChildTasks, toSavingsGoal } from '@/utils/family';
 import { getFirstName } from '@/utils/greeting';
+import { getCurrentMonthName, getMonthsUntilAge } from '@/utils/teen';
 
 export default function ChildScreen() {
   const { profile } = useAuth();
   const insets = useSafeAreaInsets();
+  const isTeen = profile?.role === 'TEEN_14_17';
   const [family, setFamily] = useState<FamilyResponseDto | null>(null);
   const [tasks, setTasks] = useState<TaskResponseDto[]>([]);
   const [piggyBanks, setPiggyBanks] = useState<PiggyBankResponseDto[]>([]);
+  const [transactions, setTransactions] = useState<MemberTransactionsResponseDto | null>(null);
+  const [graduation, setGraduation] = useState<GraduationStatusResponseDto | null>(null);
+  const [cashback, setCashback] = useState<CashbackCategoriesResponseDto | null>(null);
 
   useEffect(() => {
     if (!profile) {
@@ -36,8 +54,14 @@ export default function ChildScreen() {
 
     let cancelled = false;
 
-    Promise.allSettled([fetchFamily(), fetchTasks(), fetchPiggyBanks()]).then(
-      ([familyResult, tasksResult, piggyBanksResult]) => {
+    if (isTeen) {
+      Promise.allSettled([
+        fetchFamily(),
+        fetchPiggyBanks(),
+        fetchMyTransactions(6),
+        fetchGraduationStatus(),
+        fetchCashbackCategories(),
+      ]).then(([familyResult, piggyBanksResult, transactionsResult, graduationResult, cashbackResult]) => {
         if (cancelled) {
           return;
         }
@@ -45,23 +69,48 @@ export default function ChildScreen() {
         if (familyResult.status === 'fulfilled') {
           setFamily(familyResult.value);
         }
-        if (tasksResult.status === 'fulfilled') {
-          setTasks(tasksResult.value);
-        }
         if (piggyBanksResult.status === 'fulfilled') {
           setPiggyBanks(piggyBanksResult.value);
         }
-      },
-    );
+        if (transactionsResult.status === 'fulfilled') {
+          setTransactions(transactionsResult.value);
+        }
+        if (graduationResult.status === 'fulfilled') {
+          setGraduation(graduationResult.value);
+        }
+        if (cashbackResult.status === 'fulfilled') {
+          setCashback(cashbackResult.value);
+        }
+      });
+    } else {
+      Promise.allSettled([fetchFamily(), fetchTasks(), fetchPiggyBanks()]).then(
+        ([familyResult, tasksResult, piggyBanksResult]) => {
+          if (cancelled) {
+            return;
+          }
+
+          if (familyResult.status === 'fulfilled') {
+            setFamily(familyResult.value);
+          }
+          if (tasksResult.status === 'fulfilled') {
+            setTasks(tasksResult.value);
+          }
+          if (piggyBanksResult.status === 'fulfilled') {
+            setPiggyBanks(piggyBanksResult.value);
+          }
+        },
+      );
+    }
 
     return () => {
       cancelled = true;
     };
-  }, [profile]);
+  }, [isTeen, profile]);
 
   const child = family ? toChildProfile(family.user) : null;
   const activeTasks = toChildTasks(tasks);
-  const activePiggyBank = piggyBanks.find((piggyBank) => piggyBank.status === 'ACTIVE');
+  const activePiggyBanks = piggyBanks.filter((piggyBank) => piggyBank.status === 'ACTIVE');
+  const activePiggyBank = activePiggyBanks[0];
   const firstName = getFirstName(family?.user.name ?? profile?.name);
 
   const openSoon = (title: string) => {
@@ -70,6 +119,14 @@ export default function ChildScreen() {
 
   const openQuickAction = (action: ChildQuickAction) => {
     if (action.id === 'child-action-qr') {
+      router.push('/qr');
+      return;
+    }
+    openSoon(action.label);
+  };
+
+  const openTeenAction = (action: TeenQuickAction) => {
+    if (action.id === 'teen-qr') {
       router.push('/qr');
       return;
     }
@@ -106,45 +163,106 @@ export default function ChildScreen() {
           paddingTop: 8,
         }}
         showsVerticalScrollIndicator={false}>
-        <View className="gap-space-md">
-          <View className="pt-1">
-            <Text className="text-headline-md font-inter-semibold text-on-surface">
-              Привет, {firstName}! 👋
-            </Text>
+        {isTeen ? (
+          <>
+            {child ? (
+              <TeenBalanceCard
+                ageLabel="14–17 лет (Самостоятельный)"
+                cardLast4={child.cardLast4}
+                balance={child.purchaseBalance}
+                savings={activePiggyBank?.currentAmount ?? 0}
+                onPressDetails={() => openSoon('Реквизиты карты')}
+              />
+            ) : null}
+
+            <TeenQuickActions actions={teenQuickActions} onPress={openTeenAction} />
+
+            {cashback ? (
+              <TeenCashbackCard
+                categories={cashback}
+                mobiksBalance={family?.user.mobiksBalance ?? 0}
+                monthName={getCurrentMonthName()}
+                onConfigure={() => openSoon('Категории кэшбэка')}
+              />
+            ) : null}
+
+            {graduation ? (
+              <TeenQuestCard
+                status={graduation}
+                monthsLeft={family ? getMonthsUntilAge(family.user.birthDay, 18) : 0}
+                onPress={() => openSoon('Квесты')}
+              />
+            ) : null}
+
+            {activePiggyBank ? (
+              <TeenGoalCard
+                piggyBank={activePiggyBank}
+                activeCount={activePiggyBanks.length}
+                onAddMoney={() => openSoon('Пополнение цели')}
+              />
+            ) : null}
+
+            {transactions ? (
+              <TeenTransactions
+                transactions={transactions.transactions}
+                onPressAll={() => openSoon('История операций')}
+              />
+            ) : null}
+          </>
+        ) : (
+          <View className="gap-space-md">
+            <View className="pt-1">
+              <Text className="text-headline-md font-inter-semibold text-on-surface">
+                Привет, {firstName}! 👋
+              </Text>
+            </View>
+
+            {child ? <ChildBalanceCard child={child} /> : null}
+
+            <ChildQuickActions actions={childQuickActions} onPress={openQuickAction} />
+
+            {activePiggyBank ? (
+              <ChildGoalCard
+                goal={toSavingsGoal(activePiggyBank)}
+                onAddMoney={() => openSoon('Пополнение цели')}
+              />
+            ) : null}
+
+            <View className="gap-gutter">
+              <ChildTasksSection
+                tasks={activeTasks}
+                onSubmit={handleSubmitTask}
+                onPressAll={() => openSoon('Задания')}
+              />
+              <FinanceAcademyCard onPress={() => openSoon('Фин-академия')} />
+            </View>
           </View>
-
-          {child ? <ChildBalanceCard child={child} /> : null}
-
-          <ChildQuickActions actions={childQuickActions} onPress={openQuickAction} />
-
-          {activePiggyBank ? (
-            <ChildGoalCard
-              goal={toSavingsGoal(activePiggyBank)}
-              onAddMoney={() => openSoon('Пополнение цели')}
-            />
-          ) : null}
-
-          <View className="gap-gutter">
-            <ChildTasksSection
-              tasks={activeTasks}
-              onSubmit={handleSubmitTask}
-              onPressAll={() => openSoon('Задания')}
-            />
-            <FinanceAcademyCard onPress={() => openSoon('Фин-академия')} />
-          </View>
-        </View>
+        )}
       </ScrollView>
 
-      <BottomNav
-        activeTab="family"
-        onPress={(tab) => {
-          if (tab.key === 'profile') {
-            router.push('/profile');
-          } else if (tab.key !== 'family') {
-            openSoon(tab.label);
-          }
-        }}
-      />
+      {isTeen ? (
+        <TeenBottomNav
+          activeTab="home"
+          onPress={(tab) => {
+            if (tab.key === 'profile') {
+              router.push('/profile');
+            } else if (tab.key !== 'home') {
+              openSoon(tab.label);
+            }
+          }}
+        />
+      ) : (
+        <BottomNav
+          activeTab="family"
+          onPress={(tab) => {
+            if (tab.key === 'profile') {
+              router.push('/profile');
+            } else if (tab.key !== 'family') {
+              openSoon(tab.label);
+            }
+          }}
+        />
+      )}
     </View>
   );
 }
