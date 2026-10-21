@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/button';
@@ -11,12 +10,11 @@ import { formatBYN, pluralize } from '@/utils/format';
 
 type ChildTasksSectionProps = {
   tasks: Task[];
+  onSubmit: (taskId: string) => void;
   onPressAll: () => void;
 };
 
-export function ChildTasksSection({ tasks, onPressAll }: ChildTasksSectionProps) {
-  const [submitted, setSubmitted] = useState<Record<string, boolean>>({});
-
+export function ChildTasksSection({ tasks, onSubmit, onPressAll }: ChildTasksSectionProps) {
   return (
     <View className="gap-gutter">
       <SectionHeader
@@ -25,19 +23,22 @@ export function ChildTasksSection({ tasks, onPressAll }: ChildTasksSectionProps)
         onAction={onPressAll}
       />
 
-      {tasks.map((task) => (
-        <TaskCard
-          key={task.id}
-          task={task}
-          submitted={Boolean(submitted[task.id])}
-          onSubmit={() =>
-            setSubmitted((current) => ({
-              ...current,
-              [task.id]: true,
-            }))
-          }
-        />
-      ))}
+      {tasks.length === 0 ? (
+        <Card className="p-margin">
+          <Text className="text-center text-body-sm font-inter text-on-surface-variant">
+            Активных заданий нет
+          </Text>
+        </Card>
+      ) : (
+        tasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+            submitted={task.status === 'submitted'}
+            onSubmit={() => onSubmit(task.id)}
+          />
+        ))
+      )}
     </View>
   );
 }
@@ -89,7 +90,7 @@ function TaskCard({ task, submitted, onSubmit }: TaskCardProps) {
       <View className="flex-row justify-end pt-2">
         {submitted ? (
           <Button
-            label="На проверке у мамы"
+            label="На проверке у родителей"
             icon="hourglass-top"
             variant="secondary"
             className="rounded-xl px-4"

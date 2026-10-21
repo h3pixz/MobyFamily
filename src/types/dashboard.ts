@@ -2,7 +2,7 @@ import type { IconName } from '@/types/icons';
 
 export type AppRole = 'parent' | 'child';
 
-export type TaskStatus = 'pending' | 'in_progress';
+export type TaskStatus = 'pending' | 'in_progress' | 'submitted';
 
 export type Reward = { kind: 'money'; amount: number } | { kind: 'points'; amount: number };
 

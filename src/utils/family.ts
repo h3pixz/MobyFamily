@@ -1,6 +1,8 @@
 import type { ChildUserWithCardsDto } from '@/api/gen/models/ChildUserWithCardsDto';
+import type { PiggyBankResponseDto } from '@/api/gen/models/PiggyBankResponseDto';
+import type { TaskResponseDto } from '@/api/gen/models/TaskResponseDto';
 import { childProfile as demoChildProfile } from '@/data/dashboard';
-import type { ChildProfile, FamilyMember } from '@/types/dashboard';
+import type { ChildProfile, FamilyMember, SavingsGoal, Task } from '@/types/dashboard';
 import { getFirstName } from '@/utils/greeting';
 
 export function getAge(birthDay: string) {
@@ -52,6 +54,51 @@ export function toChildProfile(child: ChildUserWithCardsDto): ChildProfile {
     purchaseBalance: card?.balance ?? 0,
     dailyLimit: card?.dailyLimit ?? demoChildProfile.dailyLimit,
     dailySpent: card?.spentToday ?? 0,
+  };
+}
+
+export function toChildTasks(tasks: TaskResponseDto[]): Task[] {
+  return tasks
+    .filter(
+      (task) =>
+        task.status === 'OPEN' || task.status === 'IN_PROGRESS' || task.status === 'SUBMITTED',
+    )
+    .map((task): Task => {
+      const parentName = getFirstName(task.creator?.name);
+
+      return {
+        id: task.id,
+        title: task.title,
+        subtitle: typeof task.description === 'string' ? task.description : '',
+        from: parentName ? `Задание от ${getGenitiveName(parentName)}` : 'Задание от родителей',
+        icon: 'assignment',
+        reward: { kind: 'money', amount: task.rewardAmount },
+        status:
+          task.status === 'SUBMITTED'
+            ? 'submitted'
+            : task.status === 'IN_PROGRESS'
+              ? 'in_progress'
+              : 'pending',
+      };
+    });
+}
+
+export function toSavingsGoal(piggyBank: PiggyBankResponseDto): SavingsGoal {
+  const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const weeklyDelta = piggyBank.contributions
+    .filter((contribution) => new Date(contribution.createdAt).getTime() >= weekAgo)
+    .reduce((sum, contribution) => sum + contribution.amount, 0);
+
+  return {
+    id: piggyBank.id,
+    title: piggyBank.title,
+    subtitle: typeof piggyBank.description === 'string' ? piggyBank.description : 'Копилка мечты',
+    icon: 'savings',
+    deadline: '',
+    saved: piggyBank.currentAmount,
+    target: piggyBank.targetAmount,
+    weeklyDelta,
+    monthsLeft: 0,
   };
 }
 
