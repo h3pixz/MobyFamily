@@ -1,1 +1,5039 @@
-{"openapi":"3.0.0","paths":{"/":{"get":{"operationId":"AppController_getHello","parameters":[],"responses":{"200":{"description":"Успешный ответ сервиса","content":{"application/json":{"schema":{"type":"string"}}}}},"summary":"Healthcheck / Приветствие","tags":["system"]}},"/auth/register":{"post":{"operationId":"AuthController_register","parameters":[],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/RegisterDto"}}}},"responses":{"201":{"description":"Успешная регистрация","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AuthResponseDto"}}}}},"summary":"Регистрация нового пользователя","tags":["auth"]}},"/auth/login":{"post":{"operationId":"AuthController_login","parameters":[],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/LoginDto"}}}},"responses":{"200":{"description":"Успешная авторизация","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AuthResponseDto"}}}}},"summary":"Вход в аккаунт по номеру телефона и паролю","tags":["auth"]}},"/auth/refresh":{"post":{"operationId":"AuthController_refresh","parameters":[],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/RefreshTokenDto"}}}},"responses":{"200":{"description":"Токены успешно обновлены","content":{"application/json":{"schema":{"$ref":"#/components/schemas/TokensResponseDto"}}}}},"summary":"Обновление пары токенов по refreshToken","tags":["auth"]}},"/auth/logout":{"post":{"operationId":"AuthController_logout","parameters":[],"responses":{"200":{"description":"Успешный выход","content":{"application/json":{"schema":{"$ref":"#/components/schemas/LogoutResponseDto"}}}}},"security":[{"bearer":[]}],"summary":"Выход из аккаунта (аннулирование refresh-токена)","tags":["auth"]}},"/auth/me":{"get":{"operationId":"AuthController_getProfile","parameters":[],"responses":{"200":{"description":"Данные профиля из токена","content":{"application/json":{"schema":{"$ref":"#/components/schemas/UserProfileDto"}}}}},"security":[{"bearer":[]}],"summary":"Получить профиль текущего авторизованного пользователя","tags":["auth"]}},"/passport":{"post":{"operationId":"PassportController_recognize","parameters":[],"requestBody":{"required":true,"description":"Файл изображения паспорта","content":{"multipart/form-data":{"schema":{"type":"object","properties":{"file":{"type":"string","format":"binary"}},"required":["file"]}}}},"responses":{"200":{"description":"Данные паспорта успешно распознаны","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PassportRecognizeResponseDto"}}}}},"summary":"Распознавание паспорта по фото через OCR","tags":["passport"]}},"/payments/qr":{"post":{"description":"Проверяет категорию товаров, возраст ребенка и суточный лимит. При превышении отправляет на аппрув родителям.","operationId":"PaymentsController_payByQr","parameters":[],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/PayQrDto"}}}},"responses":{"200":{"description":"Результат оплаты","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PayQrResponseDto"}}}}},"security":[{"bearer":[]}],"summary":"Оплата по QR-коду с проверкой 18+ и дневных лимитов","tags":["payments"]}},"/payments/transfer-requests":{"post":{"description":"Ребенок указывает сумму, карту для зачисления и комментарий (зачем нужны деньги: на кино, обед, книги и т.д.). Запрос становится доступен всем привязанным родителям.","operationId":"PaymentsController_createTransferRequest","parameters":[],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/CreateTransferRequestDto"}}}},"responses":{"201":{"description":"Запрос на перевод успешно создан","content":{"application/json":{"schema":{"$ref":"#/components/schemas/CreateTransferRequestResponseDto"}}}}},"security":[{"bearer":[]}],"summary":"Запрос ребенка на перевод денег у родителей","tags":["payments"]},"get":{"description":"Если авторизован ребенок — возвращает его созданные запросы со статусами. Если родитель — возвращает запросы всех его детей.","operationId":"PaymentsController_getTransferRequests","parameters":[],"responses":{"200":{"description":"Список запросов на перевод","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/TransferRequestListItemDto"}}}}}},"security":[{"bearer":[]}],"summary":"Получить список запросов на перевод денег","tags":["payments"]}},"/payments/transfer-requests/{id}/approve":{"post":{"description":"Родитель подтверждает перевод. Деньги атомарно списываются с карты родителя и зачисляются на карту ребенка, создаются истории транзакций.","operationId":"PaymentsController_approveTransferRequest","parameters":[{"name":"id","required":true,"in":"path","description":"ID запроса на перевод","schema":{"type":"string"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ApproveTransferRequestDto"}}}},"responses":{"200":{"description":"Перевод успешно выполнен","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ApproveTransferRequestResponseDto"}}}}},"security":[{"bearer":[]}],"summary":"Одобрить перевод денег ребенку (для родителей)","tags":["payments"]}},"/payments/transfer-requests/{id}/decline":{"post":{"description":"Родитель отклоняет запрос с указанием причины (опционально).","operationId":"PaymentsController_declineTransferRequest","parameters":[{"name":"id","required":true,"in":"path","description":"ID запроса на перевод","schema":{"type":"string"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/DeclineTransferRequestDto"}}}},"responses":{"200":{"description":"Запрос отклонен","content":{"application/json":{"schema":{"$ref":"#/components/schemas/DeclineTransferRequestResponseDto"}}}}},"security":[{"bearer":[]}],"summary":"Отклонить запрос на перевод денег (для родителей)","tags":["payments"]}},"/users/family/children":{"post":{"description":"Создает аккаунт ребенка, выпускает виртуальную карту, назначает роль CHILD_7_13 или TEEN_14_17 в зависимости от возраста, а родителю выставляет роль PARENT.","operationId":"UsersController_addChild","parameters":[],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/AddChildDto"}}}},"responses":{"201":{"description":"Ребенок успешно зарегистрирован","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AddChildResponseDto"}}}}},"security":[{"bearer":[]}],"summary":"Регистрация и добавление нового ребенка в семью","tags":["users / family"]}},"/users/family/link":{"post":{"description":"Ищет ребенка по номеру телефона, распознает скан паспорта через OCR Tesseract, сравнивает имена из паспорта и профиля пользователя. При совпадении привязывает ребенка и выставляет соответствующие роли.","operationId":"UsersController_linkChild","parameters":[],"requestBody":{"required":true,"content":{"multipart/form-data":{"schema":{"type":"object","properties":{"phoneNumber":{"type":"string","example":"+375291234567"},"passport":{"type":"string","format":"binary","description":"Фото/скан разворота паспорта ребенка"}},"required":["phoneNumber"]}},"application/json":{"schema":{"type":"object","properties":{"phoneNumber":{"type":"string","example":"+375291234567"},"passport":{"type":"string","format":"binary","description":"Фото/скан разворота паспорта ребенка"}},"required":["phoneNumber"]}}}},"responses":{"200":{"description":"Ребенок успешно привязан после проверки паспорта","content":{"application/json":{"schema":{"$ref":"#/components/schemas/LinkChildResponseDto"}}}},"400":{"description":"Несовпадение имени в паспорте или невалидные данные"}},"security":[{"bearer":[]}],"summary":"Привязка существующего аккаунта ребенка по номеру телефона (со сканом паспорта)","tags":["users / family"]}},"/users/family":{"get":{"operationId":"UsersController_getFamily","parameters":[],"responses":{"200":{"description":"Информация о семье получена","content":{"application/json":{"schema":{"$ref":"#/components/schemas/FamilyResponseDto"}}}}},"security":[{"bearer":[]}],"summary":"Получить информацию о семье (родители, дети и их карты)","tags":["users / family"]}},"/users/family/children/{childId}":{"delete":{"description":"Родитель отвязывает ребенка от своего аккаунта. Если у родителя больше нет других детей, его роль возвращается в ORDINARY.","operationId":"UsersController_removeChild","parameters":[{"name":"childId","required":true,"in":"path","description":"ID ребенка","schema":{"type":"string"}}],"responses":{"200":{"description":"Ребенок успешно удален из семьи","content":{"application/json":{"schema":{"$ref":"#/components/schemas/DeleteFamilyMemberResponseDto"}}}}},"security":[{"bearer":[]}],"summary":"Удалить ребенка из семьи (для родителя)","tags":["users / family"]}},"/users/family/parents/{parentId}":{"delete":{"description":"Ребенок отвязывает конкретного родителя от своего профиля.","operationId":"UsersController_removeParent","parameters":[{"name":"parentId","required":true,"in":"path","description":"ID родителя","schema":{"type":"string"}}],"responses":{"200":{"description":"Родитель успешно отвязан","content":{"application/json":{"schema":{"$ref":"#/components/schemas/DeleteFamilyMemberResponseDto"}}}}},"security":[{"bearer":[]}],"summary":"Отвязать родителя (для ребенка)","tags":["users / family"]}},"/users/family/members/{memberId}":{"delete":{"description":"Автоматически определяет отношение между текущим пользователем и memberId (родитель-ребенок или ребенок-родитель) и удаляет связь.","operationId":"UsersController_removeFamilyMember","parameters":[{"name":"memberId","required":true,"in":"path","description":"ID удаляемого члена семьи","schema":{"type":"string"}}],"responses":{"200":{"description":"Член семьи успешно удален","content":{"application/json":{"schema":{"$ref":"#/components/schemas/DeleteFamilyMemberResponseDto"}}}}},"security":[{"bearer":[]}],"summary":"Универсальное удаление члена семьи (ребенка или родителя)","tags":["users / family"]}},"/users/family/cards/{cardId}/limits":{"patch":{"description":"Позволяет родителю задать суточный лимит расходов (в BYN) на покупки по карте ребенка, а также включить/отключить онлайн-платежи, снятие наличных или блокировку карты.","operationId":"UsersController_updateCardLimits","parameters":[{"name":"cardId","required":true,"in":"path","description":"ID карты ребенка","schema":{"type":"string"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/UpdateCardLimitsDto"}}}},"responses":{"200":{"description":"Лимиты карты успешно обновлены","content":{"application/json":{"schema":{"$ref":"#/components/schemas/UpdateCardLimitsResponseDto"}}}}},"security":[{"bearer":[]}],"summary":"Установить ежедневный лимит на покупки и параметры карты ребенка (для родителя)","tags":["users / family"]}},"/users/family/cards/{cardId}/reset-spent":{"post":{"description":"Обнуляет spentToday на карте ребенка, возвращая доступный остаток дневного лимита к полному значению dailyLimit.","operationId":"UsersController_resetSpentToday","parameters":[{"name":"cardId","required":true,"in":"path","description":"ID карты ребенка","schema":{"type":"string"}}],"responses":{"200":{"description":"Потраченная за сегодня сумма успешно сброшена","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ResetSpentTodayResponseDto"}}}}},"security":[{"bearer":[]}],"summary":"Сбросить потраченную за сегодня сумму по карте ребенка (для родителя)","tags":["users / family"]}}},"info":{"title":"MTBank Junior API","description":"Документация API для семейного банкинга МТБанк","version":"1.0","contact":{}},"tags":[],"servers":[],"components":{"securitySchemes":{"bearer":{"scheme":"bearer","bearerFormat":"JWT","type":"http"}},"schemas":{"RegisterDto":{"type":"object","properties":{"phoneNumber":{"type":"string","minLength":5},"password":{"type":"string","minLength":6},"name":{"type":"string","minLength":1},"birthDay":{"type":"string","format":"date","pattern":"^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"}},"required":["phoneNumber","password","name","birthDay"]},"UserSummaryDto":{"type":"object","properties":{"id":{"type":"string","example":"b3f5c71a-47d2-432a-bc91-382940294821"},"phoneNumber":{"type":"string","example":"+375291234567"},"name":{"type":"string","example":"Андрей Дрёмин"}},"required":["id","phoneNumber","name"]},"AuthResponseDto":{"type":"object","properties":{"user":{"$ref":"#/components/schemas/UserSummaryDto"},"accessToken":{"type":"string","example":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."},"refreshToken":{"type":"string","example":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}},"required":["user","accessToken","refreshToken"]},"LoginDto":{"type":"object","properties":{"phoneNumber":{"type":"string","minLength":5},"password":{"type":"string","minLength":1}},"required":["phoneNumber","password"]},"RefreshTokenDto":{"type":"object","properties":{"refreshToken":{"type":"string","minLength":1}},"required":["refreshToken"]},"TokensResponseDto":{"type":"object","properties":{"accessToken":{"type":"string","example":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."},"refreshToken":{"type":"string","example":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}},"required":["accessToken","refreshToken"]},"LogoutResponseDto":{"type":"object","properties":{"success":{"type":"boolean","example":true}},"required":["success"]},"UserProfileDto":{"type":"object","properties":{"sub":{"type":"string","example":"b3f5c71a-47d2-432a-bc91-382940294821"},"phoneNumber":{"type":"string","example":"+375291234567"},"role":{"type":"string","example":"PARENT"}},"required":["sub","phoneNumber","role"]},"PassportRecognizeResponseDto":{"type":"object","properties":{"lastName":{"type":"string","example":"DREMIN"},"firstName":{"type":"string","example":"ANDREW"},"middleName":{"type":"string","example":"SERGEEVICH"},"documentNumber":{"type":"string","example":"MC1234567"},"personalNumber":{"type":"string","example":"3010190A001PB1"},"birthDate":{"type":"string","example":"23.07.2008"},"expiryDate":{"type":"string","example":"23.07.2028"}}},"PayQrDto":{"type":"object","properties":{"merchant":{"type":"string","minLength":1},"cardId":{"type":"string"},"items":{"minItems":1,"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"mcc":{"type":"string","description":"MCC - Merchant Category Code"},"amount":{"type":"number","minimum":0.01}},"required":["mcc","amount"]}},"mcc":{"type":"string"},"amount":{"type":"number","minimum":0.01}},"required":["merchant"]},"TransactionItemDto":{"type":"object","properties":{"id":{"type":"string","example":"b3f5c71a-47d2-432a-bc91-382940294821"},"amount":{"type":"number","example":12.5},"merchant":{"type":"string","example":"Школьная столовая"},"category":{"type":"string","example":"FOOD"},"status":{"type":"string","example":"SUCCESS"},"createdAt":{"format":"date-time","type":"string","example":"2026-10-21T00:30:00.000Z"}},"required":["id","amount","merchant","category","status","createdAt"]},"PayQrResponseDto":{"type":"object","properties":{"status":{"type":"string","example":"SUCCESS"},"message":{"type":"string","example":"Оплата прошла успешно!"},"totalAmount":{"type":"number","example":12.5},"newBalance":{"type":"number","example":87.5},"spentToday":{"type":"number","example":12.5},"dailyLimit":{"type":"number","example":25},"transactions":{"type":"array","items":{"$ref":"#/components/schemas/TransactionItemDto"}}},"required":["status","message","totalAmount","newBalance","spentToday","dailyLimit","transactions"]},"CreateTransferRequestDto":{"type":"object","properties":{"amount":{"type":"number","minimum":0.01},"cardId":{"type":"string","minLength":1},"comment":{"type":"string","minLength":1,"maxLength":500}},"required":["amount","cardId","comment"]},"TransferRequestCardDto":{"type":"object","properties":{"id":{"type":"string","example":"b3f5c71a-47d2-432a-bc91-382940294821"},"cardNumberMask":{"type":"string","example":"4258 •••• •••• 1234"},"cardholderName":{"type":"string","example":"ИВАН ДРЁМИН"},"type":{"type":"string","example":"VIRTUAL"},"balance":{"type":"number","example":50}},"required":["id","cardNumberMask"]},"TransferRequestCreatedItemDto":{"type":"object","properties":{"id":{"type":"string","example":"b3f5c71a-47d2-432a-bc91-382940294821"},"amount":{"type":"number","example":15},"comment":{"type":"string","example":"На обед в столовой"},"status":{"type":"string","example":"PENDING"},"createdAt":{"format":"date-time","type":"string","example":"2026-10-21T00:30:00.000Z"},"card":{"$ref":"#/components/schemas/TransferRequestCardDto"}},"required":["id","amount","comment","status","createdAt","card"]},"CreateTransferRequestResponseDto":{"type":"object","properties":{"message":{"type":"string","example":"Запрос на перевод денег успешно отправлен родителям"},"transferRequest":{"$ref":"#/components/schemas/TransferRequestCreatedItemDto"}},"required":["message","transferRequest"]},"TransferRequestUserShortDto":{"type":"object","properties":{"id":{"type":"string","example":"b3f5c71a-47d2-432a-bc91-382940294821"},"name":{"type":"string","example":"Иван"},"phoneNumber":{"type":"string","example":"+375291234567"}},"required":["id","name"]},"TransferRequestListItemDto":{"type":"object","properties":{"id":{"type":"string","example":"b3f5c71a-47d2-432a-bc91-382940294821"},"amount":{"type":"number","example":15},"comment":{"type":"string","example":"На обед в столовой"},"status":{"type":"string","example":"PENDING"},"declineReason":{"type":"object","example":"Недостаточно средств","nullable":true},"createdAt":{"format":"date-time","type":"string","example":"2026-10-21T00:30:00.000Z"},"updatedAt":{"format":"date-time","type":"string","example":"2026-10-21T00:30:00.000Z"},"child":{"$ref":"#/components/schemas/TransferRequestUserShortDto"},"card":{"$ref":"#/components/schemas/TransferRequestCardDto"},"resolvedBy":{"nullable":true,"type":"object","allOf":[{"$ref":"#/components/schemas/TransferRequestUserShortDto"}]}},"required":["id","amount","comment","status","createdAt","updatedAt","card"]},"ApproveTransferRequestDto":{"type":"object","properties":{"parentCardId":{"description":"ID карты родителя для списания (если не указана, выберется автоматически)","type":"string"}}},"TransferRequestResolvedItemDto":{"type":"object","properties":{"id":{"type":"string","example":"b3f5c71a-47d2-432a-bc91-382940294821"},"amount":{"type":"number","example":15},"comment":{"type":"string","example":"На обед в столовой"},"status":{"type":"string","example":"APPROVED"},"declineReason":{"type":"string"},"child":{"$ref":"#/components/schemas/TransferRequestUserShortDto"},"card":{"$ref":"#/components/schemas/TransferRequestCardDto"},"parentCardBalance":{"type":"number","example":250},"resolvedBy":{"nullable":true,"type":"object","allOf":[{"$ref":"#/components/schemas/TransferRequestUserShortDto"}]}},"required":["id","amount","comment","status","card"]},"ApproveTransferRequestResponseDto":{"type":"object","properties":{"message":{"type":"string","example":"Перевод успешно отправлен ребенку"},"transferRequest":{"$ref":"#/components/schemas/TransferRequestResolvedItemDto"}},"required":["message","transferRequest"]},"DeclineTransferRequestDto":{"type":"object","properties":{"reason":{"description":"Причина отклонения запроса","type":"string"}}},"DeclineTransferRequestResponseDto":{"type":"object","properties":{"message":{"type":"string","example":"Запрос на перевод отклонен"},"transferRequest":{"$ref":"#/components/schemas/TransferRequestResolvedItemDto"}},"required":["message","transferRequest"]},"AddChildDto":{"type":"object","properties":{"phoneNumber":{"type":"string","minLength":5},"password":{"type":"string","minLength":6},"name":{"type":"string","minLength":1},"birthDay":{"type":"string","format":"date","pattern":"^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"},"initialBalance":{"default":0,"type":"number","minimum":0},"dailyLimit":{"default":15,"type":"number","minimum":0}},"required":["phoneNumber","password","name","birthDay"]},"CardDto":{"type":"object","properties":{"id":{"type":"string","example":"b3f5c71a-47d2-432a-bc91-382940294821"},"cardNumberMask":{"type":"string","example":"4258 •••• •••• 1234"},"cardholderName":{"type":"string","example":"ИВАН ДРЁМИН"},"expiryDate":{"type":"string","example":"10/29"},"type":{"type":"string","example":"VIRTUAL"},"balance":{"type":"number","example":100},"isBlocked":{"type":"boolean","example":false},"dailyLimit":{"type":"number","example":25},"spentToday":{"type":"number","example":0},"allowOnlinePurchases":{"type":"boolean","example":true},"allowCashWithdrawal":{"type":"boolean","example":false}},"required":["id","cardNumberMask","cardholderName","expiryDate","type","balance","isBlocked","dailyLimit","spentToday","allowOnlinePurchases","allowCashWithdrawal"]},"ChildUserWithCardsDto":{"type":"object","properties":{"id":{"type":"string","example":"b3f5c71a-47d2-432a-bc91-382940294821"},"name":{"type":"string","example":"Иван"},"phoneNumber":{"type":"string","example":"+375291234567"},"birthDay":{"format":"date-time","type":"string","example":"2012-05-10T00:00:00.000Z"},"role":{"type":"string","example":"CHILD_7_13"},"cards":{"type":"array","items":{"$ref":"#/components/schemas/CardDto"}}},"required":["id","name","phoneNumber","birthDay","role","cards"]},"AddChildResponseDto":{"type":"object","properties":{"message":{"type":"string","example":"Ребенок успешно зарегистрирован и привязан к семье"},"parentRole":{"type":"string","example":"PARENT"},"child":{"$ref":"#/components/schemas/ChildUserWithCardsDto"}},"required":["message","parentRole","child"]},"LinkChildSummaryDto":{"type":"object","properties":{"id":{"type":"string","example":"b3f5c71a-47d2-432a-bc91-382940294821"},"name":{"type":"string","example":"Иван"},"phoneNumber":{"type":"string","example":"+375291234567"},"birthDay":{"format":"date-time","type":"string","example":"2012-05-10T00:00:00.000Z"},"role":{"type":"string","example":"CHILD_7_13"}},"required":["id","name","phoneNumber","birthDay","role"]},"LinkChildResponseDto":{"type":"object","properties":{"message":{"type":"string","example":"Член семьи успешно привязан"},"parentRole":{"type":"string","example":"PARENT"},"child":{"$ref":"#/components/schemas/LinkChildSummaryDto"},"passportVerification":{"type":"object","nullable":true}},"required":["message","parentRole","child"]},"ParentSummaryDto":{"type":"object","properties":{"id":{"type":"string","example":"b3f5c71a-47d2-432a-bc91-382940294821"},"name":{"type":"string","example":"Андрей Дрёмин"},"phoneNumber":{"type":"string","example":"+375291112233"},"role":{"type":"string","example":"PARENT"}},"required":["id","name","phoneNumber","role"]},"FamilyMemberUserDto":{"type":"object","properties":{"id":{"type":"string","example":"b3f5c71a-47d2-432a-bc91-382940294821"},"name":{"type":"string","example":"Иван"},"phoneNumber":{"type":"string","example":"+375291234567"},"birthDay":{"format":"date-time","type":"string","example":"2012-05-10T00:00:00.000Z"},"role":{"type":"string","example":"CHILD_7_13"},"parents":{"type":"array","items":{"$ref":"#/components/schemas/ParentSummaryDto"}},"cards":{"type":"array","items":{"$ref":"#/components/schemas/CardDto"}}},"required":["id","name","phoneNumber","birthDay","role","parents","cards"]},"FamilyResponseDto":{"type":"object","properties":{"user":{"$ref":"#/components/schemas/FamilyMemberUserDto"},"children":{"type":"array","items":{"$ref":"#/components/schemas/ChildUserWithCardsDto"}}},"required":["user","children"]},"DeleteFamilyMemberResponseDto":{"type":"object","properties":{"message":{"type":"string","example":"Ребенок успешно удален из семьи"},"childId":{"type":"string","example":"b3f5c71a-47d2-432a-bc91-382940294821"},"parentId":{"type":"string","example":"b3f5c71a-47d2-432a-bc91-382940294821"}},"required":["message"]},"UpdateCardLimitsDto":{"type":"object","properties":{"dailyLimit":{"type":"number","minimum":0,"description":"Ежедневный лимит на сумму покупок в BYN"},"allowOnlinePurchases":{"description":"Разрешить онлайн-покупки","type":"boolean"},"allowCashWithdrawal":{"description":"Разрешить снятие наличных","type":"boolean"},"isBlocked":{"description":"Заблокировать / разблокировать карту","type":"boolean"}},"required":["dailyLimit"]},"CardLimitsDetailsDto":{"type":"object","properties":{"id":{"type":"string","example":"b3f5c71a-47d2-432a-bc91-382940294821"},"cardNumberMask":{"type":"string","example":"4258 •••• •••• 1234"},"cardholderName":{"type":"string","example":"ИВАН ДРЁМИН"},"childName":{"type":"string","example":"Иван"},"type":{"type":"string","example":"VIRTUAL"},"balance":{"type":"number","example":45},"dailyLimit":{"type":"number","example":25},"spentToday":{"type":"number","example":10},"remainingDailyLimit":{"type":"number","example":15},"allowOnlinePurchases":{"type":"boolean","example":true},"allowCashWithdrawal":{"type":"boolean","example":false},"isBlocked":{"type":"boolean","example":false}},"required":["id","cardNumberMask","cardholderName","childName","type","balance","dailyLimit","spentToday","remainingDailyLimit","allowOnlinePurchases","allowCashWithdrawal","isBlocked"]},"UpdateCardLimitsResponseDto":{"type":"object","properties":{"message":{"type":"string","example":"Лимит для карты ребенка Иван успешно обновлен"},"card":{"$ref":"#/components/schemas/CardLimitsDetailsDto"}},"required":["message","card"]},"ResetSpentTodayDetailsDto":{"type":"object","properties":{"id":{"type":"string","example":"b3f5c71a-47d2-432a-bc91-382940294821"},"cardNumberMask":{"type":"string","example":"4258 •••• •••• 1234"},"dailyLimit":{"type":"number","example":25},"spentToday":{"type":"number","example":0},"remainingDailyLimit":{"type":"number","example":25}},"required":["id","cardNumberMask","dailyLimit","spentToday","remainingDailyLimit"]},"ResetSpentTodayResponseDto":{"type":"object","properties":{"message":{"type":"string","example":"Потраченная сумма за сегодня для карты Иван сброшена"},"card":{"$ref":"#/components/schemas/ResetSpentTodayDetailsDto"}},"required":["message","card"]}}}}
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Успешный ответ сервиса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Healthcheck / Приветствие",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Успешная регистрация",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Регистрация нового пользователя",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешная авторизация",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Вход в аккаунт по номеру телефона и паролю",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Токены успешно обновлены",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokensResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Обновление пары токенов по refreshToken",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Успешный выход",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoutResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Выход из аккаунта (аннулирование refresh-токена)",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "operationId": "AuthController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Данные профиля из базы данных с балансом Мобиков",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Получить профиль текущего авторизованного пользователя",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/passport": {
+      "post": {
+        "operationId": "PassportController_recognize",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Файл изображения паспорта",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Данные паспорта успешно распознаны",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PassportRecognizeResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Распознавание паспорта по фото через OCR",
+        "tags": [
+          "passport"
+        ]
+      }
+    },
+    "/payments/qr": {
+      "post": {
+        "description": "Проверяет категорию товаров, возраст ребенка и суточный лимит. При превышении отправляет на аппрув родителям.",
+        "operationId": "PaymentsController_payByQr",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PayQrDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Результат оплаты",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayQrResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Оплата по QR-коду с проверкой 18+ и дневных лимитов",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/payments/transfer-requests": {
+      "post": {
+        "description": "Ребенок указывает сумму, карту для зачисления и комментарий (зачем нужны деньги: на кино, обед, книги и т.д.). Запрос становится доступен всем привязанным родителям.",
+        "operationId": "PaymentsController_createTransferRequest",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTransferRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Запрос на перевод успешно создан",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateTransferRequestResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Запрос ребенка на перевод денег у родителей",
+        "tags": [
+          "payments"
+        ]
+      },
+      "get": {
+        "description": "Если авторизован ребенок — возвращает его созданные запросы со статусами. Если родитель — возвращает запросы всех его детей.",
+        "operationId": "PaymentsController_getTransferRequests",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Список запросов на перевод",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TransferRequestListItemDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Получить список запросов на перевод денег",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/payments/transfer-requests/{id}/approve": {
+      "post": {
+        "description": "Родитель подтверждает перевод. Деньги атомарно списываются с карты родителя и зачисляются на карту ребенка, создаются истории транзакций.",
+        "operationId": "PaymentsController_approveTransferRequest",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID запроса на перевод",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproveTransferRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Перевод успешно выполнен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApproveTransferRequestResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Одобрить перевод денег ребенку (для родителей)",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/payments/transfer-requests/{id}/decline": {
+      "post": {
+        "description": "Родитель отклоняет запрос с указанием причины (опционально).",
+        "operationId": "PaymentsController_declineTransferRequest",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID запроса на перевод",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeclineTransferRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Запрос отклонен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeclineTransferRequestResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Отклонить запрос на перевод денег (для родителей)",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/payments/transfer/to-child": {
+      "post": {
+        "description": "Родитель мгновенно переводит средства со своей карты на карту ребенка без предварительного запроса со стороны ребенка. Средства атомарно списываются с карты родителя и зачисляются ребенку. Создается история транзакций и отправляется WebSocket-уведомление ребенку.",
+        "operationId": "PaymentsController_transferToChild",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParentToChildTransferDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Деньги успешно переведены ребенку",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParentToChildTransferResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Прямой перевод денег ребенку от родителя",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/payments/transfer/by-phone": {
+      "post": {
+        "description": "Быстрый перевод денег другу или родственнику по номеру телефона (+375...). Списание с карты отправителя, зачисление на карту получателя, создание транзакций и отправка пуш-уведомления через WebSockets.",
+        "operationId": "PaymentsController_transferByPhone",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P2pTransferByPhoneDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Перевод успешно выполнен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P2pTransferResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Недостаточно средств или перевод самому себе"
+          },
+          "404": {
+            "description": "Получатель с таким номером телефона не найден"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "P2P-перевод денег по номеру телефона (для подростков и взрослых)",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/payments/transactions": {
+      "get": {
+        "description": "Возвращает историю платежей и списаний текущего пользователя с фильтрацией.",
+        "operationId": "PaymentsController_getMyTransactions",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Количество записей",
+            "schema": {
+              "example": 50,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "description": "Смещение",
+            "schema": {
+              "example": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "cardId",
+            "required": false,
+            "in": "query",
+            "description": "Фильтр по карте",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "description": "Фильтр по категории трат",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "История личных транзакций",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberTransactionsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "История собственных транзакций текущего пользователя",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/payments/transactions/members/{memberId}": {
+      "get": {
+        "description": "Позволяет просматривать расходы и операции конкретного члена семьи. Родитель может смотреть транзакции своего ребенка или второго родителя; ребенок может смотреть операции в рамках своей семьи.",
+        "operationId": "PaymentsController_getMemberTransactions",
+        "parameters": [
+          {
+            "name": "memberId",
+            "required": true,
+            "in": "path",
+            "description": "ID члена семьи (ребенка или другого родителя)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Количество записей",
+            "schema": {
+              "example": 50,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "description": "Смещение",
+            "schema": {
+              "example": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "cardId",
+            "required": false,
+            "in": "query",
+            "description": "Фильтр по карте",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "description": "Фильтр по категории трат",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "История транзакций выбранного члена семьи",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberTransactionsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "История транзакций члена семьи (ребенка или другого родителя)",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/payments/family/transactions": {
+      "get": {
+        "description": "Сводная лента расходов всех членов семьи в хронологическом порядке с указанием того, кто совершил покупку, суммы и магазина.",
+        "operationId": "PaymentsController_getFamilyTransactions",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Количество записей",
+            "schema": {
+              "example": 50,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "description": "Смещение",
+            "schema": {
+              "example": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "description": "Фильтр по категории трат",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Общая семейная лента транзакций",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyTransactionsFeedResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Общая лента транзакций всей семьи (все дети и родители)",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/notifications": {
+      "get": {
+        "description": "Возвращает список уведомлений для текущего авторизованного пользователя с деталями (кто из детей совершил покупку, магазин, сумма, категория, статус прочтения).",
+        "operationId": "NotificationsController_getNotifications",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Список уведомлений",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Получить историю уведомлений родителя (покупки 18+, ночные покупки, лимиты)",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/notifications/unread-count": {
+      "get": {
+        "description": "Позволяет мобильному приложению отобразить красный бейдж со счетчиком новых уведомлений.",
+        "operationId": "NotificationsController_getUnreadCount",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Количество непрочитанных уведомлений",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnreadCountResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Количество непрочитанных уведомлений",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/notifications/{id}/read": {
+      "patch": {
+        "operationId": "NotificationsController_markAsRead",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID уведомления",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Уведомление отмечено как прочитанное",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarkAsReadResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Отметить конкретное уведомление как прочитанное",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/notifications/read-all": {
+      "patch": {
+        "operationId": "NotificationsController_markAllAsRead",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Все уведомления отмечены как прочитанные",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarkAsReadResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Отметить все уведомления пользователя как прочитанные",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/users/family/children": {
+      "post": {
+        "description": "Создает аккаунт ребенка, выпускает виртуальную карту, назначает роль CHILD_7_13 или TEEN_14_17 в зависимости от возраста, а родителю выставляет роль PARENT.",
+        "operationId": "UsersController_addChild",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddChildDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ребенок успешно зарегистрирован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddChildResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Регистрация и добавление нового ребенка в семью",
+        "tags": [
+          "users / family"
+        ]
+      }
+    },
+    "/users/family/link": {
+      "post": {
+        "description": "Ищет ребенка по номеру телефона, распознает скан паспорта через OCR Tesseract, сравнивает имена из паспорта и профиля пользователя. При совпадении привязывает ребенка и выставляет соответствующие роли.",
+        "operationId": "UsersController_linkChild",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phoneNumber": {
+                    "type": "string",
+                    "example": "+375291234567"
+                  },
+                  "passport": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Фото/скан разворота паспорта ребенка"
+                  }
+                },
+                "required": [
+                  "phoneNumber"
+                ]
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phoneNumber": {
+                    "type": "string",
+                    "example": "+375291234567"
+                  },
+                  "passport": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Фото/скан разворота паспорта ребенка"
+                  }
+                },
+                "required": [
+                  "phoneNumber"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ребенок успешно привязан после проверки паспорта",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkChildResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Несовпадение имени в паспорте или невалидные данные"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Привязка существующего аккаунта ребенка по номеру телефона (со сканом паспорта)",
+        "tags": [
+          "users / family"
+        ]
+      }
+    },
+    "/users/family": {
+      "get": {
+        "operationId": "UsersController_getFamily",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Информация о семье получена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Получить информацию о семье (родители, дети и их карты)",
+        "tags": [
+          "users / family"
+        ]
+      }
+    },
+    "/users/family/children/{childId}": {
+      "delete": {
+        "description": "Родитель отвязывает ребенка от своего аккаунта. Если у родителя больше нет других детей, его роль возвращается в ORDINARY.",
+        "operationId": "UsersController_removeChild",
+        "parameters": [
+          {
+            "name": "childId",
+            "required": true,
+            "in": "path",
+            "description": "ID ребенка",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ребенок успешно удален из семьи",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteFamilyMemberResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Удалить ребенка из семьи (для родителя)",
+        "tags": [
+          "users / family"
+        ]
+      }
+    },
+    "/users/family/children/{childId}/transfer": {
+      "post": {
+        "description": "Родитель мгновенно отправляет деньги на карту ребенка. Сумма списывается с карты родителя и зачисляется ребенку, создается история и отправляется уведомление ребенку.",
+        "operationId": "UsersController_transferToChild",
+        "parameters": [
+          {
+            "name": "childId",
+            "required": true,
+            "in": "path",
+            "description": "ID ребенка-получателя",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChildDirectTransferDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Деньги успешно переведены ребенку",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParentToChildTransferResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Перевести деньги ребенку от родителя (по ID ребенка в семье)",
+        "tags": [
+          "users / family"
+        ]
+      }
+    },
+    "/users/family/parents/{parentId}": {
+      "delete": {
+        "description": "Ребенок отвязывает конкретного родителя от своего профиля.",
+        "operationId": "UsersController_removeParent",
+        "parameters": [
+          {
+            "name": "parentId",
+            "required": true,
+            "in": "path",
+            "description": "ID родителя",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Родитель успешно отвязан",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteFamilyMemberResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Отвязать родителя (для ребенка)",
+        "tags": [
+          "users / family"
+        ]
+      }
+    },
+    "/users/family/members/{memberId}": {
+      "delete": {
+        "description": "Автоматически определяет отношение между текущим пользователем и memberId (родитель-ребенок или ребенок-родитель) и удаляет связь.",
+        "operationId": "UsersController_removeFamilyMember",
+        "parameters": [
+          {
+            "name": "memberId",
+            "required": true,
+            "in": "path",
+            "description": "ID удаляемого члена семьи",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Член семьи успешно удален",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteFamilyMemberResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Универсальное удаление члена семьи (ребенка или родителя)",
+        "tags": [
+          "users / family"
+        ]
+      }
+    },
+    "/users/family/cards/{cardId}/limits": {
+      "patch": {
+        "description": "Позволяет родителю задать суточный лимит расходов (в BYN) на покупки по карте ребенка, а также включить/отключить онлайн-платежи, снятие наличных или блокировку карты.",
+        "operationId": "UsersController_updateCardLimits",
+        "parameters": [
+          {
+            "name": "cardId",
+            "required": true,
+            "in": "path",
+            "description": "ID карты ребенка",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCardLimitsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Лимиты карты успешно обновлены",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateCardLimitsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Установить ежедневный лимит на покупки и параметры карты ребенка (для родителя)",
+        "tags": [
+          "users / family"
+        ]
+      }
+    },
+    "/users/family/cards/{cardId}/reset-spent": {
+      "post": {
+        "description": "Обнуляет spentToday на карте ребенка, возвращая доступный остаток дневного лимита к полному значению dailyLimit.",
+        "operationId": "UsersController_resetSpentToday",
+        "parameters": [
+          {
+            "name": "cardId",
+            "required": true,
+            "in": "path",
+            "description": "ID карты ребенка",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Потраченная за сегодня сумма успешно сброшена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResetSpentTodayResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Сбросить потраченную за сегодня сумму по карте ребенка (для родителя)",
+        "tags": [
+          "users / family"
+        ]
+      }
+    },
+    "/users/cards": {
+      "get": {
+        "description": "Возвращает все банковские карты текущего авторизованного пользователя (включая баланс, суточный лимит, потраченное за сегодня и остаток лимита). Если карт еще нет, автоматически выпускается виртуальная карта.",
+        "operationId": "UsersController_getMyCards",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Список карт текущего пользователя",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CardDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Получить список собственных карт (для ребенка или родителя)",
+        "tags": [
+          "users / family"
+        ]
+      }
+    },
+    "/users/cards/{cardId}": {
+      "get": {
+        "description": "Возвращает подробные данные карты и список последних транзакций. Доступно владельцу карты или родителю владельца.",
+        "operationId": "UsersController_getCardById",
+        "parameters": [
+          {
+            "name": "cardId",
+            "required": true,
+            "in": "path",
+            "description": "ID карты",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Детальная информация по карте",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Получить детальную информацию по карте (с историей транзакций)",
+        "tags": [
+          "users / family"
+        ]
+      }
+    },
+    "/users/me/graduation-status": {
+      "get": {
+        "description": "Возвращает финансовый паспорт подростка: количество закрытых копилок, выполненных заданий от родителей, баланс Мобиков, прогресс готовности к самостоятельному банкингу и список достижений.",
+        "operationId": "UsersController_getGraduationStatus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Статус готовности к самостоятельному взрослому банкингу",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraduationStatusResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Получить статус прохождения квеста совершеннолетия («Квест 17.5: Путь к 18 🚀»)",
+        "tags": [
+          "users / family"
+        ]
+      }
+    },
+    "/users/me/graduate": {
+      "post": {
+        "description": "Сценарий перехода во взрослый банкинг: отвязывает всех родителей, переводит роль пользователя в ORDINARY, снимает детские лимиты и ограничения по картам, сохраняя все счета, копилки, Мобики и историю операций.",
+        "operationId": "UsersController_graduate",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Успешный переход в статус независимого взрослого клиента",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraduateResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Пользователь уже является совершеннолетним клиентом"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Стать независимым пользователем банка (Переход 17 -> 18)",
+        "tags": [
+          "users / family"
+        ]
+      }
+    },
+    "/cards": {
+      "get": {
+        "description": "Возвращает все банковские карты текущего пользователя с балансом, суточными лимитами, потраченной суммой за день и остатком. Если у пользователя еще не было карт, автоматически создается виртуальная карта.",
+        "operationId": "CardsController_getMyCards",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Список собственных карт",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CardDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Получить список собственных карт (для ребенка или родителя)",
+        "tags": [
+          "cards"
+        ]
+      }
+    },
+    "/cards/{id}": {
+      "get": {
+        "description": "Возвращает подробные данные карты и список последних транзакций. Доступно владельцу карты или родителю ребенка.",
+        "operationId": "CardsController_getCardById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID карты",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Детали карты и последние транзакции",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Получить детальную информацию по карте (с историей транзакций)",
+        "tags": [
+          "cards"
+        ]
+      }
+    },
+    "/tasks": {
+      "post": {
+        "description": "Родитель создает задачу с вознаграждением в BYN. Деньги СРАЗУ списываются с карты родителя (эскроу). Если средств недостаточно — возвращается ошибка 400. Можно назначить конкретного ребенка или оставить задачу открытой для любого ребенка в семье.",
+        "operationId": "TasksController_createTask",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTaskDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Задача успешно создана, вознаграждение заблокировано",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateTaskResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Создать задачу для ребенка с денежным вознаграждением (для родителя)",
+        "tags": [
+          "tasks"
+        ]
+      },
+      "get": {
+        "description": "Если авторизован родитель — возвращает созданные им задачи. Если ребенок — возвращает задачи от его родителей, назначенные на него или открытые для всей семьи.",
+        "operationId": "TasksController_getTasks",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Фильтрация по статусу задачи (OPEN, IN_PROGRESS, SUBMITTED, COMPLETED, CANCELLED)",
+            "schema": {
+              "enum": [
+                "OPEN",
+                "IN_PROGRESS",
+                "SUBMITTED",
+                "COMPLETED",
+                "CANCELLED"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список задач",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TaskResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Получить список задач (для родителя или ребенка)",
+        "tags": [
+          "tasks"
+        ]
+      }
+    },
+    "/tasks/{id}": {
+      "get": {
+        "description": "Возвращает подробности задачи, включая исполнителя, статус, дедлайн и сумму.",
+        "operationId": "TasksController_getTaskById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID задачи",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Информация о задаче",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Получить детальную информацию по конкретной задаче",
+        "tags": [
+          "tasks"
+        ]
+      },
+      "patch": {
+        "description": "Позволяет родителю изменить текст, дедлайн или назначение ребенка. Если меняется сумма вознаграждения: при увеличении списывается доплата с карты, при уменьшении — разница сразу возвращается на карту родителя.",
+        "operationId": "TasksController_updateTask",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID задачи",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTaskDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Задача успешно обновлена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Редактировать задачу (контент, сумма вознаграждения, дедлайн, исполнитель)",
+        "tags": [
+          "tasks"
+        ]
+      }
+    },
+    "/tasks/request-new": {
+      "post": {
+        "description": "Ребенок отправляет родителям запрос на новое задание с опциональным комментарием (например: \"Хочу накопить на ноутбук, дайте задание!\"). Родители получают Push-уведомление через WebSockets.",
+        "operationId": "TasksController_requestNewTask",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestNewTaskDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Запрос на задание успешно отправлен родителям",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestNewTaskResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Доступно только детям с привязанными родителями"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Попросить новое задание у родителей (для ребенка)",
+        "tags": [
+          "tasks"
+        ]
+      }
+    },
+    "/tasks/{id}/submit": {
+      "post": {
+        "description": "Ребенок сообщает, что выполнил задачу, прикрепляет комментарий и указывает карту для зачисления. Статус переходит в SUBMITTED.",
+        "operationId": "TasksController_submitTask",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID задачи",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitTaskDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Отчет о выполнении отправлен родителю",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmitTaskResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Отправить отчет о выполнении задачи на проверку родителю (для ребенка)",
+        "tags": [
+          "tasks"
+        ]
+      }
+    },
+    "/tasks/{id}/approve": {
+      "post": {
+        "description": "Родитель подтверждает качественное выполнение задачи. Деньги (вознаграждение) автоматически перечисляются на карту ребенка, статус становится COMPLETED.",
+        "operationId": "TasksController_approveTask",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID задачи",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Выполнение подтверждено, вознаграждение выплачено ребенку",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApproveTaskResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Подтвердить выполнение задачи и выплатить вознаграждение (для родителя)",
+        "tags": [
+          "tasks"
+        ]
+      }
+    },
+    "/tasks/{id}/reject": {
+      "post": {
+        "description": "Если ребенок не доделал задачу, родитель указывает причину. Статус задачи возвращается в работу, чтобы ребенок мог исправить замечания.",
+        "operationId": "TasksController_rejectTask",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID задачи",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectTaskDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Задача отправлена ребенку на доработку",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RejectTaskResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Отклонить выполнение задачи / отправить на доработку (для родителя)",
+        "tags": [
+          "tasks"
+        ]
+      }
+    },
+    "/tasks/{id}/cancel": {
+      "post": {
+        "description": "Родитель отменяет задачу. Зарезервированная сумма вознаграждения сразу возвращается на банковскую карту родителя, статус становится CANCELLED.",
+        "operationId": "TasksController_cancelTask",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID задачи",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Задача отменена, деньги возвращены родителю",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancelTaskResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Отменить задачу родителем с возвратом зарезервированных денег",
+        "tags": [
+          "tasks"
+        ]
+      }
+    },
+    "/piggy-banks": {
+      "post": {
+        "description": "Ребенок открывает копилку на свою мечту (PlayStation, велосипед, кроссовки). Указывает целевую сумму и дату. Можно сразу внести стартовый взнос из карманных денег. Родители создать себе копилку не могут.",
+        "operationId": "PiggyBanksController_createPiggyBank",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePiggyBankDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Копилка успешно открыта",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePiggyBankResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Создать копилку / цель накопления (только для ребенка)",
+        "tags": [
+          "piggy-banks"
+        ]
+      },
+      "get": {
+        "description": "Если авторизован ребенок — возвращаются его личные копилки с прогрессом накопления. Если авторизован родитель — возвращаются копилки всех детей его семьи, чтобы родители могли видеть цели и пополнять их.",
+        "operationId": "PiggyBanksController_getPiggyBanks",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Список копилок с прогрессом накопления",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PiggyBankResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Получить список копилок (для ребенка или родителя)",
+        "tags": [
+          "piggy-banks"
+        ]
+      }
+    },
+    "/piggy-banks/{id}": {
+      "get": {
+        "description": "Возвращает подробности цели, процент прогресса, оставшуюся сумму и историю пополнений (кто из родственников сколько внес и с каким пожеланием).",
+        "operationId": "PiggyBanksController_getPiggyBankById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID копилки",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Детальные данные копилки",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PiggyBankResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Детальная информация о копилке (с историей пополнений от семьи)",
+        "tags": [
+          "piggy-banks"
+        ]
+      },
+      "patch": {
+        "description": "Ребенок может изменить название своей цели, описание, целевую сумму или желаемую дату достижения.",
+        "operationId": "PiggyBanksController_updatePiggyBank",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID копилки",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePiggyBankDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Параметры копилки обновлены",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PiggyBankResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Редактировать параметры копилки (для ребенка-владельца)",
+        "tags": [
+          "piggy-banks"
+        ]
+      },
+      "delete": {
+        "description": "Ребенок удаляет копилку. Если в ней оставались накопления, они автоматически зачисляются обратно на банковскую карту ребенка.",
+        "operationId": "PiggyBanksController_deletePiggyBank",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID копилки",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Копилка удалена, средства возвращены"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Удалить копилку (с возвратом оставшихся средств на карту ребенка)",
+        "tags": [
+          "piggy-banks"
+        ]
+      }
+    },
+    "/piggy-banks/{id}/top-up": {
+      "post": {
+        "description": "Позволяет внести деньги в копилку. Пополнить может сам ребенок со своей карты или любой член семьи (папа, мама, брат, сестра). Деньги списываются с банковской карты отправителя и пополняют баланс копилки.",
+        "operationId": "PiggyBanksController_topUpPiggyBank",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID копилки",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TopUpPiggyBankDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Копилка успешно пополнена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopUpPiggyBankResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Пополнить копилку ребенка (ребенок с карманных денег или любой член семьи)",
+        "tags": [
+          "piggy-banks"
+        ]
+      }
+    },
+    "/piggy-banks/{id}/withdraw": {
+      "post": {
+        "description": "Ребенок забирает накопленные средства. Вся накопленная сумма перечисляется на банковскую карту ребенка. Статус копилки переходит в COMPLETED (если цель достигнута) или BROKEN (досрочно разбита).",
+        "operationId": "PiggyBanksController_withdrawPiggyBank",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID копилки",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawPiggyBankDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Средства из копилки успешно выведены на карту",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithdrawPiggyBankResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Снять средства из копилки на банковскую карту / разбить копилку (для ребенка)",
+        "tags": [
+          "piggy-banks"
+        ]
+      }
+    },
+    "/loyalty/offers": {
+      "get": {
+        "description": "Возвращает текущий баланс Мобиков пользователя, каталог партнерских скидок и сертификатов (Додо Пицца, Яндекс Плюс, Silver Screen и др.), а также историю полученных промокодов.",
+        "operationId": "LoyaltyController_getOffers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Витрина акций и история наград",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoyaltyOffersResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Получить витрину акций партнеров, баланс Мобиков и купленные купоны",
+        "tags": [
+          "loyalty (Мобики и партнеры)"
+        ]
+      }
+    },
+    "/loyalty/offers/{offerId}/redeem": {
+      "post": {
+        "description": "Списывает стоимость акции в Мобиках с бонусного баланса пользователя, генерирует уникальный промокод и сохраняет в личные награды.",
+        "operationId": "LoyaltyController_redeemOffer",
+        "parameters": [
+          {
+            "name": "offerId",
+            "required": true,
+            "in": "path",
+            "description": "ID акции партнера (например dodo-pizza-promo)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Акция успешно приобретена за Мобики",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedeemOfferResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Недостаточно Мобиков на балансе"
+          },
+          "404": {
+            "description": "Акция не найдена"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Купить акцию / промокод партнера за Мобики",
+        "tags": [
+          "loyalty (Мобики и партнеры)"
+        ]
+      }
+    },
+    "/loyalty/cashback/categories": {
+      "get": {
+        "description": "Возвращает категории для выбора (Кафе, Книги, Игры, Транспорт, Маркетплейсы) с множителем x2 Мобиков и уже выбранные пользователем категории.",
+        "operationId": "LoyaltyController_getCashbackCategories",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Список категорий кэшбэка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CashbackCategoriesResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Получить доступные категории повышенного кэшбэка и текущий выбор",
+        "tags": [
+          "loyalty (Мобики и партнеры)"
+        ]
+      }
+    },
+    "/loyalty/cashback/select": {
+      "post": {
+        "description": "Сохраняет выбранные категории (максимум 2). При покупках в этих категориях пользователь будет получать x2 Мобиков за каждый потраченный рубль.",
+        "operationId": "LoyaltyController_selectCashbackCategories",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectCashbackCategoriesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Категории повышенного кэшбэка успешно выбраны",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SelectCashbackCategoriesResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Выбрано более 2 категорий или недопустимый код"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Выбрать категории повышенного кэшбэка на месяц (до 2 категорий)",
+        "tags": [
+          "loyalty (Мобики и партнеры)"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "MTBank Junior API",
+    "description": "Документация API для семейного банкинга МТБанк",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "minLength": 5
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "birthDay": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+          }
+        },
+        "required": [
+          "phoneNumber",
+          "password",
+          "name",
+          "birthDay"
+        ]
+      },
+      "UserSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+375291234567"
+          },
+          "name": {
+            "type": "string",
+            "example": "Андрей Дрёмин"
+          }
+        },
+        "required": [
+          "id",
+          "phoneNumber",
+          "name"
+        ]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserSummaryDto"
+          },
+          "accessToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "refreshToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        },
+        "required": [
+          "user",
+          "accessToken",
+          "refreshToken"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "minLength": 5
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "phoneNumber",
+          "password"
+        ]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
+      "TokensResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "refreshToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken"
+        ]
+      },
+      "LogoutResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "UserProfileDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+375291234567"
+          },
+          "name": {
+            "type": "string",
+            "example": "Иван"
+          },
+          "birthDay": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2010-05-15T00:00:00.000Z"
+          },
+          "role": {
+            "type": "string",
+            "example": "TEEN_14_17"
+          },
+          "mobiksBalance": {
+            "type": "number",
+            "example": 120,
+            "description": "Бонусный баланс Мобиков"
+          },
+          "selectedCashbackCategories": {
+            "example": [
+              "FOOD",
+              "EDUCATION"
+            ],
+            "description": "Выбранные категории повышенного кэшбэка",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "phoneNumber",
+          "name",
+          "birthDay",
+          "role",
+          "mobiksBalance",
+          "selectedCashbackCategories"
+        ]
+      },
+      "PassportRecognizeResponseDto": {
+        "type": "object",
+        "properties": {
+          "lastName": {
+            "type": "string",
+            "example": "DREMIN"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "ANDREW"
+          },
+          "middleName": {
+            "type": "string",
+            "example": "SERGEEVICH"
+          },
+          "documentNumber": {
+            "type": "string",
+            "example": "MC1234567"
+          },
+          "personalNumber": {
+            "type": "string",
+            "example": "3010190A001PB1"
+          },
+          "birthDate": {
+            "type": "string",
+            "example": "23.07.2008"
+          },
+          "expiryDate": {
+            "type": "string",
+            "example": "23.07.2028"
+          }
+        }
+      },
+      "PayQrDto": {
+        "type": "object",
+        "properties": {
+          "merchant": {
+            "type": "string",
+            "minLength": 1
+          },
+          "cardId": {
+            "type": "string"
+          },
+          "items": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "mcc": {
+                  "type": "string",
+                  "description": "MCC - Merchant Category Code"
+                },
+                "amount": {
+                  "type": "number",
+                  "minimum": 0.01
+                }
+              },
+              "required": [
+                "mcc",
+                "amount"
+              ]
+            }
+          },
+          "mcc": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0.01
+          }
+        },
+        "required": [
+          "merchant"
+        ]
+      },
+      "TransactionItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "amount": {
+            "type": "number",
+            "example": 12.5
+          },
+          "merchant": {
+            "type": "string",
+            "example": "Школьная столовая"
+          },
+          "category": {
+            "type": "string",
+            "example": "FOOD"
+          },
+          "status": {
+            "type": "string",
+            "example": "SUCCESS"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-10-21T00:30:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "amount",
+          "merchant",
+          "category",
+          "status",
+          "createdAt"
+        ]
+      },
+      "PayQrResponseDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "SUCCESS"
+          },
+          "message": {
+            "type": "string",
+            "example": "Оплата прошла успешно!"
+          },
+          "totalAmount": {
+            "type": "number",
+            "example": 12.5
+          },
+          "newBalance": {
+            "type": "number",
+            "example": 87.5
+          },
+          "spentToday": {
+            "type": "number",
+            "example": 12.5
+          },
+          "dailyLimit": {
+            "type": "number",
+            "example": 25
+          },
+          "earnedMobiks": {
+            "type": "number",
+            "example": 25,
+            "description": "Начислено бонусов Мобиков за покупку (с учетом кэшбэка x2)"
+          },
+          "mobiksBalance": {
+            "type": "number",
+            "example": 145,
+            "description": "Текущий баланс Мобиков пользователя"
+          },
+          "transactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransactionItemDto"
+            }
+          }
+        },
+        "required": [
+          "status",
+          "message",
+          "totalAmount",
+          "newBalance",
+          "spentToday",
+          "dailyLimit",
+          "earnedMobiks",
+          "mobiksBalance",
+          "transactions"
+        ]
+      },
+      "CreateTransferRequestDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "minimum": 0.01
+          },
+          "cardId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "comment": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "amount",
+          "cardId",
+          "comment"
+        ]
+      },
+      "TransferRequestCardDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "cardNumberMask": {
+            "type": "string",
+            "example": "4258 •••• •••• 1234"
+          },
+          "cardholderName": {
+            "type": "string",
+            "example": "ИВАН ДРЁМИН"
+          },
+          "type": {
+            "type": "string",
+            "example": "VIRTUAL"
+          },
+          "balance": {
+            "type": "number",
+            "example": 50
+          }
+        },
+        "required": [
+          "id",
+          "cardNumberMask"
+        ]
+      },
+      "TransferRequestCreatedItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "amount": {
+            "type": "number",
+            "example": 15
+          },
+          "comment": {
+            "type": "string",
+            "example": "На обед в столовой"
+          },
+          "status": {
+            "type": "string",
+            "example": "PENDING"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-10-21T00:30:00.000Z"
+          },
+          "card": {
+            "$ref": "#/components/schemas/TransferRequestCardDto"
+          }
+        },
+        "required": [
+          "id",
+          "amount",
+          "comment",
+          "status",
+          "createdAt",
+          "card"
+        ]
+      },
+      "CreateTransferRequestResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Запрос на перевод денег успешно отправлен родителям"
+          },
+          "transferRequest": {
+            "$ref": "#/components/schemas/TransferRequestCreatedItemDto"
+          }
+        },
+        "required": [
+          "message",
+          "transferRequest"
+        ]
+      },
+      "TransferRequestUserShortDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "name": {
+            "type": "string",
+            "example": "Иван"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+375291234567"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "TransferRequestListItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "amount": {
+            "type": "number",
+            "example": 15
+          },
+          "comment": {
+            "type": "string",
+            "example": "На обед в столовой"
+          },
+          "status": {
+            "type": "string",
+            "example": "PENDING"
+          },
+          "declineReason": {
+            "type": "object",
+            "example": "Недостаточно средств",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-10-21T00:30:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-10-21T00:30:00.000Z"
+          },
+          "child": {
+            "$ref": "#/components/schemas/TransferRequestUserShortDto"
+          },
+          "card": {
+            "$ref": "#/components/schemas/TransferRequestCardDto"
+          },
+          "resolvedBy": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TransferRequestUserShortDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "amount",
+          "comment",
+          "status",
+          "createdAt",
+          "updatedAt",
+          "card"
+        ]
+      },
+      "ApproveTransferRequestDto": {
+        "type": "object",
+        "properties": {
+          "parentCardId": {
+            "description": "ID карты родителя для списания (если не указана, выберется автоматически)",
+            "type": "string"
+          }
+        }
+      },
+      "TransferRequestResolvedItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "amount": {
+            "type": "number",
+            "example": 15
+          },
+          "comment": {
+            "type": "string",
+            "example": "На обед в столовой"
+          },
+          "status": {
+            "type": "string",
+            "example": "APPROVED"
+          },
+          "declineReason": {
+            "type": "string"
+          },
+          "child": {
+            "$ref": "#/components/schemas/TransferRequestUserShortDto"
+          },
+          "card": {
+            "$ref": "#/components/schemas/TransferRequestCardDto"
+          },
+          "parentCardBalance": {
+            "type": "number",
+            "example": 250
+          },
+          "resolvedBy": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TransferRequestUserShortDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "amount",
+          "comment",
+          "status",
+          "card"
+        ]
+      },
+      "ApproveTransferRequestResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Перевод успешно отправлен ребенку"
+          },
+          "transferRequest": {
+            "$ref": "#/components/schemas/TransferRequestResolvedItemDto"
+          }
+        },
+        "required": [
+          "message",
+          "transferRequest"
+        ]
+      },
+      "DeclineTransferRequestDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "description": "Причина отклонения запроса",
+            "type": "string"
+          }
+        }
+      },
+      "DeclineTransferRequestResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Запрос на перевод отклонен"
+          },
+          "transferRequest": {
+            "$ref": "#/components/schemas/TransferRequestResolvedItemDto"
+          }
+        },
+        "required": [
+          "message",
+          "transferRequest"
+        ]
+      },
+      "ParentToChildTransferDto": {
+        "type": "object",
+        "properties": {
+          "childId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "ID ребенка-получателя"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0.01,
+            "description": "Сумма перевода в BYN"
+          },
+          "comment": {
+            "description": "Комментарий к переводу (на карманные расходы, обед и т.д.)",
+            "type": "string",
+            "maxLength": 500
+          },
+          "parentCardId": {
+            "description": "ID карты родителя для списания (если не указана, выберется автоматически)",
+            "type": "string"
+          },
+          "childCardId": {
+            "description": "ID карты ребенка для зачисления (если не указана, выберется автоматически)",
+            "type": "string"
+          }
+        },
+        "required": [
+          "childId",
+          "amount"
+        ]
+      },
+      "ParentToChildTransferTransactionsDto": {
+        "type": "object",
+        "properties": {
+          "parentTransactionId": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "childTransactionId": {
+            "type": "string",
+            "example": "e7a1b2c3-1122-3344-5566-778899aabbcc"
+          }
+        },
+        "required": [
+          "parentTransactionId",
+          "childTransactionId"
+        ]
+      },
+      "ParentToChildTransferResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Перевод на сумму 25.00 BYN ребенку Иван успешно выполнен!"
+          },
+          "amount": {
+            "type": "number",
+            "example": 25
+          },
+          "comment": {
+            "type": "string",
+            "example": "На карманные расходы"
+          },
+          "parentCard": {
+            "$ref": "#/components/schemas/TransferRequestCardDto"
+          },
+          "childCard": {
+            "$ref": "#/components/schemas/TransferRequestCardDto"
+          },
+          "child": {
+            "$ref": "#/components/schemas/TransferRequestUserShortDto"
+          },
+          "transactions": {
+            "$ref": "#/components/schemas/ParentToChildTransferTransactionsDto"
+          },
+          "transferRequestId": {
+            "type": "string",
+            "example": "a1b2c3d4-5678-90ab-cdef-1234567890ab"
+          }
+        },
+        "required": [
+          "message",
+          "amount",
+          "parentCard",
+          "childCard",
+          "child",
+          "transactions"
+        ]
+      },
+      "P2pTransferByPhoneDto": {
+        "type": "object",
+        "properties": {
+          "recipientPhone": {
+            "type": "string",
+            "minLength": 5,
+            "description": "Номер телефона получателя перевода (+375XXXXXXXXX)"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0.01,
+            "description": "Сумма перевода в BYN"
+          },
+          "comment": {
+            "description": "Комментарий к переводу (за обед, в подарок и т.д.)",
+            "type": "string",
+            "maxLength": 500
+          },
+          "cardId": {
+            "description": "ID карты отправителя для списания (если не указана, выберется автоматически)",
+            "type": "string"
+          }
+        },
+        "required": [
+          "recipientPhone",
+          "amount"
+        ]
+      },
+      "P2pRecipientShortDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "name": {
+            "type": "string",
+            "example": "Иван"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+375291234567"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "phoneNumber"
+        ]
+      },
+      "P2pTransferResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Перевод на сумму 15.00 BYN для Иван (+375291234567) успешно отправлен!"
+          },
+          "amount": {
+            "type": "number",
+            "example": 15
+          },
+          "comment": {
+            "type": "string",
+            "example": "За пиццу"
+          },
+          "recipient": {
+            "$ref": "#/components/schemas/P2pRecipientShortDto"
+          },
+          "senderNewBalance": {
+            "type": "number",
+            "example": 85,
+            "description": "Новый баланс карты отправителя"
+          },
+          "senderCardMask": {
+            "type": "string",
+            "example": "4258 •••• •••• 1234"
+          },
+          "transactionId": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          }
+        },
+        "required": [
+          "message",
+          "amount",
+          "recipient",
+          "senderNewBalance",
+          "senderCardMask",
+          "transactionId"
+        ]
+      },
+      "TransactionUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "name": {
+            "type": "string",
+            "example": "Иван"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+375291234567"
+          },
+          "role": {
+            "type": "string",
+            "example": "CHILD_7_13"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "TransactionCardSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "cardNumberMask": {
+            "type": "string",
+            "example": "4258 •••• •••• 1234"
+          },
+          "type": {
+            "type": "string",
+            "example": "VIRTUAL"
+          }
+        },
+        "required": [
+          "id",
+          "cardNumberMask"
+        ]
+      },
+      "DetailedTransactionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "amount": {
+            "type": "number",
+            "example": 15.5
+          },
+          "merchant": {
+            "type": "string",
+            "example": "Евроопт"
+          },
+          "category": {
+            "type": "string",
+            "example": "FOOD"
+          },
+          "status": {
+            "type": "string",
+            "example": "SUCCESS",
+            "enum": [
+              "SUCCESS",
+              "DECLINED_BY_BANK",
+              "DECLINED_BY_LIMIT",
+              "PENDING_PARENT_APPROVAL"
+            ]
+          },
+          "user": {
+            "$ref": "#/components/schemas/TransactionUserDto"
+          },
+          "card": {
+            "$ref": "#/components/schemas/TransactionCardSummaryDto"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-10-21T02:30:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "amount",
+          "merchant",
+          "category",
+          "status",
+          "user",
+          "card",
+          "createdAt"
+        ]
+      },
+      "MemberTransactionsResponseDto": {
+        "type": "object",
+        "properties": {
+          "member": {
+            "$ref": "#/components/schemas/TransactionUserDto"
+          },
+          "totalSpent": {
+            "type": "number",
+            "example": 145.2
+          },
+          "transactionCount": {
+            "type": "number",
+            "example": 8
+          },
+          "transactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DetailedTransactionDto"
+            }
+          }
+        },
+        "required": [
+          "member",
+          "totalSpent",
+          "transactionCount",
+          "transactions"
+        ]
+      },
+      "FamilyTransactionsFeedResponseDto": {
+        "type": "object",
+        "properties": {
+          "familyTotalSpent": {
+            "type": "number",
+            "example": 520.4
+          },
+          "totalCount": {
+            "type": "number",
+            "example": 24
+          },
+          "transactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DetailedTransactionDto"
+            }
+          }
+        },
+        "required": [
+          "familyTotalSpent",
+          "totalCount",
+          "transactions"
+        ]
+      },
+      "NotificationChildShortDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "name": {
+            "type": "string",
+            "example": "Иван"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+375291234567"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "NotificationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "type": {
+            "type": "string",
+            "example": "RESTRICTED_18_PURCHASE",
+            "enum": [
+              "RESTRICTED_18_PURCHASE",
+              "NIGHT_PURCHASE",
+              "LIMIT_EXCEEDED",
+              "TRANSFER_REQUEST",
+              "TASK_SUBMITTED",
+              "PIGGY_BANK_TOPUP"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "example": "⚠️ Попытка покупки 18+ товара!"
+          },
+          "message": {
+            "type": "string",
+            "example": "Ребенок Иван пытался оплатить товар категории «Алкоголь и табак» (18+) в магазине «Евроопт» на сумму 15.50 BYN. Покупка заблокирована."
+          },
+          "isRead": {
+            "type": "boolean",
+            "example": false
+          },
+          "data": {
+            "type": "object",
+            "example": {
+              "childId": "b3f5c71a-47d2-432a-bc91-382940294821",
+              "childName": "Иван",
+              "merchant": "Евроопт",
+              "amount": 15.5,
+              "mcc": "5921",
+              "category": "RESTRICTED_18"
+            },
+            "nullable": true
+          },
+          "child": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NotificationChildShortDto"
+              }
+            ]
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-10-21T02:45:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "title",
+          "message",
+          "isRead",
+          "createdAt"
+        ]
+      },
+      "UnreadCountResponseDto": {
+        "type": "object",
+        "properties": {
+          "unreadCount": {
+            "type": "number",
+            "example": 3
+          }
+        },
+        "required": [
+          "unreadCount"
+        ]
+      },
+      "MarkAsReadResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Уведомление отмечено как прочитанное"
+          }
+        },
+        "required": [
+          "success",
+          "message"
+        ]
+      },
+      "AddChildDto": {
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "minLength": 5
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "birthDay": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+          },
+          "initialBalance": {
+            "default": 0,
+            "type": "number",
+            "minimum": 0
+          },
+          "dailyLimit": {
+            "default": 15,
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "phoneNumber",
+          "password",
+          "name",
+          "birthDay"
+        ]
+      },
+      "CardDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "cardNumberMask": {
+            "type": "string",
+            "example": "4258 •••• •••• 1234"
+          },
+          "cardholderName": {
+            "type": "string",
+            "example": "ИВАН ДРЁМИН"
+          },
+          "expiryDate": {
+            "type": "string",
+            "example": "10/29"
+          },
+          "type": {
+            "type": "string",
+            "example": "VIRTUAL"
+          },
+          "balance": {
+            "type": "number",
+            "example": 100
+          },
+          "isBlocked": {
+            "type": "boolean",
+            "example": false
+          },
+          "dailyLimit": {
+            "type": "number",
+            "example": 25
+          },
+          "spentToday": {
+            "type": "number",
+            "example": 0
+          },
+          "allowOnlinePurchases": {
+            "type": "boolean",
+            "example": true
+          },
+          "allowCashWithdrawal": {
+            "type": "boolean",
+            "example": false
+          },
+          "remainingDailyLimit": {
+            "type": "number",
+            "example": 25
+          }
+        },
+        "required": [
+          "id",
+          "cardNumberMask",
+          "cardholderName",
+          "expiryDate",
+          "type",
+          "balance",
+          "isBlocked",
+          "dailyLimit",
+          "spentToday",
+          "allowOnlinePurchases",
+          "allowCashWithdrawal",
+          "remainingDailyLimit"
+        ]
+      },
+      "ChildUserWithCardsDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "name": {
+            "type": "string",
+            "example": "Иван"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+375291234567"
+          },
+          "birthDay": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2012-05-10T00:00:00.000Z"
+          },
+          "role": {
+            "type": "string",
+            "example": "CHILD_7_13"
+          },
+          "mobiksBalance": {
+            "type": "number",
+            "example": 120,
+            "description": "Бонусный баланс Мобиков"
+          },
+          "cards": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CardDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "phoneNumber",
+          "birthDay",
+          "role",
+          "mobiksBalance",
+          "cards"
+        ]
+      },
+      "AddChildResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Ребенок успешно зарегистрирован и привязан к семье"
+          },
+          "parentRole": {
+            "type": "string",
+            "example": "PARENT"
+          },
+          "child": {
+            "$ref": "#/components/schemas/ChildUserWithCardsDto"
+          }
+        },
+        "required": [
+          "message",
+          "parentRole",
+          "child"
+        ]
+      },
+      "LinkChildSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "name": {
+            "type": "string",
+            "example": "Иван"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+375291234567"
+          },
+          "birthDay": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2012-05-10T00:00:00.000Z"
+          },
+          "role": {
+            "type": "string",
+            "example": "CHILD_7_13"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "phoneNumber",
+          "birthDay",
+          "role"
+        ]
+      },
+      "LinkChildResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Член семьи успешно привязан"
+          },
+          "parentRole": {
+            "type": "string",
+            "example": "PARENT"
+          },
+          "child": {
+            "$ref": "#/components/schemas/LinkChildSummaryDto"
+          },
+          "passportVerification": {
+            "type": "object",
+            "nullable": true
+          }
+        },
+        "required": [
+          "message",
+          "parentRole",
+          "child"
+        ]
+      },
+      "ParentSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "name": {
+            "type": "string",
+            "example": "Андрей Дрёмин"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+375291112233"
+          },
+          "role": {
+            "type": "string",
+            "example": "PARENT"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "phoneNumber",
+          "role"
+        ]
+      },
+      "FamilyMemberUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "name": {
+            "type": "string",
+            "example": "Иван"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+375291234567"
+          },
+          "birthDay": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2012-05-10T00:00:00.000Z"
+          },
+          "role": {
+            "type": "string",
+            "example": "CHILD_7_13"
+          },
+          "mobiksBalance": {
+            "type": "number",
+            "example": 120,
+            "description": "Бонусный баланс Мобиков"
+          },
+          "parents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ParentSummaryDto"
+            }
+          },
+          "cards": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CardDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "phoneNumber",
+          "birthDay",
+          "role",
+          "mobiksBalance",
+          "parents",
+          "cards"
+        ]
+      },
+      "FamilyResponseDto": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/FamilyMemberUserDto"
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChildUserWithCardsDto"
+            }
+          }
+        },
+        "required": [
+          "user",
+          "children"
+        ]
+      },
+      "DeleteFamilyMemberResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Ребенок успешно удален из семьи"
+          },
+          "childId": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "parentId": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "ChildDirectTransferDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "minimum": 0.01,
+            "description": "Сумма перевода в BYN"
+          },
+          "comment": {
+            "description": "Комментарий к переводу (на карманные расходы, обед и т.д.)",
+            "type": "string",
+            "maxLength": 500
+          },
+          "parentCardId": {
+            "description": "ID карты родителя для списания (если не указана, выберется автоматически)",
+            "type": "string"
+          },
+          "childCardId": {
+            "description": "ID карты ребенка для зачисления (если не указана, выберется автоматически)",
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount"
+        ]
+      },
+      "UpdateCardLimitsDto": {
+        "type": "object",
+        "properties": {
+          "dailyLimit": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Ежедневный лимит на сумму покупок в BYN"
+          },
+          "allowOnlinePurchases": {
+            "description": "Разрешить онлайн-покупки",
+            "type": "boolean"
+          },
+          "allowCashWithdrawal": {
+            "description": "Разрешить снятие наличных",
+            "type": "boolean"
+          },
+          "isBlocked": {
+            "description": "Заблокировать / разблокировать карту",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "dailyLimit"
+        ]
+      },
+      "CardLimitsDetailsDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "cardNumberMask": {
+            "type": "string",
+            "example": "4258 •••• •••• 1234"
+          },
+          "cardholderName": {
+            "type": "string",
+            "example": "ИВАН ДРЁМИН"
+          },
+          "childName": {
+            "type": "string",
+            "example": "Иван"
+          },
+          "type": {
+            "type": "string",
+            "example": "VIRTUAL"
+          },
+          "balance": {
+            "type": "number",
+            "example": 45
+          },
+          "dailyLimit": {
+            "type": "number",
+            "example": 25
+          },
+          "spentToday": {
+            "type": "number",
+            "example": 10
+          },
+          "remainingDailyLimit": {
+            "type": "number",
+            "example": 15
+          },
+          "allowOnlinePurchases": {
+            "type": "boolean",
+            "example": true
+          },
+          "allowCashWithdrawal": {
+            "type": "boolean",
+            "example": false
+          },
+          "isBlocked": {
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": [
+          "id",
+          "cardNumberMask",
+          "cardholderName",
+          "childName",
+          "type",
+          "balance",
+          "dailyLimit",
+          "spentToday",
+          "remainingDailyLimit",
+          "allowOnlinePurchases",
+          "allowCashWithdrawal",
+          "isBlocked"
+        ]
+      },
+      "UpdateCardLimitsResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Лимит для карты ребенка Иван успешно обновлен"
+          },
+          "card": {
+            "$ref": "#/components/schemas/CardLimitsDetailsDto"
+          }
+        },
+        "required": [
+          "message",
+          "card"
+        ]
+      },
+      "ResetSpentTodayDetailsDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "cardNumberMask": {
+            "type": "string",
+            "example": "4258 •••• •••• 1234"
+          },
+          "dailyLimit": {
+            "type": "number",
+            "example": 25
+          },
+          "spentToday": {
+            "type": "number",
+            "example": 0
+          },
+          "remainingDailyLimit": {
+            "type": "number",
+            "example": 25
+          }
+        },
+        "required": [
+          "id",
+          "cardNumberMask",
+          "dailyLimit",
+          "spentToday",
+          "remainingDailyLimit"
+        ]
+      },
+      "ResetSpentTodayResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Потраченная сумма за сегодня для карты Иван сброшена"
+          },
+          "card": {
+            "$ref": "#/components/schemas/ResetSpentTodayDetailsDto"
+          }
+        },
+        "required": [
+          "message",
+          "card"
+        ]
+      },
+      "CardTransactionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "amount": {
+            "type": "number",
+            "example": 12.5
+          },
+          "merchant": {
+            "type": "string",
+            "example": "Школьная столовая"
+          },
+          "category": {
+            "type": "string",
+            "example": "FOOD"
+          },
+          "status": {
+            "type": "string",
+            "example": "SUCCESS"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-10-21T00:30:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "amount",
+          "merchant",
+          "category",
+          "status",
+          "createdAt"
+        ]
+      },
+      "CardDetailsDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "cardNumberMask": {
+            "type": "string",
+            "example": "4258 •••• •••• 1234"
+          },
+          "cardholderName": {
+            "type": "string",
+            "example": "ИВАН ДРЁМИН"
+          },
+          "expiryDate": {
+            "type": "string",
+            "example": "10/29"
+          },
+          "type": {
+            "type": "string",
+            "example": "VIRTUAL"
+          },
+          "balance": {
+            "type": "number",
+            "example": 100
+          },
+          "isBlocked": {
+            "type": "boolean",
+            "example": false
+          },
+          "dailyLimit": {
+            "type": "number",
+            "example": 25
+          },
+          "spentToday": {
+            "type": "number",
+            "example": 0
+          },
+          "allowOnlinePurchases": {
+            "type": "boolean",
+            "example": true
+          },
+          "allowCashWithdrawal": {
+            "type": "boolean",
+            "example": false
+          },
+          "remainingDailyLimit": {
+            "type": "number",
+            "example": 25
+          },
+          "transactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CardTransactionDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "cardNumberMask",
+          "cardholderName",
+          "expiryDate",
+          "type",
+          "balance",
+          "isBlocked",
+          "dailyLimit",
+          "spentToday",
+          "allowOnlinePurchases",
+          "allowCashWithdrawal",
+          "remainingDailyLimit"
+        ]
+      },
+      "GraduationCheckpointDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Опыт накоплений"
+          },
+          "description": {
+            "type": "string",
+            "example": "Успешно закрыта хотя бы одна копилка"
+          },
+          "isCompleted": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "isCompleted"
+        ]
+      },
+      "GraduationStatusResponseDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "userName": {
+            "type": "string",
+            "example": "Иван Дрёмин"
+          },
+          "currentRole": {
+            "type": "string",
+            "example": "TEEN_14_17"
+          },
+          "age": {
+            "type": "number",
+            "example": 17.5
+          },
+          "progressPercentage": {
+            "type": "number",
+            "example": 85,
+            "description": "Процент готовности к самостоятельному банкингу (0-100%)"
+          },
+          "isEligibleForGraduation": {
+            "type": "boolean",
+            "example": true,
+            "description": "Доступна ли кнопка выпуска во взрослый банкинг"
+          },
+          "completedPiggyBanksCount": {
+            "type": "number",
+            "example": 2,
+            "description": "Количество успешно накопленных и закрытых копилок"
+          },
+          "completedTasksCount": {
+            "type": "number",
+            "example": 5,
+            "description": "Количество выполненных заданий от родителей"
+          },
+          "mobiksBalance": {
+            "type": "number",
+            "example": 120,
+            "description": "Баланс бонусов Мобиков"
+          },
+          "transactionsCount": {
+            "type": "number",
+            "example": 14,
+            "description": "Количество совершенных покупок"
+          },
+          "checkpoints": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GraduationCheckpointDto"
+            }
+          }
+        },
+        "required": [
+          "userId",
+          "userName",
+          "currentRole",
+          "age",
+          "progressPercentage",
+          "isEligibleForGraduation",
+          "completedPiggyBanksCount",
+          "completedTasksCount",
+          "mobiksBalance",
+          "transactionsCount",
+          "checkpoints"
+        ]
+      },
+      "GraduateResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Поздравляем с переходом во взрослый банкинг! Все детские ограничения и родительский контроль сняты."
+          },
+          "newRole": {
+            "type": "string",
+            "example": "ORDINARY"
+          },
+          "cards": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CardDto"
+            }
+          }
+        },
+        "required": [
+          "message",
+          "newRole",
+          "cards"
+        ]
+      },
+      "CreateTaskDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Название задачи, например: \"Убрать в комнате\", \"Получить 9 по математике\""
+          },
+          "description": {
+            "description": "Подробные инструкции или критерии выполнения задачи",
+            "type": "string"
+          },
+          "rewardAmount": {
+            "type": "number",
+            "minimum": 0.1,
+            "description": "Сумма денежного вознаграждения в BYN, которая сразу списывается с карты родителя"
+          },
+          "deadline": {
+            "description": "Дедлайн выполнения задачи (ISO строка, например 2026-10-25T18:00:00.000Z)",
+            "type": "string"
+          },
+          "assignedChildId": {
+            "description": "ID конкретного ребенка. Если не указан — задача открыта для любого ребенка в семье",
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "creatorCardId": {
+            "description": "Карта родителя, с которой списываются деньги. Если не указана — берется основная карта родителя",
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "title",
+          "rewardAmount"
+        ]
+      },
+      "TaskUserShortDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "name": {
+            "type": "string",
+            "example": "Иван"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+375291234567"
+          },
+          "role": {
+            "type": "string",
+            "example": "CHILD_7_13"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "TaskCardShortDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "cardNumberMask": {
+            "type": "string",
+            "example": "4258 •••• •••• 1234"
+          },
+          "cardholderName": {
+            "type": "string",
+            "example": "ИВАН ДРЁМИН"
+          }
+        },
+        "required": [
+          "id",
+          "cardNumberMask"
+        ]
+      },
+      "TaskResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "title": {
+            "type": "string",
+            "example": "Убрать в комнате"
+          },
+          "description": {
+            "type": "object",
+            "example": "Пропылесосить, протереть пыль и заправить постель",
+            "nullable": true
+          },
+          "rewardAmount": {
+            "type": "number",
+            "example": 15
+          },
+          "deadline": {
+            "type": "object",
+            "example": "2026-10-25T18:00:00.000Z",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "example": "OPEN",
+            "enum": [
+              "OPEN",
+              "IN_PROGRESS",
+              "SUBMITTED",
+              "COMPLETED",
+              "CANCELLED"
+            ]
+          },
+          "creator": {
+            "$ref": "#/components/schemas/TaskUserShortDto"
+          },
+          "creatorCard": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TaskCardShortDto"
+              }
+            ]
+          },
+          "assignedChild": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TaskUserShortDto"
+              }
+            ]
+          },
+          "completedBy": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TaskUserShortDto"
+              }
+            ]
+          },
+          "targetCard": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TaskCardShortDto"
+              }
+            ]
+          },
+          "submissionComment": {
+            "type": "object",
+            "example": "Я всё сделал!",
+            "nullable": true
+          },
+          "photoUrl": {
+            "type": "object",
+            "example": "https://images.unsplash.com/photo-1581578731548-c64695cc6952",
+            "nullable": true
+          },
+          "submittedAt": {
+            "type": "object",
+            "example": "2026-10-21T14:30:00.000Z",
+            "nullable": true
+          },
+          "rejectionReason": {
+            "type": "object",
+            "example": "Нужно еще вытереть пыль с полок",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-10-21T10:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-10-21T10:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "rewardAmount",
+          "status",
+          "creator",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateTaskResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Задача успешно создана, вознаграждение 15 BYN списано с карты родителя"
+          },
+          "parentCardBalance": {
+            "type": "number",
+            "example": 485
+          },
+          "task": {
+            "$ref": "#/components/schemas/TaskResponseDto"
+          }
+        },
+        "required": [
+          "message",
+          "parentCardBalance",
+          "task"
+        ]
+      },
+      "UpdateTaskDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "description": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "rewardAmount": {
+            "description": "Новая сумма вознаграждения. Разница списывается с карты или возвращается родителю",
+            "type": "number",
+            "minimum": 0.1,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "deadline": {
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "assignedChildId": {
+            "description": "Назначить конкретного ребенка или null (открыта для всех детей семьи)",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          },
+          "creatorCardId": {
+            "description": "Карта для доплаты (если сумма вознаграждения увеличивается)",
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          }
+        }
+      },
+      "RequestNewTaskDto": {
+        "type": "object",
+        "properties": {
+          "comment": {
+            "description": "Пожелание или комментарий ребенка (\"Хочу накопить на велосипед, дайте задание!\")",
+            "type": "string",
+            "maxLength": 500
+          }
+        }
+      },
+      "RequestNewTaskResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Запрос на новое задание успешно отправлен родителям!"
+          },
+          "comment": {
+            "type": "string",
+            "example": "Хочу накопить на велосипед, дайте задание!"
+          },
+          "notifiedParentsCount": {
+            "type": "number",
+            "example": 2,
+            "description": "Количество уведомленных родителей"
+          }
+        },
+        "required": [
+          "message",
+          "notifiedParentsCount"
+        ]
+      },
+      "SubmitTaskDto": {
+        "type": "object",
+        "properties": {
+          "comment": {
+            "description": "Комментарий ребенка о проделанной работе (\"Я пропылесосил и вытер пыль\")",
+            "type": "string"
+          },
+          "photoUrl": {
+            "description": "Ссылка или base64 фото-отчета о выполненной задаче (\"Сделано! Отправить фото\")",
+            "type": "string"
+          },
+          "targetCardId": {
+            "description": "Карта ребенка для зачисления награды. Если не указана — используется основная карта",
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        }
+      },
+      "SubmitTaskResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Отчет о выполнении задачи успешно отправлен родителям на проверку"
+          },
+          "task": {
+            "$ref": "#/components/schemas/TaskResponseDto"
+          }
+        },
+        "required": [
+          "message",
+          "task"
+        ]
+      },
+      "ApproveTaskResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Выполнение задачи подтверждено! Вознаграждение 15 BYN зачислено ребенку Иван"
+          },
+          "childCardBalance": {
+            "type": "number",
+            "example": 65
+          },
+          "task": {
+            "$ref": "#/components/schemas/TaskResponseDto"
+          }
+        },
+        "required": [
+          "message",
+          "childCardBalance",
+          "task"
+        ]
+      },
+      "RejectTaskDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Причина отклонения (\"Под кроватью остался мусор, доделай\")"
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "RejectTaskResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Задача отправлена на доработку с указанием замечаний"
+          },
+          "task": {
+            "$ref": "#/components/schemas/TaskResponseDto"
+          }
+        },
+        "required": [
+          "message",
+          "task"
+        ]
+      },
+      "CancelTaskResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Задача отменена, вознаграждение 15 BYN возвращено на карту родителя"
+          },
+          "parentCardBalance": {
+            "type": "number",
+            "example": 500
+          },
+          "task": {
+            "$ref": "#/components/schemas/TaskResponseDto"
+          }
+        },
+        "required": [
+          "message",
+          "parentCardBalance",
+          "task"
+        ]
+      },
+      "CreatePiggyBankDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Название цели накопления (например: \"PlayStation 5\", \"Новый велосипед\", \"Кроссовки\")"
+          },
+          "description": {
+            "description": "Описание цели (почему ребенок хочет это купить)",
+            "type": "string"
+          },
+          "targetAmount": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Целевая сумма накопления в BYN"
+          },
+          "targetDate": {
+            "description": "Желаемая дата достижения цели (ISO-строка, например 2026-12-31)",
+            "type": "string"
+          },
+          "initialAmount": {
+            "description": "Начальный взнос с карты ребенка из карманных денег (опционально)",
+            "type": "number",
+            "minimum": 0.01
+          },
+          "cardId": {
+            "description": "Карта ребенка для внесения начального взноса (если не указана, используется основная карта)",
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "title",
+          "targetAmount"
+        ]
+      },
+      "PiggyBankUserShortDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "name": {
+            "type": "string",
+            "example": "Иван"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+375291234567"
+          },
+          "role": {
+            "type": "string",
+            "example": "CHILD_7_13"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "role"
+        ]
+      },
+      "PiggyBankContributionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "amount": {
+            "type": "number",
+            "example": 25
+          },
+          "comment": {
+            "type": "object",
+            "example": "От папы на мечту! Молодец!",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-10-21T10:00:00.000Z"
+          },
+          "user": {
+            "$ref": "#/components/schemas/PiggyBankUserShortDto"
+          },
+          "cardNumberMask": {
+            "type": "object",
+            "example": "4258 •••• •••• 1234",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "amount",
+          "createdAt",
+          "user"
+        ]
+      },
+      "PiggyBankResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "title": {
+            "type": "string",
+            "example": "PlayStation 5"
+          },
+          "description": {
+            "type": "object",
+            "example": "Коплю на приставку к Новому Году",
+            "nullable": true
+          },
+          "targetAmount": {
+            "type": "number",
+            "example": 500
+          },
+          "currentAmount": {
+            "type": "number",
+            "example": 175
+          },
+          "remainingAmount": {
+            "type": "number",
+            "example": 325
+          },
+          "progressPercentage": {
+            "type": "number",
+            "example": 35
+          },
+          "isGoalReached": {
+            "type": "boolean",
+            "example": false
+          },
+          "targetDate": {
+            "type": "object",
+            "example": "2026-12-31T00:00:00.000Z",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "example": "ACTIVE",
+            "enum": [
+              "ACTIVE",
+              "COMPLETED",
+              "BROKEN"
+            ]
+          },
+          "owner": {
+            "$ref": "#/components/schemas/PiggyBankUserShortDto"
+          },
+          "contributions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PiggyBankContributionDto"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-10-21T10:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-10-21T10:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "targetAmount",
+          "currentAmount",
+          "remainingAmount",
+          "progressPercentage",
+          "isGoalReached",
+          "status",
+          "owner",
+          "contributions",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreatePiggyBankResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Копилка \"PlayStation 5\" успешно создана!"
+          },
+          "piggyBank": {
+            "$ref": "#/components/schemas/PiggyBankResponseDto"
+          }
+        },
+        "required": [
+          "message",
+          "piggyBank"
+        ]
+      },
+      "TopUpPiggyBankDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "minimum": 0.1,
+            "description": "Сумма пополнения копилки в BYN"
+          },
+          "comment": {
+            "description": "Пожелание, поздравление или комментарий (например: \"От папы на день рождения! Ты молодец!\")",
+            "type": "string"
+          },
+          "cardId": {
+            "description": "Карта, с которой списываются деньги (если не указана — берется основная карта пополняющего)",
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "amount"
+        ]
+      },
+      "TopUpPiggyBankResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Копилка успешно пополнена на 50 BYN! Текущая сумма: 225 BYN"
+          },
+          "senderCardBalance": {
+            "type": "number",
+            "example": 450
+          },
+          "piggyBank": {
+            "$ref": "#/components/schemas/PiggyBankResponseDto"
+          }
+        },
+        "required": [
+          "message",
+          "senderCardBalance",
+          "piggyBank"
+        ]
+      },
+      "WithdrawPiggyBankDto": {
+        "type": "object",
+        "properties": {
+          "cardId": {
+            "description": "Карта ребенка для зачисления накопленной суммы. Если не указана — берется основная карта",
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "breakPiggyBank": {
+            "default": false,
+            "description": "Разбить копилку досрочно (статус BROKEN) или завершить цель (COMPLETED)",
+            "type": "boolean"
+          }
+        }
+      },
+      "WithdrawPiggyBankResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Средства из копилки в размере 500 BYN успешно зачислены на карту ребенка!"
+          },
+          "withdrawnAmount": {
+            "type": "number",
+            "example": 500
+          },
+          "childCardBalance": {
+            "type": "number",
+            "example": 565
+          },
+          "piggyBank": {
+            "$ref": "#/components/schemas/PiggyBankResponseDto"
+          }
+        },
+        "required": [
+          "message",
+          "withdrawnAmount",
+          "childCardBalance",
+          "piggyBank"
+        ]
+      },
+      "UpdatePiggyBankDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string"
+          },
+          "targetAmount": {
+            "type": "number",
+            "minimum": 1
+          },
+          "targetDate": {
+            "x-nestjs_zod-empty-type": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PartnerOfferDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "dodo-pizza-promo"
+          },
+          "title": {
+            "type": "string",
+            "example": "Пепперони 25 см в подарок"
+          },
+          "description": {
+            "type": "string",
+            "example": "Промокод на бесплатную сочную пиццу при заказе от 20 BYN в Додо Пицца."
+          },
+          "partnerName": {
+            "type": "string",
+            "example": "Додо Пицца"
+          },
+          "cost": {
+            "type": "number",
+            "example": 50,
+            "description": "Стоимость в Мобиках"
+          },
+          "category": {
+            "type": "string",
+            "example": "FOOD"
+          },
+          "imageUrl": {
+            "type": "string",
+            "example": "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=500"
+          },
+          "discountBadge": {
+            "type": "string",
+            "example": "Бесплатно"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "description",
+          "partnerName",
+          "cost",
+          "category",
+          "imageUrl"
+        ]
+      },
+      "PurchasedRewardDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "offerId": {
+            "type": "string",
+            "example": "dodo-pizza-promo"
+          },
+          "title": {
+            "type": "string",
+            "example": "Пепперони 25 см в подарок"
+          },
+          "partnerName": {
+            "type": "string",
+            "example": "Додо Пицца"
+          },
+          "cost": {
+            "type": "number",
+            "example": 50
+          },
+          "promoCode": {
+            "type": "string",
+            "example": "MOBY-DODO-8291"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-10-21T03:30:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "offerId",
+          "title",
+          "partnerName",
+          "cost",
+          "promoCode",
+          "createdAt"
+        ]
+      },
+      "LoyaltyOffersResponseDto": {
+        "type": "object",
+        "properties": {
+          "mobiksBalance": {
+            "type": "number",
+            "example": 120,
+            "description": "Текущий баланс Мобиков пользователя"
+          },
+          "offers": {
+            "description": "Доступные для покупки акции партнеров",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartnerOfferDto"
+            }
+          },
+          "purchasedRewards": {
+            "description": "Уже купленные промокоды и сертификаты",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PurchasedRewardDto"
+            }
+          }
+        },
+        "required": [
+          "mobiksBalance",
+          "offers",
+          "purchasedRewards"
+        ]
+      },
+      "RedeemOfferResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Сертификат «Пепперони 25 см в подарок» успешно куплен за 50 Мобиков!"
+          },
+          "mobiksBalance": {
+            "type": "number",
+            "example": 70,
+            "description": "Остаток баланса Мобиков"
+          },
+          "spentMobiks": {
+            "type": "number",
+            "example": 50,
+            "description": "Списано Мобиков"
+          },
+          "purchasedReward": {
+            "$ref": "#/components/schemas/PurchasedRewardDto"
+          }
+        },
+        "required": [
+          "message",
+          "mobiksBalance",
+          "spentMobiks",
+          "purchasedReward"
+        ]
+      },
+      "CashbackCategoryOptionDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "FOOD"
+          },
+          "name": {
+            "type": "string",
+            "example": "Кафе и фастфуд"
+          },
+          "description": {
+            "type": "string",
+            "example": "Пиццерии, бургерные, школьные столовые и кофейни"
+          },
+          "icon": {
+            "type": "string",
+            "example": "🍔"
+          },
+          "multiplier": {
+            "type": "number",
+            "example": 2,
+            "description": "Множитель начисления Мобиков (x2)"
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "description",
+          "icon",
+          "multiplier"
+        ]
+      },
+      "CashbackCategoriesResponseDto": {
+        "type": "object",
+        "properties": {
+          "selectedCategories": {
+            "example": [
+              "FOOD",
+              "EDUCATION"
+            ],
+            "description": "Выбранные пользователем категории повышенного кэшбэка",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "availableCategories": {
+            "description": "Все доступные для выбора категории",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CashbackCategoryOptionDto"
+            }
+          }
+        },
+        "required": [
+          "selectedCategories",
+          "availableCategories"
+        ]
+      },
+      "SelectCashbackCategoriesDto": {
+        "type": "object",
+        "properties": {
+          "categories": {
+            "minItems": 1,
+            "maxItems": 2,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": [
+          "categories"
+        ]
+      },
+      "SelectCashbackCategoriesResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Категории повышенного кэшбэка на месяц успешно сохранены!"
+          },
+          "selectedCategories": {
+            "example": [
+              "FOOD",
+              "EDUCATION"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "message",
+          "selectedCategories"
+        ]
+      }
+    }
+  }
+}

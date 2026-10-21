@@ -10,7 +10,6 @@ import {
 import {
   clearSession,
   getAccessToken,
-  getStoredProfileName,
   loadSession,
   onSessionExpired,
 } from '@/api/session';
@@ -60,10 +59,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       try {
         const restored = await fetchProfile();
-        const name = getStoredProfileName();
 
         if (!cancelled) {
-          setProfile({ ...restored, name: name ?? undefined });
+          setProfile(restored);
           setStatus('authenticated');
         }
       } catch {

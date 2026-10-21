@@ -36,5 +36,17 @@ export type PayQrResponseDto = {
      * @type number
     */
     dailyLimit: number;
+    /**
+     * @description Начислено бонусов Мобиков за покупку (с учетом кэшбэка x2)
+     * @example 25
+     * @type number
+    */
+    earnedMobiks: number;
+    /**
+     * @description Текущий баланс Мобиков пользователя
+     * @example 145
+     * @type number
+    */
+    mobiksBalance: number;
     transactions: TransactionItemDto[];
 };

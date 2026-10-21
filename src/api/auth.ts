@@ -11,9 +11,7 @@ import type { UserProfileDto } from './gen/models/UserProfileDto';
 import { clearSession, saveSession } from './session';
 import { toPhoneNumber } from '@/utils/phone';
 
-export type AuthProfile = UserProfileDto & {
-  name?: string;
-};
+export type AuthProfile = UserProfileDto;
 
 async function completeAuth(tokens: AuthResponseDto, persist: boolean): Promise<AuthProfile> {
   await saveSession(tokens, persist, tokens.user.name);

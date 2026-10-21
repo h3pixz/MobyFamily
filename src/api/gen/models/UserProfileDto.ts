@@ -8,15 +8,39 @@ export type UserProfileDto = {
      * @example b3f5c71a-47d2-432a-bc91-382940294821
      * @type string
     */
-    sub: string;
+    id: string;
     /**
      * @example +375291234567
      * @type string
     */
     phoneNumber: string;
     /**
-     * @example PARENT
+     * @example Иван
+     * @type string
+    */
+    name: string;
+    /**
+     * @description
+     * Format: `date-time`
+     * @example 2010-05-15T00:00:00.000Z
+     * @type string
+    */
+    birthDay: string;
+    /**
+     * @example TEEN_14_17
      * @type string
     */
     role: string;
+    /**
+     * @description Бонусный баланс Мобиков
+     * @example 120
+     * @type number
+    */
+    mobiksBalance: number;
+    /**
+     * @description Выбранные категории повышенного кэшбэка
+     * @example ["FOOD","EDUCATION"]
+     * @type array
+    */
+    selectedCashbackCategories: string[];
 };

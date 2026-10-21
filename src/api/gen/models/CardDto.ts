@@ -59,4 +59,9 @@ export type CardDto = {
      * @type boolean
     */
     allowCashWithdrawal: boolean;
+    /**
+     * @example 25
+     * @type number
+    */
+    remainingDailyLimit: number;
 };

@@ -33,5 +33,11 @@ export type ChildUserWithCardsDto = {
      * @type string
     */
     role: string;
+    /**
+     * @description Бонусный баланс Мобиков
+     * @example 120
+     * @type number
+    */
+    mobiksBalance: number;
     cards: CardDto[];
 };

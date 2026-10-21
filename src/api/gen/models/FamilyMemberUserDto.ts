@@ -34,6 +34,12 @@ export type FamilyMemberUserDto = {
      * @type string
     */
     role: string;
+    /**
+     * @description Бонусный баланс Мобиков
+     * @example 120
+     * @type number
+    */
+    mobiksBalance: number;
     parents: ParentSummaryDto[];
     cards: CardDto[];
 };
