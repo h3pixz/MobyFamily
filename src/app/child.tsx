@@ -1,5 +1,5 @@
-import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -43,40 +43,21 @@ export default function ChildScreen() {
   const [transactions, setTransactions] = useState<MemberTransactionsResponseDto | null>(null);
   const [graduation, setGraduation] = useState<GraduationStatusResponseDto | null>(null);
 
-  useEffect(() => {
-    if (!profile) {
-      return;
-    }
+  useFocusEffect(
+    useCallback(() => {
+      if (!profile) {
+        return;
+      }
 
-    let cancelled = false;
+      let cancelled = false;
 
-    if (isTeen) {
-      Promise.allSettled([
-        fetchFamily(),
-        fetchPiggyBanks(),
-        fetchMyTransactions(6),
-        fetchGraduationStatus(),
-      ]).then(([familyResult, piggyBanksResult, transactionsResult, graduationResult]) => {
-        if (cancelled) {
-          return;
-        }
-
-        if (familyResult.status === 'fulfilled') {
-          setFamily(familyResult.value);
-        }
-        if (piggyBanksResult.status === 'fulfilled') {
-          setPiggyBanks(piggyBanksResult.value);
-        }
-        if (transactionsResult.status === 'fulfilled') {
-          setTransactions(transactionsResult.value);
-        }
-        if (graduationResult.status === 'fulfilled') {
-          setGraduation(graduationResult.value);
-        }
-      });
-    } else {
-      Promise.allSettled([fetchFamily(), fetchTasks(), fetchPiggyBanks()]).then(
-        ([familyResult, tasksResult, piggyBanksResult]) => {
+      if (isTeen) {
+        Promise.allSettled([
+          fetchFamily(),
+          fetchPiggyBanks(),
+          fetchMyTransactions(6),
+          fetchGraduationStatus(),
+        ]).then(([familyResult, piggyBanksResult, transactionsResult, graduationResult]) => {
           if (cancelled) {
             return;
           }
@@ -84,20 +65,41 @@ export default function ChildScreen() {
           if (familyResult.status === 'fulfilled') {
             setFamily(familyResult.value);
           }
-          if (tasksResult.status === 'fulfilled') {
-            setTasks(tasksResult.value);
-          }
           if (piggyBanksResult.status === 'fulfilled') {
             setPiggyBanks(piggyBanksResult.value);
           }
-        },
-      );
-    }
+          if (transactionsResult.status === 'fulfilled') {
+            setTransactions(transactionsResult.value);
+          }
+          if (graduationResult.status === 'fulfilled') {
+            setGraduation(graduationResult.value);
+          }
+        });
+      } else {
+        Promise.allSettled([fetchFamily(), fetchTasks(), fetchPiggyBanks()]).then(
+          ([familyResult, tasksResult, piggyBanksResult]) => {
+            if (cancelled) {
+              return;
+            }
 
-    return () => {
-      cancelled = true;
-    };
-  }, [isTeen, profile]);
+            if (familyResult.status === 'fulfilled') {
+              setFamily(familyResult.value);
+            }
+            if (tasksResult.status === 'fulfilled') {
+              setTasks(tasksResult.value);
+            }
+            if (piggyBanksResult.status === 'fulfilled') {
+              setPiggyBanks(piggyBanksResult.value);
+            }
+          },
+        );
+      }
+
+      return () => {
+        cancelled = true;
+      };
+    }, [isTeen, profile]),
+  );
 
   const child = family ? toChildProfile(family.user) : null;
   const activeTasks = toChildTasks(tasks);
@@ -107,6 +109,10 @@ export default function ChildScreen() {
 
   const openSoon = (title: string) => {
     router.push({ pathname: '/soon', params: { title } });
+  };
+
+  const openTopUp = (piggyBankId: string) => {
+    router.push({ pathname: '/piggy-bank-top-up', params: { id: piggyBankId } });
   };
 
   const openQuickAction = (action: ChildQuickAction) => {
@@ -181,7 +187,7 @@ export default function ChildScreen() {
               <TeenGoalCard
                 piggyBank={activePiggyBank}
                 activeCount={activePiggyBanks.length}
-                onAddMoney={() => openSoon('Пополнение цели')}
+                onAddMoney={() => openTopUp(activePiggyBank.id)}
               />
             ) : null}
 
@@ -207,7 +213,7 @@ export default function ChildScreen() {
             {activePiggyBank ? (
               <ChildGoalCard
                 goal={toSavingsGoal(activePiggyBank)}
-                onAddMoney={() => openSoon('Пополнение цели')}
+                onAddMoney={() => openTopUp(activePiggyBank.id)}
               />
             ) : null}
 

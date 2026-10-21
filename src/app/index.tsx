@@ -1,5 +1,5 @@
-import { router } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback, useRef, useState } from 'react';
 import { PanResponder, ScrollView, View } from 'react-native';
 import Animated, { FadeInLeft, FadeInRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -35,32 +35,34 @@ export default function HomeScreen() {
   const scrollRef = useRef<ScrollView>(null);
   const insets = useSafeAreaInsets();
 
-  useEffect(() => {
-    if (!profile) {
-      return;
-    }
+  useFocusEffect(
+    useCallback(() => {
+      if (!profile) {
+        return;
+      }
 
-    let cancelled = false;
+      let cancelled = false;
 
-    Promise.allSettled([fetchFamily(), fetchPiggyBanks()]).then(
-      ([familyResult, piggyBanksResult]) => {
-        if (cancelled) {
-          return;
-        }
+      Promise.allSettled([fetchFamily(), fetchPiggyBanks()]).then(
+        ([familyResult, piggyBanksResult]) => {
+          if (cancelled) {
+            return;
+          }
 
-        if (familyResult.status === 'fulfilled') {
-          setFamily(familyResult.value);
-        }
-        if (piggyBanksResult.status === 'fulfilled') {
-          setPiggyBanks(piggyBanksResult.value);
-        }
-      },
-    );
+          if (familyResult.status === 'fulfilled') {
+            setFamily(familyResult.value);
+          }
+          if (piggyBanksResult.status === 'fulfilled') {
+            setPiggyBanks(piggyBanksResult.value);
+          }
+        },
+      );
 
-    return () => {
-      cancelled = true;
-    };
-  }, [profile]);
+      return () => {
+        cancelled = true;
+      };
+    }, [profile]),
+  );
 
   const children = family?.children ?? [];
   const selectedChild =
@@ -89,6 +91,14 @@ export default function HomeScreen() {
 
   const openSoon = (title: string) => {
     router.push({ pathname: '/soon', params: { title } });
+  };
+
+  const openTopUp = () => {
+    if (activeGoal) {
+      router.push({ pathname: '/piggy-bank-top-up', params: { id: activeGoal.id } });
+      return;
+    }
+    openSoon('Пополнение цели');
   };
 
   const changeRole = (next: AppRole) => {
@@ -171,7 +181,7 @@ export default function HomeScreen() {
               onDecline={resolveDecision}
               onPressAction={openSoon}
               onNewTask={() => openSoon('Новое задание')}
-              onAddMoney={() => openSoon('Пополнение цели')}
+              onAddMoney={openTopUp}
             />
           </Animated.View>
         ) : null}
