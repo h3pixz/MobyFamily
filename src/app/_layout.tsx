@@ -20,7 +20,7 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 
 const AUTH_ROUTES = new Set(['login', 'register']);
 const OPEN_ROUTES = new Set(['login', 'register', 'policy', 'soon']);
-const CHILD_ROUTES = new Set(['child', 'profile', 'qr', 'soon', 'policy']);
+const CHILD_ROUTES = new Set(['child', 'profile', 'qr', 'soon', 'policy', 'piggy-bank-top-up']);
 
 function RootNavigator({ fontsReady }: { fontsReady: boolean }) {
   const { status, profile } = useAuth();
@@ -68,8 +68,16 @@ function RootNavigator({ fontsReady }: { fontsReady: boolean }) {
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: '#F8F9FB' },
-        }}
-      />
+        }}>
+        <Stack.Screen
+          name="piggy-bank-top-up"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'fade',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+      </Stack>
     </>
   );
 }
