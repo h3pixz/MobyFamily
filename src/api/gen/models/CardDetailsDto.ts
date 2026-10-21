@@ -12,6 +12,12 @@ export type CardDetailsDto = {
     */
     id: string;
     /**
+     * @description Полный номер карты; возвращается только владельцу карты
+     * @example 4258123456781234
+     * @type string | undefined
+    */
+    cardNumber?: string;
+    /**
      * @example 4258 •••• •••• 1234
      * @type string
     */

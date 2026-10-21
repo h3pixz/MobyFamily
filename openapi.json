@@ -3354,6 +3354,11 @@
             "type": "string",
             "example": "b3f5c71a-47d2-432a-bc91-382940294821"
           },
+          "cardNumber": {
+            "type": "string",
+            "example": "4258123456781234",
+            "description": "Полный номер карты; возвращается только владельцу карты"
+          },
           "cardNumberMask": {
             "type": "string",
             "example": "4258 •••• •••• 1234"
@@ -3918,6 +3923,11 @@
           "id": {
             "type": "string",
             "example": "b3f5c71a-47d2-432a-bc91-382940294821"
+          },
+          "cardNumber": {
+            "type": "string",
+            "example": "4258123456781234",
+            "description": "Полный номер карты; возвращается только владельцу карты"
           },
           "cardNumberMask": {
             "type": "string",
