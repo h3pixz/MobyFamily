@@ -114,6 +114,17 @@ export default function HomeScreen() {
     openSoon('Пополнение цели');
   };
 
+  const openLimitSettings = () => {
+    const card = selectedChild?.cards[0];
+
+    if (!card) {
+      openSoon('Настройка лимитов');
+      return;
+    }
+
+    router.push({ pathname: '/limit-settings', params: { cardId: card.id } });
+  };
+
   const changeRole = (next: AppRole) => {
     setRole(next);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
@@ -194,6 +205,7 @@ export default function HomeScreen() {
               onApprove={resolveDecision}
               onDecline={resolveDecision}
               onPressAction={openSoon}
+              onPressPocketMoney={openLimitSettings}
               onNewTask={() => openSoon('Новое задание')}
               onAddMoney={openTopUp}
             />

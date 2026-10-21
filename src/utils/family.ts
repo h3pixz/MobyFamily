@@ -4,6 +4,7 @@ import type { TaskResponseDto } from '@/api/gen/models/TaskResponseDto';
 import { childProfile as demoChildProfile } from '@/data/dashboard';
 import type { ChildProfile, FamilyMember, SavingsGoal, Task } from '@/types/dashboard';
 import { getFirstName } from '@/utils/greeting';
+import { getPocketMoneySchedule } from '@/utils/limits';
 
 export function getAge(birthDay: string) {
   const birth = new Date(birthDay);
@@ -54,6 +55,8 @@ export function toChildProfile(child: ChildUserWithCardsDto): ChildProfile {
     purchaseBalance: card?.balance ?? 0,
     dailyLimit: card?.dailyLimit ?? demoChildProfile.dailyLimit,
     dailySpent: card?.spentToday ?? 0,
+    pocketMoney: card?.pocketMoneyAmount ?? demoChildProfile.pocketMoney,
+    pocketMoneySchedule: `по ${getPocketMoneySchedule(card?.pocketMoneyDay ?? 1)}`,
   };
 }
 
