@@ -197,7 +197,7 @@ export default function ChildScreen() {
             {transactions ? (
               <TeenTransactions
                 transactions={transactions.transactions}
-                onPressAll={() => openSoon('История операций')}
+                onPressAll={() => router.push('/transaction-history')}
               />
             ) : null}
           </>

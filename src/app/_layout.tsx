@@ -20,7 +20,15 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 
 const AUTH_ROUTES = new Set(['login', 'register']);
 const OPEN_ROUTES = new Set(['login', 'register', 'policy', 'soon']);
-const CHILD_ROUTES = new Set(['child', 'profile', 'qr', 'soon', 'policy', 'piggy-bank-top-up']);
+const CHILD_ROUTES = new Set([
+  'child',
+  'profile',
+  'qr',
+  'soon',
+  'policy',
+  'piggy-bank-top-up',
+  'transaction-history',
+]);
 
 function RootNavigator({ fontsReady }: { fontsReady: boolean }) {
   const { status, profile } = useAuth();
