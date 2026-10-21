@@ -34,7 +34,7 @@ export default function FamilyScreen() {
         showsVerticalScrollIndicator={false}>
         <FamilyManagement
           members={familyMembers}
-          onPressAdd={() => openSoon('Добавить члена семьи')}
+          onPressAdd={() => router.push('/add-member')}
           onPressAction={openSoon}
         />
       </ScrollView>
