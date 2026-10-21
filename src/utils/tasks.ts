@@ -42,6 +42,7 @@ function asString(value: object | null | undefined) {
 export function toTaskItem(task: TaskResponseDto): TaskItem {
   const creatorName = task.creator?.name ?? '';
   const firstName = creatorName ? getFirstName(creatorName) : '';
+  const child = task.assignedChild ?? task.completedBy;
 
   return {
     id: task.id,
@@ -52,8 +53,13 @@ export function toTaskItem(task: TaskResponseDto): TaskItem {
     authorName: firstName ? `От ${getGenitiveName(firstName)}` : 'От родителей',
     authorInitials: creatorName ? getInitials(creatorName) : '',
     status: STATUS_KIND[task.status] ?? 'active',
+    apiStatus: task.status,
+    childName: child?.name ?? null,
+    assignedChildId: task.assignedChild?.id ?? null,
     submittedAt: asString(task.submittedAt),
     photoUrl: asString(task.photoUrl),
+    submissionComment: asString(task.submissionComment),
+    rejectionReason: asString(task.rejectionReason),
     icon: getTaskIcon(task.title),
     updatedAt: task.updatedAt,
   };

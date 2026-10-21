@@ -11,35 +11,35 @@ import { getRelativeTime, getTaskDeadlineLabel } from '@/utils/tasks';
 
 type TaskCardProps = {
   task: TaskItem;
-  submitting: boolean;
-  onSubmit: () => void;
+  variant?: 'child' | 'parent';
+  submitting?: boolean;
+  busy?: boolean;
+  onSubmit?: () => void;
+  onApprove?: () => void;
+  onReject?: () => void;
+  onCancel?: () => void;
 };
 
-export function TaskCard({ task, submitting, onSubmit }: TaskCardProps) {
-  const review = task.status === 'review';
-  const done = task.status === 'done';
+export function TaskCard({
+  task,
+  variant = 'child',
+  submitting = false,
+  busy = false,
+  onSubmit,
+  onApprove,
+  onReject,
+  onCancel,
+}: TaskCardProps) {
+  const parent = variant === 'parent';
+  const review = task.apiStatus === 'SUBMITTED';
+  const done = task.apiStatus === 'COMPLETED';
+  const cancelled = task.apiStatus === 'CANCELLED';
+  const inactive = busy || submitting;
 
   return (
     <Card className="gap-3 p-4">
       <View className="flex-row items-center justify-between gap-2">
-        {review ? (
-          <View className="flex-row items-center gap-1.5 rounded-lg bg-secondary-fixed/50 px-2.5 py-1">
-            <Icon name="hourglass-empty" size={15} color="#FB7800" />
-            <Text className="text-label-sm font-inter-semibold text-secondary">Ждём проверку</Text>
-          </View>
-        ) : done ? (
-          <View className="flex-row items-center gap-1.5 rounded-lg bg-success-soft px-2.5 py-1">
-            <Icon name="check-circle" size={15} color="#006242" />
-            <Text className="text-label-sm font-inter-semibold text-tertiary">Выполнено</Text>
-          </View>
-        ) : (
-          <View className="flex-row items-center gap-1.5 rounded-lg bg-surface-low px-2.5 py-1">
-            <Icon name="schedule" size={15} color="#FB7800" />
-            <Text className="text-label-sm font-inter-medium text-on-surface-variant">
-              {getTaskDeadlineLabel(task.deadline)}
-            </Text>
-          </View>
-        )}
+        <StatusPill task={task} />
 
         <View className="flex-shrink-0 flex-row items-center gap-0.5">
           <Text className="text-headline-sm font-inter-bold text-accent">
@@ -52,7 +52,7 @@ export function TaskCard({ task, submitting, onSubmit }: TaskCardProps) {
       <View className="flex-row items-start gap-3">
         <IconTile
           icon={task.icon}
-          tone={review ? 'secondary' : 'primary'}
+          tone={review ? 'secondary' : done ? 'tertiary' : 'primary'}
           size="lg"
           className="rounded-xl"
         />
@@ -73,7 +73,9 @@ export function TaskCard({ task, submitting, onSubmit }: TaskCardProps) {
 
           <View className="mt-2 flex-row items-center gap-1.5">
             <View className="h-5 w-5 items-center justify-center rounded-full bg-surface-container-high">
-              {task.authorInitials ? (
+              {parent ? (
+                <Icon name="face" size={12} color="#424655" />
+              ) : task.authorInitials ? (
                 <Text className="text-[9px] font-inter-semibold text-on-surface-variant">
                   {task.authorInitials}
                 </Text>
@@ -82,7 +84,11 @@ export function TaskCard({ task, submitting, onSubmit }: TaskCardProps) {
               )}
             </View>
             <Text className="text-label-sm font-inter text-on-surface-variant">
-              {task.authorName}
+              {parent
+                ? task.childName
+                  ? `Для ${task.childName}`
+                  : 'Для любого ребёнка'
+                : task.authorName}
             </Text>
           </View>
         </View>
@@ -104,7 +110,53 @@ export function TaskCard({ task, submitting, onSubmit }: TaskCardProps) {
         </View>
       ) : null}
 
-      {task.status === 'active' ? (
+      {review && task.submissionComment ? (
+        <View className="rounded-lg bg-surface-low px-3 py-2">
+          <Text className="text-label-sm font-inter text-on-surface-variant">
+            «{task.submissionComment}»
+          </Text>
+        </View>
+      ) : null}
+
+      {!review && task.rejectionReason ? (
+        <View className="flex-row items-start gap-1.5 rounded-lg bg-warning-soft px-3 py-2">
+          <Icon name="info" size={14} color="#FF7A00" />
+          <Text className="flex-1 text-label-sm font-inter text-secondary">
+            На доработке: {task.rejectionReason}
+          </Text>
+        </View>
+      ) : null}
+
+      {parent ? (
+        review ? (
+          <View className="mt-1 flex-row gap-2">
+            <Button
+              label="Отклонить"
+              variant="secondary"
+              className="flex-1 rounded-xl"
+              disabled={inactive}
+              onPress={onReject}
+            />
+            <Button
+              label="Подтвердить"
+              icon="check-circle"
+              className="flex-1 rounded-xl"
+              loading={inactive}
+              onPress={onApprove}
+            />
+          </View>
+        ) : task.apiStatus === 'OPEN' || task.apiStatus === 'IN_PROGRESS' ? (
+          <Button
+            label="Отменить задание"
+            icon="cancel"
+            variant="secondary"
+            size="lg"
+            className="mt-1 rounded-xl"
+            disabled={inactive}
+            onPress={onCancel}
+          />
+        ) : null
+      ) : task.apiStatus === 'OPEN' || task.apiStatus === 'IN_PROGRESS' ? (
         <Button
           label="Отметить выполненным"
           icon="check-circle"
@@ -122,7 +174,55 @@ export function TaskCard({ task, submitting, onSubmit }: TaskCardProps) {
           className="mt-1 rounded-xl"
           disabled
         />
+      ) : cancelled ? (
+        <Text className="pt-1 text-center text-label-sm font-inter text-outline">
+          Задание отменено
+        </Text>
       ) : null}
     </Card>
+  );
+}
+
+function StatusPill({ task }: { task: TaskItem }) {
+  if (task.apiStatus === 'SUBMITTED') {
+    return (
+      <View className="flex-row items-center gap-1.5 rounded-lg bg-secondary-fixed/50 px-2.5 py-1">
+        <Icon name="hourglass-empty" size={15} color="#FB7800" />
+        <Text className="text-label-sm font-inter-semibold text-secondary">Ждём проверку</Text>
+      </View>
+    );
+  }
+  if (task.apiStatus === 'COMPLETED') {
+    return (
+      <View className="flex-row items-center gap-1.5 rounded-lg bg-success-soft px-2.5 py-1">
+        <Icon name="check-circle" size={15} color="#006242" />
+        <Text className="text-label-sm font-inter-semibold text-tertiary">Выполнено</Text>
+      </View>
+    );
+  }
+  if (task.apiStatus === 'CANCELLED') {
+    return (
+      <View className="flex-row items-center gap-1.5 rounded-lg bg-surface-low px-2.5 py-1">
+        <Icon name="cancel" size={15} color="#737686" />
+        <Text className="text-label-sm font-inter-medium text-on-surface-variant">Отменено</Text>
+      </View>
+    );
+  }
+  if (task.apiStatus === 'IN_PROGRESS') {
+    return (
+      <View className="flex-row items-center gap-1.5 rounded-lg bg-primary-soft px-2.5 py-1">
+        <Icon name="autorenew" size={15} color="#1D63ED" />
+        <Text className="text-label-sm font-inter-medium text-primary">В работе</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View className="flex-row items-center gap-1.5 rounded-lg bg-surface-low px-2.5 py-1">
+      <Icon name="schedule" size={15} color="#FB7800" />
+      <Text className="text-label-sm font-inter-medium text-on-surface-variant">
+        {getTaskDeadlineLabel(task.deadline)}
+      </Text>
+    </View>
   );
 }

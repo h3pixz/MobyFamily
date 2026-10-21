@@ -305,7 +305,7 @@ export default function HomeScreen() {
               onDecline={handleDeclineDecision}
               onPressHistory={openChildHistory}
               onPressPocketMoney={openLimitSettings}
-              onNewTask={() => openSoon('Новое задание')}
+              onNewTask={() => router.push('/new-task')}
               onAddMoney={openTopUp}
             />
           </Animated.View>

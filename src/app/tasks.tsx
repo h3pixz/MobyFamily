@@ -3,12 +3,16 @@ import { useCallback, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { fetchTasks, submitTask } from '@/api/tasks';
+import { isChildRole } from '@/api/auth';
+import { getApiErrorMessage } from '@/api/error';
+import { approveTask, cancelTask, fetchTasks } from '@/api/tasks';
+import { useAuth } from '@/auth/auth-context';
 import { TaskCard } from '@/components/tasks/task-card';
 import { TaskEarningsCard } from '@/components/tasks/task-earnings-card';
 import { TaskFilterChips } from '@/components/tasks/task-filter-chips';
 import { TasksBottomNav } from '@/components/tasks/tasks-bottom-nav';
 import { TasksHeader } from '@/components/tasks/tasks-header';
+import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Icon } from '@/components/ui/icon';
 import { useUnreadCount } from '@/hooks/use-unread-count';
@@ -20,33 +24,23 @@ import {
   toTaskItem,
 } from '@/utils/tasks';
 
-const EMPTY_STATES: Record<TaskFilter, { title: string; subtitle: string }> = {
-  active: {
-    title: 'Активных заданий нет',
-    subtitle: 'Новые поручения от родителей появятся здесь.',
-  },
-  review: {
-    title: 'Заданий на проверке нет',
-    subtitle: 'Отправленные отчёты будут ждать подтверждения здесь.',
-  },
-  done: {
-    title: 'Завершённых заданий пока нет',
-    subtitle: 'Выполненные задания появятся здесь.',
-  },
-};
-
 export default function TasksScreen() {
   const insets = useSafeAreaInsets();
   const unreadCount = useUnreadCount();
+  const { profile } = useAuth();
+  const isParent = !isChildRole(profile?.role ?? '');
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [filter, setFilter] = useState<TaskFilter>('active');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [submittingId, setSubmittingId] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useFocusEffect(
     useCallback(() => {
       let cancelled = false;
+
+      setLoading(true);
 
       fetchTasks()
         .then((response) => {
@@ -54,12 +48,16 @@ export default function TasksScreen() {
             return;
           }
 
-          setTasks(response.filter((task) => task.status !== 'CANCELLED').map(toTaskItem));
+          setTasks(
+            response
+              .filter((task) => task.status !== 'CANCELLED')
+              .map(toTaskItem),
+          );
           setError(null);
         })
-        .catch(() => {
+        .catch((loadError) => {
           if (!cancelled) {
-            setError('Не удалось загрузить задания');
+            setError(getApiErrorMessage(loadError));
           }
         })
         .finally(() => {
@@ -71,37 +69,67 @@ export default function TasksScreen() {
       return () => {
         cancelled = true;
       };
-    }, []),
+    }, [reloadKey]),
   );
+
+  const reload = () => setReloadKey((current) => current + 1);
 
   const goBack = () => {
     if (router.canGoBack()) {
       router.back();
       return;
     }
-    router.replace('/child');
+    router.replace(isParent ? '/' : '/child');
   };
 
-  const handleSubmit = async (taskId: string) => {
-    setSubmittingId(taskId);
+  const handleSubmit = (taskId: string) => {
+    router.push({ pathname: '/submit-task', params: { id: taskId } });
+  };
+
+  const handleApprove = async (task: TaskItem) => {
+    setBusyId(task.id);
 
     try {
-      await submitTask(taskId);
-
-      const submittedAt = new Date().toISOString();
-
-      setTasks((current) =>
-        current.map((task) =>
-          task.id === taskId
-            ? { ...task, status: 'review', submittedAt, updatedAt: submittedAt }
-            : task,
-        ),
-      );
-    } catch {
-      Alert.alert('Не удалось отправить задание', 'Попробуйте ещё раз.');
+      await approveTask(task.id);
+      reload();
+    } catch (approveError) {
+      Alert.alert('Не удалось подтвердить задание', getApiErrorMessage(approveError));
     } finally {
-      setSubmittingId(null);
+      setBusyId(null);
     }
+  };
+
+  const handleReject = (task: TaskItem) => {
+    router.push({
+      pathname: '/decision-reason',
+      params: { kind: 'task', id: task.id, title: task.title },
+    });
+  };
+
+  const handleCancel = (task: TaskItem) => {
+    Alert.alert(
+      'Отменить задание?',
+      'Зарезервированное вознаграждение вернётся на карту родителя.',
+      [
+        { text: 'Оставить', style: 'cancel' },
+        {
+          text: 'Отменить задание',
+          style: 'destructive',
+          onPress: async () => {
+            setBusyId(task.id);
+
+            try {
+              await cancelTask(task.id);
+              reload();
+            } catch (cancelError) {
+              Alert.alert('Не удалось отменить задание', getApiErrorMessage(cancelError));
+            } finally {
+              setBusyId(null);
+            }
+          },
+        },
+      ],
+    );
   };
 
   const activeTasks = filterTasksByStatus(tasks, 'active');
@@ -109,7 +137,23 @@ export default function TasksScreen() {
   const visibleTasks = filterTasksByStatus(tasks, filter);
   const progress = getTaskProgress(tasks);
   const earnings = getMonthlyEarnings(tasks);
-  const emptyState = EMPTY_STATES[filter];
+  const emptyState =
+    filter === 'active'
+      ? {
+          title: 'Активных заданий нет',
+          subtitle: isParent
+            ? 'Создайте первое задание для ребёнка.'
+            : 'Новые поручения от родителей появятся здесь.',
+        }
+      : filter === 'review'
+        ? {
+            title: 'Заданий на проверке нет',
+            subtitle: 'Отправленные отчёты будут ждать подтверждения здесь.',
+          }
+        : {
+            title: 'Завершённых заданий пока нет',
+            subtitle: 'Выполненные задания появятся здесь.',
+          };
 
   return (
     <View className="flex-1 bg-surface">
@@ -144,6 +188,25 @@ export default function TasksScreen() {
           </View>
         ) : (
           <>
+            {isParent ? (
+              <Button
+                label="Новое задание"
+                icon="add-task"
+                size="lg"
+                className="w-full rounded-xl"
+                onPress={() => router.push('/new-task')}
+              />
+            ) : (
+              <Button
+                label="Попросить новое задание"
+                icon="add-task"
+                variant="secondary"
+                size="lg"
+                className="w-full rounded-xl"
+                onPress={() => router.push('/request-task')}
+              />
+            )}
+
             <TaskFilterChips
               value={filter}
               activeCount={activeTasks.length}
@@ -152,6 +215,7 @@ export default function TasksScreen() {
             />
 
             <TaskEarningsCard
+              title={isParent ? 'Выплачено за месяц' : 'Заработок за месяц'}
               earned={earnings}
               completed={progress.completed}
               total={progress.total}
@@ -160,7 +224,7 @@ export default function TasksScreen() {
 
             <View className="flex-row items-center justify-between gap-2 pt-1">
               <Text className="text-headline-sm font-inter-semibold text-on-surface">
-                Текущие поручения
+                {isParent ? 'Задания семьи' : 'Текущие поручения'}
               </Text>
               <Text className="text-label-md font-inter-medium text-on-surface-variant">
                 Всего: {visibleTasks.length}
@@ -181,8 +245,12 @@ export default function TasksScreen() {
                 <TaskCard
                   key={task.id}
                   task={task}
-                  submitting={submittingId === task.id}
+                  variant={isParent ? 'parent' : 'child'}
+                  busy={busyId === task.id}
                   onSubmit={() => handleSubmit(task.id)}
+                  onApprove={() => handleApprove(task)}
+                  onReject={() => handleReject(task)}
+                  onCancel={() => handleCancel(task)}
                 />
               ))
             )}

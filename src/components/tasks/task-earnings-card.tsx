@@ -6,13 +6,20 @@ import { Icon } from '@/components/ui/icon';
 import { formatBYN } from '@/utils/format';
 
 type TaskEarningsCardProps = {
+  title?: string;
   earned: number;
   completed: number;
   total: number;
   percent: number;
 };
 
-export function TaskEarningsCard({ earned, completed, total, percent }: TaskEarningsCardProps) {
+export function TaskEarningsCard({
+  title = 'Заработок за месяц',
+  earned,
+  completed,
+  total,
+  percent,
+}: TaskEarningsCardProps) {
   return (
     <BankCard colors={['#1D63ED', '#004BC3']} padding={16}>
       <View className="flex-row items-center gap-3">
@@ -21,7 +28,7 @@ export function TaskEarningsCard({ earned, completed, total, percent }: TaskEarn
         </View>
         <View>
           <Text className="text-label-md font-inter-semibold uppercase tracking-wider text-primary-fixed">
-            Заработок за месяц
+            {title}
           </Text>
           <View className="flex-row items-center gap-1">
             <Text className="text-headline-lg font-inter-bold tracking-tight text-on-primary">

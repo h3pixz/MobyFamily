@@ -11,7 +11,7 @@ import type { PiggyBankResponseDto } from '@/api/gen/models/PiggyBankResponseDto
 import type { TaskResponseDto } from '@/api/gen/models/TaskResponseDto';
 import { fetchMyTransactions } from '@/api/payments';
 import { fetchPiggyBanks } from '@/api/piggy-banks';
-import { fetchTasks, submitTask } from '@/api/tasks';
+import { fetchTasks } from '@/api/tasks';
 import { useAuth } from '@/auth/auth-context';
 import { ChildBalanceCard } from '@/components/child/child-balance-card';
 import { ChildGoalCard } from '@/components/child/child-goal-card';
@@ -154,16 +154,8 @@ export default function ChildScreen() {
     openSoon(action.label);
   };
 
-  const handleSubmitTask = async (taskId: string) => {
-    try {
-      await submitTask(taskId);
-    } catch {
-      return;
-    }
-
-    setTasks((current) =>
-      current.map((task) => (task.id === taskId ? { ...task, status: 'SUBMITTED' } : task)),
-    );
+  const handleSubmitTask = (taskId: string) => {
+    router.push({ pathname: '/submit-task', params: { id: taskId } });
   };
 
   return (
@@ -248,7 +240,7 @@ export default function ChildScreen() {
               <ChildTasksSection
                 tasks={activeTasks}
                 onSubmit={handleSubmitTask}
-                onPressAll={() => openSoon('Задания')}
+                onPressAll={() => router.push('/tasks')}
               />
               <FinanceAcademyCard onPress={() => openSoon('Фин-академия')} />
             </View>

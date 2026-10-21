@@ -66,10 +66,25 @@ function TaskRow({ task }: { task: Task }) {
       </View>
 
       <View className="flex-row flex-wrap items-center justify-between gap-2 border-t border-outline-variant/20 pt-1.5">
-        <Badge label="В процессе" tone="info" />
+        <Badge
+          label={
+            task.status === 'submitted'
+              ? 'На проверке'
+              : task.status === 'in_progress'
+                ? 'В процессе'
+                : 'Ожидает'
+          }
+          tone={task.status === 'submitted' ? 'warning' : task.status === 'in_progress' ? 'info' : 'neutral'}
+        />
         <View className="flex-row items-center gap-1">
-          <Icon name="notifications-active" size={14} color="#737686" />
-          <Text className="text-[12px] font-inter text-outline">Напоминание отправлено</Text>
+          <Icon
+            name={task.status === 'submitted' ? 'hourglass-top' : 'schedule'}
+            size={14}
+            color="#737686"
+          />
+          <Text className="text-[12px] font-inter text-outline">
+            {task.status === 'submitted' ? 'Родитель проверит отчёт' : 'Задание активно'}
+          </Text>
         </View>
       </View>
     </View>
