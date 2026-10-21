@@ -5,12 +5,31 @@ import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 
+import { getApiErrorMessage } from '@/api/error';
+import type { PayQrDto } from '@/api/gen/models/PayQrDto';
+import { payByQr } from '@/api/payments';
 import { QrHeader } from '@/components/qr/qr-header';
 import { QrPaymentSheet } from '@/components/qr/qr-payment-sheet';
 import { QrViewfinder } from '@/components/qr/qr-viewfinder';
-import { qrPaymentSource } from '@/data/qr';
+import { demoQrPayment, qrPaymentSource } from '@/data/qr';
 
 const FEEDBACK_DURATION = 1600;
+
+function parseQrPayment(raw: string): PayQrDto | null {
+  try {
+    const parsed = JSON.parse(raw) as PayQrDto;
+    const hasItems = Array.isArray(parsed.items) && parsed.items.length > 0;
+    const hasSingleItem = Boolean(parsed.mcc) && typeof parsed.amount === 'number';
+
+    if (typeof parsed.merchant !== 'string' || !parsed.merchant) {
+      return null;
+    }
+
+    return hasItems || hasSingleItem ? parsed : null;
+  } catch {
+    return null;
+  }
+}
 
 export default function QrScannerScreen() {
   const isFocused = useIsFocused();
@@ -18,6 +37,9 @@ export default function QrScannerScreen() {
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [galleryLoading, setGalleryLoading] = useState(false);
   const feedbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const paymentInFlight = useRef(false);
+  const alertOpen = useRef(false);
+  const scanCooldownUntil = useRef(0);
 
   useEffect(() => {
     return () => {
@@ -34,6 +56,59 @@ export default function QrScannerScreen() {
     }
     feedbackTimer.current = setTimeout(() => setFeedbackVisible(false), FEEDBACK_DURATION);
   }, []);
+
+  const showAlert = useCallback((title: string, message?: string) => {
+    alertOpen.current = true;
+    Alert.alert(
+      title,
+      message,
+      [{ text: 'ОК', onPress: () => { alertOpen.current = false; } }],
+      { cancelable: false },
+    );
+  }, []);
+
+  const payWithPayload = useCallback(
+    async (payload: PayQrDto) => {
+      if (paymentInFlight.current) {
+        return;
+      }
+
+      paymentInFlight.current = true;
+      try {
+        const result = await payByQr(payload);
+        showScanFeedback();
+        showAlert(
+          result.status === 'PENDING_PARENT_APPROVAL' ? 'Нужно подтверждение' : 'Оплата прошла',
+          result.message,
+        );
+      } catch (error) {
+        showAlert('Оплата не прошла', getApiErrorMessage(error));
+      } finally {
+        paymentInFlight.current = false;
+        scanCooldownUntil.current = Date.now() + 3000;
+      }
+    },
+    [showAlert, showScanFeedback],
+  );
+
+  const handleScanned = useCallback(
+    (raw: string) => {
+      if (alertOpen.current || Date.now() < scanCooldownUntil.current) {
+        return;
+      }
+
+      const payload = parseQrPayment(raw);
+
+      if (!payload) {
+        scanCooldownUntil.current = Date.now() + 3000;
+        showAlert('Не удалось прочитать QR-код', 'В коде нет данных для оплаты.');
+        return;
+      }
+
+      return payWithPayload(payload);
+    },
+    [payWithPayload, showAlert],
+  );
 
   const goBack = () => {
     if (router.canGoBack()) {
@@ -65,7 +140,7 @@ export default function QrScannerScreen() {
         return;
       }
 
-      showScanFeedback();
+      await handleScanned(codes[0].data);
     } catch {
       Alert.alert('Не удалось прочитать QR-код', 'Попробуйте выбрать другое фото.');
     } finally {
@@ -93,8 +168,8 @@ export default function QrScannerScreen() {
             torchOn={torchOn}
             active={isFocused}
             feedbackVisible={feedbackVisible}
-            onBarcodeScanned={showScanFeedback}
-            onDemoScan={showScanFeedback}
+            onBarcodeScanned={handleScanned}
+            onDemoScan={() => handleScanned(JSON.stringify(demoQrPayment))}
           />
         </View>
 
