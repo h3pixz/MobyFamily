@@ -11,11 +11,17 @@ import { formatBYN } from '@/utils/format';
 
 type DecisionsSectionProps = {
   requests: DecisionRequest[];
+  childName: string;
   onApprove: (id: string) => void;
   onDecline: (id: string) => void;
 };
 
-export function DecisionsSection({ requests, onApprove, onDecline }: DecisionsSectionProps) {
+export function DecisionsSection({
+  requests,
+  childName,
+  onApprove,
+  onDecline,
+}: DecisionsSectionProps) {
   return (
     <View className="gap-2.5">
       <View className="flex-row items-center justify-between px-0.5">
@@ -27,7 +33,7 @@ export function DecisionsSection({ requests, onApprove, onDecline }: DecisionsSe
             <Badge label={String(requests.length)} tone="warning" dot />
           ) : null}
         </View>
-        <Text className="text-label-sm font-inter-medium text-outline">Саша ожидает</Text>
+        <Text className="text-label-sm font-inter-medium text-outline">{childName} ожидает</Text>
       </View>
 
       {requests.length === 0 ? (

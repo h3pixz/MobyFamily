@@ -7,14 +7,17 @@ import { pluralize } from '@/utils/format';
 
 type FamilyAlertProps = {
   count: number;
+  childName?: string;
   onPress: () => void;
 };
 
-export function FamilyAlert({ count, onPress }: FamilyAlertProps) {
+export function FamilyAlert({ count, childName, onPress }: FamilyAlertProps) {
   const requests = pluralize(count, ['запрос', 'запроса', 'запросов']);
   const verb = count === 1 ? 'ждёт' : 'ждут';
   const message =
-    count > 0 ? `У Саши ${count} ${requests} ${verb} решения` : 'Все запросы Саши обработаны';
+    count > 0
+      ? `${childName ?? 'У ребёнка'}: ${count} ${requests} ${verb} решения`
+      : 'Все запросы обработаны';
 
   return (
     <LinearGradient

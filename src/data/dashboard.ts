@@ -30,72 +30,61 @@ export const childProfile: ChildProfile = {
   pocketMoneySchedule: 'в понедельник',
 };
 
-export const familyMembers: FamilyMember[] = [
-  {
-    id: 'member-child-sasha',
-    kind: 'child',
-    name: childProfile.name,
-    roleLabel: 'Карта ребёнка',
-    emoji: '👦🏻',
-    age: childProfile.age,
-    balance: childProfile.purchaseBalance,
-  },
-  {
-    id: 'member-parent-alexey',
-    kind: 'parent',
-    name: 'Алексей',
-    roleLabel: 'Совместный доступ',
-    emoji: '👨🏻',
-  },
-];
+export const familyParentMember: FamilyMember = {
+  id: 'member-parent-olga',
+  kind: 'parent',
+  name: 'Ольга',
+  roleLabel: 'Совместный доступ',
+  emoji: '👩🏻',
+};
 
-export const bonusMembers: BonusMember[] = [
-  {
-    id: 'bonus-anna',
-    kind: 'parent',
-    name: 'Анна',
-    roleLabel: 'Родитель',
-    points: 1240,
-  },
-  {
-    id: 'bonus-sasha',
-    kind: 'child',
-    name: 'Саша',
-    emoji: '👦🏻',
-    points: 350,
-    goal: 500,
-  },
-];
+export const parentBonusMember: BonusMember = {
+  id: 'bonus-parent',
+  kind: 'parent',
+  name: 'Анна',
+  roleLabel: 'Родитель',
+  points: 1240,
+};
+
+export const childBonusMember: Omit<BonusMember, 'name'> = {
+  id: 'bonus-child',
+  kind: 'child',
+  emoji: '👦🏻',
+  points: 350,
+  goal: 500,
+};
 
 export const childQuickActions: ChildQuickAction[] = [
   { id: 'child-action-ask', label: 'Попросить деньги', icon: 'handshake', tone: 'primary' },
   { id: 'child-action-qr', label: 'Оплатить по QR', icon: 'qr-code-scanner', tone: 'accent' },
 ];
 
-export const initialDecisions: DecisionRequest[] = [
-  {
-    id: 'decision-purchase',
-    kind: 'purchase',
-    title: 'Саша просит одобрить покупку · Книжный магазин',
-    subtitle: 'Книги и комиксы · Магазин «Читай-город»',
-    amount: 18,
-    icon: 'menu-book',
-    note: 'Превышен дневной лимит',
-    noteAmount: 15,
-    available: 42,
-    hint: 'Запрос на одобрение отправлен в 1 клик через QR',
-  },
-  {
-    id: 'decision-task',
-    kind: 'task',
-    title: 'Помочь с покупками к ужину',
-    subtitle: 'Саша отметил выполнено',
-    amount: 5,
-    icon: 'shopping-cart',
-    note: 'Ждёт подтверждения',
-    noteDetail: 'Чек прикреплен',
-  },
-];
+export function getInitialDecisions(childName: string): DecisionRequest[] {
+  return [
+    {
+      id: 'decision-purchase',
+      kind: 'purchase',
+      title: `${childName} просит одобрить покупку · Книжный магазин`,
+      subtitle: 'Книги и комиксы · Магазин «Читай-город»',
+      amount: 18,
+      icon: 'menu-book',
+      note: 'Превышен дневной лимит',
+      noteAmount: 15,
+      available: 42,
+      hint: 'Запрос на одобрение отправлен в 1 клик через QR',
+    },
+    {
+      id: 'decision-task',
+      kind: 'task',
+      title: 'Помочь с покупками к ужину',
+      subtitle: `${childName} отметил выполнено`,
+      amount: 5,
+      icon: 'shopping-cart',
+      note: 'Ждёт подтверждения',
+      noteDetail: 'Чек прикреплен',
+    },
+  ];
+}
 
 export const childTasks: Task[] = [
   {

@@ -1,32 +1,69 @@
 import { router } from 'expo-router';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PanResponder, ScrollView, View } from 'react-native';
 import Animated, { FadeInLeft, FadeInRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { fetchFamily } from '@/api/family';
+import type { FamilyResponseDto } from '@/api/gen/models/FamilyResponseDto';
 import { useAuth } from '@/auth/auth-context';
 import { BottomNav } from '@/components/dashboard/bottom-nav';
 import { ChildDashboard } from '@/components/dashboard/child-dashboard';
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 import { ParentDashboard } from '@/components/dashboard/parent-dashboard';
 import {
-  bonusMembers,
-  childProfile,
+  childBonusMember,
   childTasks,
-  familyMembers,
-  initialDecisions,
+  familyParentMember,
+  getInitialDecisions,
+  parentBonusMember,
   parentCard,
   savingsGoal,
 } from '@/data/dashboard';
-import type { AppRole, DecisionRequest } from '@/types/dashboard';
+import type { AppRole } from '@/types/dashboard';
+import { toChildProfile, toFamilyMember } from '@/utils/family';
 import { getGreeting } from '@/utils/greeting';
 
 export default function HomeScreen() {
   const { profile } = useAuth();
   const [role, setRole] = useState<AppRole>('parent');
-  const [decisions, setDecisions] = useState<DecisionRequest[]>(initialDecisions);
+  const [resolvedDecisions, setResolvedDecisions] = useState<string[]>([]);
+  const [family, setFamily] = useState<FamilyResponseDto | null>(null);
   const scrollRef = useRef<ScrollView>(null);
   const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    if (!profile) {
+      return;
+    }
+
+    let cancelled = false;
+
+    fetchFamily()
+      .then((data) => {
+        if (!cancelled) {
+          setFamily(data);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [profile]);
+
+  const familyChild = family?.children[0];
+  const childProfile = familyChild ? toChildProfile(familyChild) : null;
+  const childName = childProfile?.name ?? 'Ребёнок';
+  const members = familyChild
+    ? [toFamilyMember(familyChild), familyParentMember]
+    : [familyParentMember];
+  const bonuses = childProfile
+    ? [parentBonusMember, { ...childBonusMember, name: childProfile.name }]
+    : [parentBonusMember];
+  const decisions = getInitialDecisions(childName).filter(
+    (request) => !resolvedDecisions.includes(request.id),
+  );
 
   const openSoon = (title: string) => {
     router.push({ pathname: '/soon', params: { title } });
@@ -38,7 +75,7 @@ export default function HomeScreen() {
   };
 
   const resolveDecision = (id: string) => {
-    setDecisions((current) => current.filter((request) => request.id !== id));
+    setResolvedDecisions((current) => [...current, id]);
   };
 
   const swipeBack = useRef(
@@ -78,18 +115,23 @@ export default function HomeScreen() {
           <Animated.View key="parent" entering={FadeInLeft.duration(220)}>
             <ParentDashboard
               card={parentCard}
-              members={familyMembers}
-              bonuses={bonusMembers}
+              members={members}
+              bonuses={bonuses}
+              childName={childProfile?.name}
               pendingCount={decisions.length}
               onPressAction={openSoon}
               onPressManageFamily={() => router.push('/family')}
-              onSwitchToChild={() => changeRole('child')}
+              onSwitchToChild={() => {
+                if (childProfile) {
+                  changeRole('child');
+                }
+              }}
             />
           </Animated.View>
-        ) : (
+        ) : childProfile ? (
           <Animated.View key="child" entering={FadeInRight.duration(280)}>
             <ChildDashboard
-              greeting={getGreeting(profile?.name)}
+              greeting={getGreeting(familyChild?.name)}
               child={childProfile}
               decisions={decisions}
               tasks={childTasks}
@@ -101,7 +143,7 @@ export default function HomeScreen() {
               onAddMoney={() => openSoon('Пополнение цели')}
             />
           </Animated.View>
-        )}
+        ) : null}
       </ScrollView>
 
       <BottomNav

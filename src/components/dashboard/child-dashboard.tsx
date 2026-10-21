@@ -45,7 +45,12 @@ export function ChildDashboard({
         onPressPocketMoney={() => onPressAction('Настройка карманных')}
         onPressHistory={() => onPressAction('История')}
       />
-      <DecisionsSection requests={decisions} onApprove={onApprove} onDecline={onDecline} />
+      <DecisionsSection
+        requests={decisions}
+        childName={child.name}
+        onApprove={onApprove}
+        onDecline={onDecline}
+      />
       <TasksSection tasks={tasks} onNewTask={onNewTask} />
       <SavingsGoalCard goal={goal} onAddMoney={onAddMoney} />
     </View>

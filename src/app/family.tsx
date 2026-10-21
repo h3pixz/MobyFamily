@@ -1,14 +1,37 @@
 import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { fetchFamily } from '@/api/family';
+import type { FamilyResponseDto } from '@/api/gen/models/FamilyResponseDto';
 import { BottomNav } from '@/components/dashboard/bottom-nav';
 import { FamilyHeader } from '@/components/family/family-header';
 import { FamilyManagement } from '@/components/family/family-management';
-import { familyMembers } from '@/data/dashboard';
+import { familyParentMember } from '@/data/dashboard';
+import { toFamilyMember } from '@/utils/family';
 
 export default function FamilyScreen() {
   const insets = useSafeAreaInsets();
+  const [family, setFamily] = useState<FamilyResponseDto | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetchFamily()
+      .then((data) => {
+        if (!cancelled) {
+          setFamily(data);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const members = [...(family?.children.map(toFamilyMember) ?? []), familyParentMember];
 
   const openSoon = (title: string) => {
     router.push({ pathname: '/soon', params: { title } });
@@ -33,7 +56,7 @@ export default function FamilyScreen() {
         }}
         showsVerticalScrollIndicator={false}>
         <FamilyManagement
-          members={familyMembers}
+          members={members}
           onPressAdd={() => router.push('/add-member')}
           onPressAction={openSoon}
         />

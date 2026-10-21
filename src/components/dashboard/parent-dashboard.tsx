@@ -10,6 +10,7 @@ type ParentDashboardProps = {
   card: ParentCard;
   members: FamilyMember[];
   bonuses: BonusMember[];
+  childName?: string;
   pendingCount: number;
   onPressAction: (label: string) => void;
   onPressManageFamily: () => void;
@@ -20,6 +21,7 @@ export function ParentDashboard({
   card,
   members,
   bonuses,
+  childName,
   pendingCount,
   onPressAction,
   onPressManageFamily,
@@ -36,7 +38,7 @@ export function ParentDashboard({
         onPressManage={onPressManageFamily}
       />
 
-      <FamilyAlert count={pendingCount} onPress={onSwitchToChild} />
+      <FamilyAlert count={pendingCount} childName={childName} onPress={onSwitchToChild} />
       <BonusesCard members={bonuses} onPress={onPressAction} />
     </View>
   );
