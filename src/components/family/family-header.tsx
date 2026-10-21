@@ -11,11 +11,16 @@ const shadow = {
 };
 
 type FamilyHeaderProps = {
+  title?: string;
   onPressBack: () => void;
   onPressProfile: () => void;
 };
 
-export function FamilyHeader({ onPressBack, onPressProfile }: FamilyHeaderProps) {
+export function FamilyHeader({
+  title = 'Управление семьёй',
+  onPressBack,
+  onPressProfile,
+}: FamilyHeaderProps) {
   return (
     <View className="bg-surface-lowest" style={shadow}>
       <View className="h-14 flex-row items-center justify-between px-margin">
@@ -31,7 +36,7 @@ export function FamilyHeader({ onPressBack, onPressProfile }: FamilyHeaderProps)
         <Text
           numberOfLines={1}
           className="flex-1 px-2 text-center text-headline-sm font-inter-semibold tracking-tight text-on-surface">
-          Управление семьёй
+          {title}
         </Text>
 
         <Pressable
