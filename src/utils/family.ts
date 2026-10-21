@@ -19,7 +19,17 @@ export function getAge(birthDay: string) {
   return age;
 }
 
+const GENITIVE_EXCEPTIONS: Record<string, string> = {
+  Павел: 'Павла',
+  Пётр: 'Петра',
+  Лев: 'Льва',
+};
+
 export function getGenitiveName(name: string) {
+  const exception = GENITIVE_EXCEPTIONS[name];
+  if (exception) {
+    return exception;
+  }
   if (name.endsWith('а')) {
     return `${name.slice(0, -1)}ы`;
   }
