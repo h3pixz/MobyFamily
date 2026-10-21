@@ -18,6 +18,21 @@ const MONTHS_GENITIVE = [
   'декабря',
 ];
 
+const MONTHS_PREPOSITIONAL = [
+  'январе',
+  'феврале',
+  'марте',
+  'апреле',
+  'мае',
+  'июне',
+  'июле',
+  'августе',
+  'сентябре',
+  'октябре',
+  'ноябре',
+  'декабре',
+];
+
 const WEEKDAYS = [
   'воскресенье',
   'понедельник',
@@ -40,8 +55,8 @@ function getComment(value: unknown) {
   return typeof value === 'string' && value.trim() ? value : null;
 }
 
-export function getMonthLabelGenitive(date: Date) {
-  return MONTHS_GENITIVE[date.getMonth()];
+export function getMonthLabelPrepositional(date: Date) {
+  return MONTHS_PREPOSITIONAL[date.getMonth()];
 }
 
 export function formatTopUpTime(value: string) {

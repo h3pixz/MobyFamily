@@ -15,7 +15,7 @@ import type { TopUpEntry } from '@/types/history';
 import { toChildProfile } from '@/utils/family';
 import {
   getCurrentMonthTopUps,
-  getMonthLabelGenitive,
+  getMonthLabelPrepositional,
   groupTopUpsByDay,
   toTopUpEntries,
 } from '@/utils/history';
@@ -66,7 +66,7 @@ export default function ChildHistoryScreen() {
 
   const groups = groupTopUpsByDay(entries);
   const monthTopUps = getCurrentMonthTopUps(entries);
-  const monthLabel = getMonthLabelGenitive(new Date());
+  const monthLabel = getMonthLabelPrepositional(new Date());
 
   const goBack = () => {
     if (router.canGoBack()) {
