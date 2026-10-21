@@ -64,4 +64,16 @@ export type CardLimitsDetailsDto = {
      * @type boolean
     */
     isBlocked: boolean;
+    /**
+     * @description Сумма карманных в неделю
+     * @example 25
+     * @type number
+    */
+    pocketMoneyAmount: number;
+    /**
+     * @description День недели выплаты (1 — понедельник, 7 — воскресенье)
+     * @example 1
+     * @type number
+    */
+    pocketMoneyDay: number;
 };

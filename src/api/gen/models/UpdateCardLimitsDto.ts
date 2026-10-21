@@ -25,4 +25,17 @@ export type UpdateCardLimitsDto = {
      * @type boolean | undefined
     */
     isBlocked?: boolean;
+    /**
+     * @description Сумма регулярного автоперевода карманных денег в BYN
+     * @minLength 0
+     * @type number | undefined
+    */
+    pocketMoneyAmount?: number;
+    /**
+     * @description День недели автоперевода карманных денег (1 — понедельник, 7 — воскресенье)
+     * @minLength 1
+     * @maxLength 7
+     * @type integer | undefined
+    */
+    pocketMoneyDay?: number;
 };

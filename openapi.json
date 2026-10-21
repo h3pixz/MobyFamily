@@ -3397,6 +3397,16 @@
           "remainingDailyLimit": {
             "type": "number",
             "example": 25
+          },
+          "pocketMoneyAmount": {
+            "type": "number",
+            "example": 25,
+            "description": "Сумма карманных в неделю"
+          },
+          "pocketMoneyDay": {
+            "type": "number",
+            "example": 1,
+            "description": "День недели выплаты (1 — понедельник, 7 — воскресенье)"
           }
         },
         "required": [
@@ -3411,7 +3421,9 @@
           "spentToday",
           "allowOnlinePurchases",
           "allowCashWithdrawal",
-          "remainingDailyLimit"
+          "remainingDailyLimit",
+          "pocketMoneyAmount",
+          "pocketMoneyDay"
         ]
       },
       "ChildUserWithCardsDto": {
@@ -3702,6 +3714,17 @@
           "isBlocked": {
             "description": "Заблокировать / разблокировать карту",
             "type": "boolean"
+          },
+          "pocketMoneyAmount": {
+            "description": "Сумма регулярного автоперевода карманных денег в BYN",
+            "type": "number",
+            "minimum": 0
+          },
+          "pocketMoneyDay": {
+            "description": "День недели автоперевода карманных денег (1 — понедельник, 7 — воскресенье)",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 7
           }
         },
         "required": [
@@ -3758,6 +3781,16 @@
           "isBlocked": {
             "type": "boolean",
             "example": false
+          },
+          "pocketMoneyAmount": {
+            "type": "number",
+            "example": 25,
+            "description": "Сумма карманных в неделю"
+          },
+          "pocketMoneyDay": {
+            "type": "number",
+            "example": 1,
+            "description": "День недели выплаты (1 — понедельник, 7 — воскресенье)"
           }
         },
         "required": [
@@ -3772,7 +3805,9 @@
           "remainingDailyLimit",
           "allowOnlinePurchases",
           "allowCashWithdrawal",
-          "isBlocked"
+          "isBlocked",
+          "pocketMoneyAmount",
+          "pocketMoneyDay"
         ]
       },
       "UpdateCardLimitsResponseDto": {
@@ -3928,6 +3963,16 @@
             "type": "number",
             "example": 25
           },
+          "pocketMoneyAmount": {
+            "type": "number",
+            "example": 25,
+            "description": "Сумма карманных в неделю"
+          },
+          "pocketMoneyDay": {
+            "type": "number",
+            "example": 1,
+            "description": "День недели выплаты (1 — понедельник, 7 — воскресенье)"
+          },
           "transactions": {
             "type": "array",
             "items": {
@@ -3947,7 +3992,9 @@
           "spentToday",
           "allowOnlinePurchases",
           "allowCashWithdrawal",
-          "remainingDailyLimit"
+          "remainingDailyLimit",
+          "pocketMoneyAmount",
+          "pocketMoneyDay"
         ]
       },
       "GraduationCheckpointDto": {

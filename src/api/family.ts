@@ -4,6 +4,7 @@ import {
   usersControllerGetFamily,
   usersControllerGetGraduationStatus,
   usersControllerLinkChild,
+  usersControllerUpdateCardLimits,
 } from './gen/clients';
 import type { UsersControllerLinkChildBodyFormData } from './gen/models/UsersControllerLinkChild';
 import { toPhoneNumber } from '@/utils/phone';
@@ -20,6 +21,22 @@ export async function fetchFamily() {
 
 export async function fetchGraduationStatus() {
   return usersControllerGetGraduationStatus({});
+}
+
+export async function updateCardLimits(input: {
+  cardId: string;
+  dailyLimit: number;
+  pocketMoneyAmount: number;
+  pocketMoneyDay: number;
+}) {
+  return usersControllerUpdateCardLimits({
+    path: { cardId: input.cardId },
+    body: {
+      dailyLimit: input.dailyLimit,
+      pocketMoneyAmount: input.pocketMoneyAmount,
+      pocketMoneyDay: input.pocketMoneyDay,
+    },
+  });
 }
 
 export async function linkChild(input: { phone: string; passport: PassportFile }) {
