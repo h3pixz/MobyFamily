@@ -128,6 +128,10 @@ export default function ChildScreen() {
       router.push('/qr');
       return;
     }
+    if (action.id === 'teen-tasks') {
+      router.push('/tasks');
+      return;
+    }
     openSoon(action.label);
   };
 
