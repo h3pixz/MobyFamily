@@ -28,6 +28,7 @@ const CHILD_ROUTES = new Set([
   'policy',
   'piggy-bank-top-up',
   'transaction-history',
+  'tasks',
 ]);
 
 function RootNavigator({ fontsReady }: { fontsReady: boolean }) {
