@@ -77,10 +77,15 @@ export default function QrScannerScreen() {
       try {
         const result = await payByQr(payload);
         showScanFeedback();
-        showAlert(
-          result.status === 'PENDING_PARENT_APPROVAL' ? 'Нужно подтверждение' : 'Оплата прошла',
-          result.message,
-        );
+
+        if (result.status === 'PENDING_PARENT_APPROVAL') {
+          showAlert('Нужно подтверждение', result.message);
+        } else {
+          showAlert(
+            'Оплата прошла',
+            `Начислено ${result.earnedMobiks} Мобиков ⚡`,
+          );
+        }
       } catch (error) {
         showAlert('Оплата не прошла', getApiErrorMessage(error));
       } finally {
