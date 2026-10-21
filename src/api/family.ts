@@ -1,6 +1,10 @@
 import './client';
 
-import { usersControllerGetFamily, usersControllerLinkChild } from './gen/clients';
+import {
+  usersControllerGetFamily,
+  usersControllerGetGraduationStatus,
+  usersControllerLinkChild,
+} from './gen/clients';
 import type { UsersControllerLinkChildBodyFormData } from './gen/models/UsersControllerLinkChild';
 import { toPhoneNumber } from '@/utils/phone';
 
@@ -12,6 +16,10 @@ export type PassportFile = {
 
 export async function fetchFamily() {
   return usersControllerGetFamily({});
+}
+
+export async function fetchGraduationStatus() {
+  return usersControllerGetGraduationStatus({});
 }
 
 export async function linkChild(input: { phone: string; passport: PassportFile }) {
