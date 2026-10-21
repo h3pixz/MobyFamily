@@ -263,7 +263,7 @@ export default function TasksScreen() {
           if (tab.key === 'home') {
             goBack();
           } else if (tab.key === 'piggy') {
-            router.push({ pathname: '/soon', params: { title: tab.label } });
+            router.push('/piggy-banks');
           } else if (tab.key === 'profile') {
             router.push('/profile');
           }

@@ -267,6 +267,8 @@ export default function ChildScreen() {
           onPress={(tab) => {
             if (tab.key === 'profile') {
               router.push('/profile');
+            } else if (tab.key === 'savings') {
+              router.push('/piggy-banks');
             } else if (tab.key !== 'family') {
               openSoon(tab.label);
             }
