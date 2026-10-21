@@ -38,7 +38,7 @@ function getRoleLabel(role?: string) {
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, refreshProfile } = useAuth();
   const [signingOut, setSigningOut] = useState(false);
   const [parents, setParents] = useState<ParentSummaryDto[]>([]);
   const isChild = isChildRole(profile?.role ?? '');
@@ -82,6 +82,7 @@ export default function ProfileScreen() {
             try {
               await removeParent(parent.id);
               setParents((current) => current.filter((item) => item.id !== parent.id));
+              await refreshProfile().catch(() => {});
             } catch (removeError) {
               Alert.alert('Не удалось отвязать родителя', getApiErrorMessage(removeError));
             }
