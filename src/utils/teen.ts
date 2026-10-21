@@ -1,18 +1,3 @@
-const MONTHS = [
-  'январь',
-  'февраль',
-  'март',
-  'апрель',
-  'май',
-  'июнь',
-  'июль',
-  'август',
-  'сентябрь',
-  'октябрь',
-  'ноябрь',
-  'декабрь',
-];
-
 const MONTHS_SHORT = [
   'янв',
   'фев',
@@ -27,10 +12,6 @@ const MONTHS_SHORT = [
   'ноя',
   'дек',
 ];
-
-export function getCurrentMonthName() {
-  return MONTHS[new Date().getMonth()];
-}
 
 const categoryMeta: Record<string, { emoji: string; label: string; container: string }> = {
   FOOD: { emoji: '🍕', label: 'Кафе и фастфуд', container: 'bg-warning-soft' },

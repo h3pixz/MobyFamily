@@ -4,13 +4,11 @@ import { ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { fetchFamily, fetchGraduationStatus } from '@/api/family';
-import type { CashbackCategoriesResponseDto } from '@/api/gen/models/CashbackCategoriesResponseDto';
 import type { FamilyResponseDto } from '@/api/gen/models/FamilyResponseDto';
 import type { GraduationStatusResponseDto } from '@/api/gen/models/GraduationStatusResponseDto';
 import type { MemberTransactionsResponseDto } from '@/api/gen/models/MemberTransactionsResponseDto';
 import type { PiggyBankResponseDto } from '@/api/gen/models/PiggyBankResponseDto';
 import type { TaskResponseDto } from '@/api/gen/models/TaskResponseDto';
-import { fetchCashbackCategories } from '@/api/loyalty';
 import { fetchMyTransactions } from '@/api/payments';
 import { fetchPiggyBanks } from '@/api/piggy-banks';
 import { fetchTasks, submitTask } from '@/api/tasks';
@@ -24,7 +22,6 @@ import { BottomNav } from '@/components/dashboard/bottom-nav';
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 import { TeenBalanceCard } from '@/components/teen/teen-balance-card';
 import { TeenBottomNav } from '@/components/teen/teen-bottom-nav';
-import { TeenCashbackCard } from '@/components/teen/teen-cashback-card';
 import { TeenGoalCard } from '@/components/teen/teen-goal-card';
 import { TeenQuestCard } from '@/components/teen/teen-quest-card';
 import { TeenQuickActions } from '@/components/teen/teen-quick-actions';
@@ -34,7 +31,7 @@ import { teenQuickActions } from '@/data/teen';
 import type { ChildQuickAction, TeenQuickAction } from '@/types/dashboard';
 import { toChildProfile, toChildTasks, toSavingsGoal } from '@/utils/family';
 import { getFirstName } from '@/utils/greeting';
-import { getCurrentMonthName, getMonthsUntilAge } from '@/utils/teen';
+import { getMonthsUntilAge } from '@/utils/teen';
 
 export default function ChildScreen() {
   const { profile } = useAuth();
@@ -45,7 +42,6 @@ export default function ChildScreen() {
   const [piggyBanks, setPiggyBanks] = useState<PiggyBankResponseDto[]>([]);
   const [transactions, setTransactions] = useState<MemberTransactionsResponseDto | null>(null);
   const [graduation, setGraduation] = useState<GraduationStatusResponseDto | null>(null);
-  const [cashback, setCashback] = useState<CashbackCategoriesResponseDto | null>(null);
 
   useEffect(() => {
     if (!profile) {
@@ -60,8 +56,7 @@ export default function ChildScreen() {
         fetchPiggyBanks(),
         fetchMyTransactions(6),
         fetchGraduationStatus(),
-        fetchCashbackCategories(),
-      ]).then(([familyResult, piggyBanksResult, transactionsResult, graduationResult, cashbackResult]) => {
+      ]).then(([familyResult, piggyBanksResult, transactionsResult, graduationResult]) => {
         if (cancelled) {
           return;
         }
@@ -77,9 +72,6 @@ export default function ChildScreen() {
         }
         if (graduationResult.status === 'fulfilled') {
           setGraduation(graduationResult.value);
-        }
-        if (cashbackResult.status === 'fulfilled') {
-          setCashback(cashbackResult.value);
         }
       });
     } else {
@@ -176,15 +168,6 @@ export default function ChildScreen() {
             ) : null}
 
             <TeenQuickActions actions={teenQuickActions} onPress={openTeenAction} />
-
-            {cashback ? (
-              <TeenCashbackCard
-                categories={cashback}
-                mobiksBalance={family?.user.mobiksBalance ?? 0}
-                monthName={getCurrentMonthName()}
-                onConfigure={() => openSoon('Категории кэшбэка')}
-              />
-            ) : null}
 
             {graduation ? (
               <TeenQuestCard
