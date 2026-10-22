@@ -1,56 +1,111 @@
-# Welcome to your Expo app 👋
+# Moby Family
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Семейный режим Moby МТбанка для родителей и детей 7–17 лет: родителю — спокойствие, ребёнку — деньги, навыки и самостоятельность.
 
-## Get started
+Мобильное приложение на Expo / React Native. Прототип для хакатона: карты, балансы, переводы, кэшбэк и Мобики имитируются бэкендом, реальной интеграции с МТБанком нет.
 
-1. Install dependencies
+<p align="center">
+  <img src="docs/screenshots/parent-home.png" width="300" alt="Главная родителя" />
+  <img src="docs/screenshots/child-home.png" width="300" alt="Главная ребёнка" />
+</p>
 
-   ```bash
-   npm install
-   ```
+## Возможности
 
-2. Start the app
+**Родитель**
 
-   ```bash
-   npx expo start
-   ```
+- Главная: семейная карта, члены семьи, запросы, Moby Бонусы.
+- Управление семьёй: привязка ребёнка по телефону со сканом документа или создание нового аккаунта.
+- Настройка карты ребёнка: дневной лимит, карманные, онлайн-покупки, снятие наличных, блокировка.
+- Задания: создание с резервированием награды, проверка отчётов, отклонение с причиной.
+- Одобрение запросов ребёнка на деньги и переводы.
+- Уведомления о лимитах, ночных покупках и запрещённых операциях.
 
-In the output, you'll find options to open the app in a
+**Ребёнок**
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- Отдельный вход и главная по возрасту: 7–13 или 14–17 лет.
+- Карта Moby Junior, баланс, дневной лимит и карманные.
+- Запрос денег у родителей, QR-оплата, переводы.
+- Копилки с целями, прогрессом и пополнениями.
+- Задания от родителей с отправкой отчёта.
+- История операций с фильтрами и сводкой трат.
+- Для подростков — квест «17.5» и переход во взрослый банкинг.
 
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Стек
 
-## Get a fresh project
+- Expo SDK 57, React Native 0.86, React 19, TypeScript.
+- Expo Router (typed routes) и React Compiler.
+- NativeWind 4 + Tailwind CSS.
+- Kubb 5: типы и fetch-клиент генерируются из [`openapi.json`](openapi.json).
+- Шрифт Inter 400–800, светлая тема.
+- Expo-модули: camera, image-picker, secure-store, linear-gradient, reanimated.
 
-When you're ready, run:
+## Запуск
+
+Требуются Node.js 20+, npm и запущенный бэкенд на порту `3000` (отдельный репозиторий с NestJS API).
 
 ```bash
-npm run reset-project
+npm install
+npm start
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+Затем откройте приложение в Expo Go, на эмуляторе Android или iOS-симуляторе. Адрес API определяется автоматически из хоста Expo dev-сервера; для туннеля или удалённого бэкенда задайте `EXPO_PUBLIC_API_URL`:
 
-### Other setup steps
+```bash
+EXPO_PUBLIC_API_URL=https://api.example.com npm start
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+В PowerShell:
 
-## Learn more
+```powershell
+$env:EXPO_PUBLIC_API_URL = "https://api.example.com"; npm start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## Скрипты
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+| Команда | Что делает |
+| --- | --- |
+| `npm start` | Запускает Expo dev-сервер |
+| `npm run ios` / `npm run android` / `npm run web` | Запускает на конкретной платформе |
+| `npm run lint` | Проверка ESLint |
+| `npx tsc --noEmit` | Проверка типов |
+| `npm run api:generate` | Перегенерирует API-клиент и модели из `openapi.json` |
 
-## Join the community
+## API
 
-Join our community of developers creating universal apps.
+`openapi.json` — снимок контракта MTBank Junior API (auth, семья, карты, платежи, задания, копилки, уведомления, лояльность). Из него Kubb генерирует код в `src/api/gen`: типы в `models`, типизированные клиенты в `clients`.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+После изменений на бэкенде обновите `openapi.json` с `GET /api/swagger.json` и выполните:
+
+```bash
+npm run api:generate
+```
+
+Обёртки над сгенерированным клиентом лежат в `src/api` (`auth.ts`, `family.ts`, `payments.ts`, `tasks.ts`, `piggy-banks.ts`, `notifications.ts`, `loyalty.ts`). Авторизация — Bearer-токены в `expo-secure-store`; при `401` клиент автоматически обновляет пару токенов через `POST /auth/refresh`.
+
+## Структура
+
+```
+src/
+  app/          # маршруты Expo Router: файл = экран или layout
+  auth/         # AuthProvider и useAuth
+  components/
+    ui/         # переиспользуемые примитивы
+    <feature>/  # компоненты конкретного экрана
+  api/          # клиент, сессия, сгенерированный код Kubb
+  data/         # демо-данные и конфиги
+  types/        # модели и типы
+  utils/        # форматирование и вспомогательные функции
+assets/         # иконки, логотип, изображения
+docs/           # документация и скриншоты
+```
+
+## Ограничения демо
+
+- Нет реальной банковской интеграции: карты, балансы, лимиты, кэшбэк и Мобики — записи в PostgreSQL.
+- Верификация документа, КРОК, push и банковские данные имитируются.
+- Тап по видоискателю в QR-сканере запускает демонстрационную оплату.
+- Карманные деньги хранятся как настройка карты; автоматических выплат по расписанию нет.
+
+## Правила разработки
+
+Перед изменением кода прочитайте [`AGENTS.md`](AGENTS.md): Expo SDK имеет breaking changes между версиями, а навигация, стили и структура проекта следуют описанным там правилам.
