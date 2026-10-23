@@ -41,6 +41,8 @@
     "@react-native-community/cli": "^20.2.0",
     "@types/react": "~19.2.4",
     "babel-preset-expo": "~57.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~57.0.2",
     "expo-module-scripts": "file:vendor/expo-module-scripts",
     "kubb": "^5.11.6",
     "tailwindcss": "^3.4.17",
