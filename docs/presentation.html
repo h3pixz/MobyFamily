@@ -1,0 +1,2725 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moby Family — презентация</title>
+<meta name="description" content="Moby Family — семейный режим Moby МТбанка для родителей и детей 7–17 лет. Анимированная презентация прототипа.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F8F9FB;
+    --surface: #FFFFFF;
+    --surface-low: #F2F4F6;
+    --ink: #191C1E;
+    --ink-2: #424655;
+    --muted: #737686;
+    --line: #E2E8F0;
+    --line-soft: rgba(25, 28, 30, .07);
+    --blue: #1D63ED;
+    --blue-deep: #004BC3;
+    --blue-bright: #2B73FA;
+    --blue-soft: #E5EDFD;
+    --blue-fixed: #B3C5FF;
+    --orange: #FB7800;
+    --orange-deep: #994700;
+    --orange-soft: #FFF4EB;
+    --orange-fixed: #FFB68B;
+    --green: #006242;
+    --green-soft: #E6F7ED;
+    --success: #00B856;
+    --dark: #2E3132;
+    --radius: 22px;
+    --ease: cubic-bezier(.22, 1, .36, 1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  button { font: inherit; color: inherit; }
+  img { max-width: 100%; }
+
+  .icon {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    vertical-align: middle;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: none;
+  }
+
+  .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+  /* ---------- Backdrop ---------- */
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .backdrop::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(1100px 720px at 12% 8%, rgba(29, 99, 237, .10), transparent 62%),
+      radial-gradient(900px 680px at 88% 92%, rgba(251, 120, 0, .08), transparent 60%);
+  }
+
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: .55;
+  }
+
+  .blob-blue {
+    width: 46vw;
+    height: 46vw;
+    background: rgba(29, 99, 237, .17);
+    top: -20vw;
+    left: -12vw;
+    animation: drift 24s ease-in-out infinite alternate;
+  }
+
+  .blob-orange {
+    width: 38vw;
+    height: 38vw;
+    background: rgba(251, 120, 0, .14);
+    bottom: -16vw;
+    right: -10vw;
+    animation: drift 28s ease-in-out infinite alternate-reverse;
+  }
+
+  .grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(25, 28, 30, .045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(25, 28, 30, .045) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(72% 72% at 50% 45%, #000 25%, transparent 100%);
+    mask-image: radial-gradient(72% 72% at 50% 45%, #000 25%, transparent 100%);
+    opacity: .55;
+  }
+
+  @keyframes drift {
+    0% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(4vw, 3vh, 0) scale(1.08); }
+    100% { transform: translate3d(-2vw, 5vh, 0) scale(.96); }
+  }
+
+  /* ---------- HUD ---------- */
+  .hud {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 15px clamp(14px, 3vw, 32px);
+    pointer-events: none;
+  }
+
+  .hud > * { pointer-events: auto; }
+
+  .brand-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 15px 6px 7px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .85);
+    border: 1px solid rgba(255, 255, 255, .8);
+    box-shadow: 0 10px 30px rgba(25, 28, 30, .08);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    flex: none;
+  }
+
+  .brand-pill img {
+    width: 34px;
+    height: 34px;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+  }
+
+  .brand-pill strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: -.015em;
+    line-height: 1.15;
+  }
+
+  .brand-pill span {
+    display: block;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .progress {
+    flex: 1;
+    height: 4px;
+    margin: 0 6px;
+    border-radius: 999px;
+    background: rgba(25, 28, 30, .09);
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 11.11%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--blue), var(--blue-bright) 58%, var(--orange));
+    transition: width .7s var(--ease);
+  }
+
+  .counter {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    padding: 9px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .85);
+    border: 1px solid rgba(255, 255, 255, .8);
+    box-shadow: 0 10px 30px rgba(25, 28, 30, .08);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    font-size: 12px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .counter-sep { color: var(--muted); font-weight: 500; }
+  #slideTotal { color: var(--muted); }
+
+  /* ---------- Controls ---------- */
+  .controls {
+    position: fixed;
+    right: clamp(14px, 3vw, 32px);
+    bottom: 20px;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .88);
+    border: 1px solid rgba(255, 255, 255, .85);
+    box-shadow: 0 16px 42px rgba(25, 28, 30, .14);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .controls button {
+    height: 42px;
+    min-width: 42px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
+    transition: background .2s, color .2s, transform .2s;
+  }
+
+  .controls button .icon { width: 19px; height: 19px; }
+
+  .controls button:hover { background: var(--blue-soft); color: var(--blue); }
+  .controls button:active { transform: scale(.93); }
+  .controls button:disabled { opacity: .28; cursor: default; }
+  .controls button:disabled:hover { background: transparent; color: inherit; }
+
+  #autoBtn {
+    padding: 0 15px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  #autoBtn.on,
+  #fsBtn.on {
+    background: var(--blue);
+    color: #fff;
+  }
+
+  #autoBtn.on:hover,
+  #fsBtn.on:hover { background: var(--blue-deep); color: #fff; }
+
+  .dots {
+    position: fixed;
+    right: clamp(14px, 2.7vw, 30px);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 55;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    padding: 12px 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .55);
+    border: 1px solid rgba(255, 255, 255, .7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .dots button {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(25, 28, 30, .18);
+    cursor: pointer;
+    transition: height .35s var(--ease), background .35s;
+  }
+
+  .dots button:hover { background: rgba(25, 28, 30, .36); }
+
+  .dots button.active {
+    height: 26px;
+    background: linear-gradient(var(--blue), var(--blue-bright));
+  }
+
+  .hint {
+    position: fixed;
+    left: clamp(14px, 3vw, 32px);
+    bottom: 26px;
+    z-index: 40;
+    padding: 8px 13px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .72);
+    border: 1px solid rgba(255, 255, 255, .7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: var(--muted);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    opacity: 1;
+    transition: opacity 1.2s;
+    pointer-events: none;
+  }
+
+  .hint.faded { opacity: 0; }
+
+  /* ---------- Deck / slides ---------- */
+  .deck { position: relative; width: 100%; height: 100vh; height: 100dvh; z-index: 1; }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(86px, 9vh, 108px) clamp(22px, 6vw, 88px) clamp(82px, 9vh, 96px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(28px) scale(.995);
+    transition: opacity .62s var(--ease), transform .62s var(--ease), visibility .62s;
+  }
+
+  .slide.active {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    z-index: 2;
+  }
+
+  .slide.prev { transform: translateY(-28px) scale(.995); }
+
+  .slide-inner {
+    position: relative;
+    z-index: 2;
+    width: min(1240px, 100%);
+    margin: auto;
+  }
+
+  .slide--dark {
+    background:
+      radial-gradient(58% 52% at 82% 16%, rgba(251, 120, 0, .30), transparent 66%),
+      radial-gradient(52% 48% at 6% 88%, rgba(43, 115, 250, .60), transparent 68%),
+      linear-gradient(135deg, #00296B 0%, #004BC3 46%, #1D63ED 100%);
+    color: #fff;
+  }
+
+  .slide--dark::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, .05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, .05) 1px, transparent 1px);
+    background-size: 64px 64px;
+    -webkit-mask-image: radial-gradient(65% 65% at 55% 50%, #000 20%, transparent 100%);
+    mask-image: radial-gradient(65% 65% at 55% 50%, #000 20%, transparent 100%);
+    opacity: .5;
+    pointer-events: none;
+  }
+
+  /* ---------- Reveal ---------- */
+  .reveal { opacity: 0; transform: translateY(22px); }
+
+  .slide.active .reveal {
+    animation: rise .82s var(--ease) forwards;
+    animation-delay: calc(var(--d, 0) * 105ms + 120ms);
+  }
+
+  @keyframes rise {
+    to { opacity: 1; transform: none; }
+  }
+
+  /* ---------- Typography ---------- */
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    color: var(--blue);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+
+  .kicker .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--orange);
+    box-shadow: 0 0 0 4px rgba(251, 120, 0, .14);
+  }
+
+  .slide--dark .kicker { color: var(--blue-fixed); }
+  .slide--dark .kicker .dot { background: var(--orange-fixed); box-shadow: 0 0 0 4px rgba(255, 182, 139, .16); }
+
+  h2 {
+    margin: 0 0 18px;
+    font-size: clamp(31px, 4.1vw, 56px);
+    line-height: 1.03;
+    letter-spacing: -.035em;
+    font-weight: 800;
+    text-wrap: balance;
+  }
+
+  .lead {
+    margin: 0;
+    max-width: 60ch;
+    font-size: clamp(14px, 1.35vw, 18px);
+    line-height: 1.52;
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  .slide-head { margin-bottom: clamp(26px, 4vh, 44px); }
+  .slide-head--center { text-align: center; }
+  .slide-head--center .lead { margin-left: auto; margin-right: auto; }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--blue-soft);
+    color: var(--blue-deep);
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .pill--orange { background: var(--orange-soft); color: var(--orange-deep); }
+  .pill .icon { width: 13px; height: 13px; }
+
+  .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--line);
+    color: var(--ink-2);
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 8px 22px -18px rgba(25, 28, 30, .5);
+  }
+
+  .chip .icon { width: 15px; height: 15px; color: var(--blue); }
+
+  .slide--dark .chip {
+    background: rgba(255, 255, 255, .08);
+    border-color: rgba(255, 255, 255, .18);
+    color: rgba(255, 255, 255, .92);
+    box-shadow: none;
+    backdrop-filter: blur(8px);
+  }
+
+  .slide--dark .chip .icon { color: var(--orange-fixed); }
+
+  /* ---------- Phone mockup ---------- */
+  .phone {
+    position: relative;
+    border-radius: clamp(24px, 2.4vw, 36px);
+    padding: clamp(5px, .55vw, 8px);
+    background: linear-gradient(150deg, #3B4046, #0D0F11 46%, #24282C);
+    box-shadow:
+      0 34px 70px -22px rgba(0, 75, 195, .38),
+      0 12px 30px rgba(25, 28, 30, .18);
+  }
+
+  .phone::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18);
+    pointer-events: none;
+  }
+
+  .phone img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1179 / 2556;
+    object-fit: cover;
+    border-radius: calc(clamp(24px, 2.4vw, 36px) - clamp(5px, .55vw, 8px));
+    background: #fff;
+  }
+
+  /* ---------- Slide 1: hero ---------- */
+  .hero {
+    display: grid;
+    grid-template-columns: 1.12fr .88fr;
+    gap: clamp(22px, 4vw, 56px);
+    align-items: center;
+  }
+
+  .hero-brand {
+    display: flex;
+    align-items: center;
+    gap: clamp(14px, 1.6vw, 22px);
+  }
+
+  .hero-logo-tile {
+    width: clamp(66px, 8.4vw, 104px);
+    height: clamp(66px, 8.4vw, 104px);
+    padding: 8px;
+    border-radius: clamp(18px, 2vw, 26px);
+    background: #fff;
+    box-shadow: 0 26px 60px -20px rgba(0, 0, 0, .45);
+    flex: none;
+  }
+
+  .hero-logo-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    border-radius: 12px;
+  }
+
+  .hero-brand h1 {
+    margin: 0;
+    font-size: clamp(38px, 5.4vw, 74px);
+    line-height: .98;
+    letter-spacing: -.045em;
+    font-weight: 800;
+  }
+
+  .hero-brand .sub {
+    display: block;
+    margin-top: 7px;
+    color: rgba(255, 255, 255, .66);
+    font-size: clamp(11px, 1.1vw, 14px);
+    font-weight: 500;
+    letter-spacing: .01em;
+  }
+
+  .hero-claim {
+    margin: clamp(20px, 3vh, 30px) 0 0;
+    font-size: clamp(20px, 2.55vw, 36px);
+    line-height: 1.18;
+    letter-spacing: -.03em;
+    font-weight: 700;
+    max-width: 20ch;
+  }
+
+  .hero-claim em {
+    font-style: normal;
+    color: var(--orange-fixed);
+  }
+
+  .hero .chip-row { margin-top: clamp(20px, 3vh, 30px); }
+
+  .hero-visual {
+    position: relative;
+    min-height: clamp(360px, 56vh, 620px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-phone {
+    position: relative;
+    animation: float 8s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .hero-phone--back {
+    position: absolute;
+    width: clamp(132px, 18vh, 220px);
+    left: 0;
+    top: 4%;
+    z-index: 1;
+    --rot: -9deg;
+    transform: rotate(var(--rot));
+    animation-duration: 9.5s;
+    animation-delay: -2.5s;
+    opacity: .92;
+  }
+
+  .hero-phone--front {
+    width: clamp(172px, 25vh, 300px);
+    margin-left: auto;
+    margin-right: 2%;
+    z-index: 2;
+    --rot: 3deg;
+    transform: rotate(var(--rot));
+    animation-duration: 7.5s;
+    animation-delay: -1s;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: rotate(var(--rot, 0deg)) translateY(0); }
+    50% { transform: rotate(var(--rot, 0deg)) translateY(-11px); }
+  }
+
+  .float-card {
+    position: absolute;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    border-radius: 15px;
+    background: #fff;
+    border: 1px solid rgba(255, 255, 255, .9);
+    box-shadow: 0 20px 44px -14px rgba(0, 28, 80, .42), 0 2px 8px rgba(25, 28, 30, .07);
+    color: var(--ink);
+    animation: float 7s ease-in-out infinite;
+  }
+
+  .float-card strong {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: -.01em;
+    line-height: 1.25;
+  }
+
+  .float-card small {
+    display: block;
+    margin-top: 1px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+
+  .fc-icon {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    border-radius: 9px;
+    background: var(--green-soft);
+    color: var(--green);
+    flex: none;
+  }
+
+  .fc-icon .icon { width: 15px; height: 15px; }
+  .fc-icon--blue { background: var(--blue-soft); color: var(--blue); }
+  .fc-icon--orange { background: var(--orange-soft); color: var(--orange-deep); }
+
+  .float-card--approved {
+    top: 11%;
+    right: -3%;
+    animation-delay: -1.2s;
+  }
+
+  .float-card--mobiks {
+    top: 50%;
+    right: -6%;
+    animation-delay: -4.4s;
+  }
+
+  .float-card--goal {
+    bottom: 13%;
+    left: -5%;
+    animation-delay: -2.8s;
+  }
+
+  .fc-bar {
+    display: block;
+    width: 96px;
+    height: 5px;
+    margin-top: 5px;
+    border-radius: 999px;
+    background: var(--surface-low);
+    overflow: hidden;
+  }
+
+  .fc-bar b {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--blue), var(--blue-bright));
+    transition: width 1.6s var(--ease) 1.2s;
+  }
+
+  .slide.active .fc-bar b { width: 32%; }
+
+  /* ---------- Slide 2: journey ---------- */
+  .journey { position: relative; margin: clamp(30px, 5vh, 54px) 0 clamp(22px, 3.6vh, 38px); }
+
+  .journey-track {
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    top: 25px;
+    height: 3px;
+    border-radius: 999px;
+    background: rgba(25, 28, 30, .08);
+    overflow: hidden;
+  }
+
+  .journey-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--blue), var(--blue-bright) 50%, var(--orange));
+    transition: width 1.8s var(--ease) .35s;
+  }
+
+  .slide.active .journey-fill { width: 100%; }
+
+  .journey-spark {
+    position: absolute;
+    top: 22px;
+    left: 10%;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(251, 120, 0, .2), 0 0 18px rgba(251, 120, 0, .85);
+    opacity: 0;
+    animation: travel 6s cubic-bezier(.45, 0, .55, 1) infinite;
+    z-index: 3;
+  }
+
+  @keyframes travel {
+    0% { left: 10%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { left: 90%; opacity: 0; }
+  }
+
+  .journey-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: clamp(8px, 1.3vw, 20px);
+    position: relative;
+    z-index: 2;
+  }
+
+  .journey-step { text-align: center; }
+
+  .step-icon {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 17px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid var(--line);
+    color: var(--blue);
+    box-shadow: 0 12px 26px -14px rgba(0, 75, 195, .4);
+    transition: transform .3s var(--ease), color .3s, border-color .3s;
+  }
+
+  .step-icon .icon { width: 23px; height: 23px; }
+
+  .journey-step:nth-child(5) .step-icon { color: var(--orange); }
+
+  .journey-step:hover .step-icon {
+    transform: translateY(-4px);
+    border-color: var(--blue-fixed);
+    color: var(--orange);
+  }
+
+  .step-num {
+    margin-bottom: 5px;
+    color: var(--orange);
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: .18em;
+  }
+
+  .journey-step h3 {
+    margin: 0 0 6px;
+    font-size: clamp(13px, 1.25vw, 17px);
+    letter-spacing: -.015em;
+  }
+
+  .journey-step p {
+    margin: 0 auto;
+    max-width: 19ch;
+    font-size: clamp(10.5px, .95vw, 12.5px);
+    line-height: 1.45;
+    color: var(--muted);
+  }
+
+  .quote-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: clamp(15px, 2.2vw, 22px) clamp(18px, 3vw, 30px);
+    border-radius: 20px;
+    background: linear-gradient(120deg, #EAF1FE, #F6F9FF 52%, var(--orange-soft));
+    border: 1px solid #DCE7FB;
+  }
+
+  .quote-icon {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    background: #fff;
+    color: var(--blue);
+    flex: none;
+    box-shadow: 0 10px 22px -14px rgba(0, 75, 195, .5);
+  }
+
+  .quote-icon .icon { width: 21px; height: 21px; }
+
+  .quote-card p {
+    margin: 0;
+    font-size: clamp(14px, 1.55vw, 19px);
+    font-weight: 700;
+    letter-spacing: -.02em;
+    line-height: 1.35;
+  }
+
+  .quote-card span {
+    display: block;
+    margin-top: 3px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ---------- Slide 3: two experiences ---------- */
+  .experience {
+    display: grid;
+    grid-template-columns: minmax(210px, 1fr) minmax(360px, 1.25fr) minmax(210px, 1fr);
+    gap: clamp(16px, 2.8vw, 42px);
+    align-items: center;
+  }
+
+  .experience-side h3 {
+    margin: 12px 0 0;
+    font-size: clamp(19px, 2vw, 26px);
+    letter-spacing: -.025em;
+  }
+
+  .feature-list {
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 9px;
+  }
+
+  .feature-list li {
+    position: relative;
+    padding-left: 18px;
+    font-size: clamp(11.5px, 1.02vw, 13.5px);
+    line-height: 1.4;
+    color: var(--ink-2);
+  }
+
+  .feature-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: .5em;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--blue);
+    box-shadow: 0 0 0 3px var(--blue-soft);
+  }
+
+  .experience-side--child .feature-list li::before {
+    background: var(--orange);
+    box-shadow: 0 0 0 3px var(--orange-soft);
+  }
+
+  .experience-phones {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    min-height: clamp(340px, 48vh, 540px);
+  }
+
+  .experience-phones .phone {
+    width: clamp(142px, 21vh, 214px);
+    transition: transform .45s var(--ease);
+  }
+
+  .experience-phones .phone-left {
+    transform: rotate(-3.5deg) translate(9%, -1%);
+    z-index: 1;
+  }
+
+  .experience-phones .phone-right {
+    transform: rotate(3.5deg) translate(-9%, 2%);
+    z-index: 2;
+  }
+
+  .experience-phones .phone-left:hover { transform: rotate(0deg) translate(9%, -3%); }
+  .experience-phones .phone-right:hover { transform: rotate(0deg) translate(-9%, 0); }
+
+  .family-link {
+    position: absolute;
+    left: 50%;
+    bottom: 2%;
+    transform: translateX(-50%);
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 15px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--line);
+    box-shadow: 0 16px 34px -16px rgba(25, 28, 30, .4);
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .family-link .icon { width: 15px; height: 15px; color: var(--blue); }
+
+  /* ---------- Slide 4: age modes ---------- */
+  .age-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(16px, 2.4vw, 30px);
+  }
+
+  .age-card {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(18px, 2.4vw, 28px);
+    border-radius: var(--radius);
+    background: #fff;
+    border: 1px solid var(--line);
+    box-shadow: 0 22px 50px -38px rgba(25, 28, 30, .35);
+  }
+
+  .age-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--blue), var(--blue-bright));
+  }
+
+  .age-card--teen::before {
+    background: linear-gradient(90deg, var(--orange), var(--orange-fixed));
+  }
+
+  .age-card header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .age-badge {
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    border-radius: 17px;
+    background: var(--blue-soft);
+    color: var(--blue-deep);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    flex: none;
+  }
+
+  .age-card--teen .age-badge {
+    background: var(--orange-soft);
+    color: var(--orange-deep);
+  }
+
+  .age-card header h3 {
+    margin: 0 0 3px;
+    font-size: clamp(16px, 1.65vw, 21px);
+    letter-spacing: -.02em;
+  }
+
+  .age-card header p {
+    margin: 0;
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+
+  .rows { margin: 0; }
+
+  .rows > div {
+    display: grid;
+    grid-template-columns: 118px 1fr;
+    gap: 14px;
+    padding: 9px 0;
+    border-top: 1px solid var(--line-soft);
+    font-size: clamp(11.5px, 1.02vw, 13.5px);
+    line-height: 1.35;
+  }
+
+  .rows dt { color: var(--muted); font-weight: 500; }
+
+  .rows dd {
+    margin: 0;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .autonomy {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--line);
+    color: var(--muted);
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  .meter {
+    flex: 1;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--surface-low);
+    overflow: hidden;
+  }
+
+  .meter i {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--blue), var(--blue-bright));
+    transition: width 1.5s var(--ease) .75s;
+  }
+
+  .slide.active .meter i { width: var(--v, 50%); }
+
+  .age-card--teen .meter i {
+    background: linear-gradient(90deg, var(--orange), var(--orange-fixed));
+  }
+
+  .age-note {
+    margin: 16px 0 0;
+    text-align: center;
+    font-size: 10.5px;
+    color: var(--muted);
+  }
+
+  /* ---------- Slide 5: scenarios ---------- */
+  .flow-demo {
+    display: flex;
+    align-items: center;
+    gap: clamp(8px, 1.4vw, 16px);
+    margin: clamp(18px, 2.8vh, 28px) 0 clamp(18px, 2.8vh, 26px);
+    padding: clamp(13px, 1.9vw, 20px) clamp(15px, 2.4vw, 26px);
+    border-radius: 20px;
+    background: #fff;
+    border: 1px solid var(--line);
+    box-shadow: 0 20px 48px -36px rgba(25, 28, 30, .4);
+  }
+
+  .flow-node {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .flow-node .avatar {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--blue);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    flex: none;
+  }
+
+  .avatar--orange { background: var(--orange); }
+
+  .flow-node strong {
+    display: block;
+    font-size: 12.5px;
+    letter-spacing: -.01em;
+    white-space: nowrap;
+  }
+
+  .flow-node span {
+    display: block;
+    font-size: 10.5px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .flow-node--ok {
+    padding: 9px 13px;
+    border-radius: 13px;
+    background: var(--green-soft);
+    color: var(--green);
+  }
+
+  .flow-node--ok .icon { width: 19px; height: 19px; }
+  .flow-node--ok strong { color: var(--green); }
+  .flow-node--ok span { color: rgba(0, 98, 66, .7); }
+
+  .flow-link {
+    position: relative;
+    flex: 1;
+    min-width: 22px;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--surface-high);
+  }
+
+  .flow-link::after {
+    content: "";
+    position: absolute;
+    right: -1px;
+    top: -3px;
+    border: 4px solid transparent;
+    border-left-color: var(--surface-highest);
+  }
+
+  .packet {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--blue);
+    box-shadow: 0 0 0 4px rgba(29, 99, 237, .15);
+    transform: translate(-50%, -50%);
+    animation: packet 2.8s ease-in-out infinite;
+  }
+
+  .packet--2 {
+    background: var(--orange);
+    box-shadow: 0 0 0 4px rgba(251, 120, 0, .15);
+    animation-delay: 1.4s;
+  }
+
+  @keyframes packet {
+    0% { left: 0; opacity: 0; }
+    15% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { left: 100%; opacity: 0; }
+  }
+
+  .scenario-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(11px, 1.7vw, 18px);
+  }
+
+  .scenario {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(15px, 1.9vw, 21px);
+    border-radius: 19px;
+    background: #fff;
+    border: 1px solid var(--line);
+    transition: transform .3s var(--ease), box-shadow .3s;
+  }
+
+  .scenario::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--blue), transparent 80%);
+    opacity: .65;
+    transition: opacity .3s;
+  }
+
+  .scenario:nth-child(2)::after { background: linear-gradient(90deg, var(--orange), transparent 80%); }
+  .scenario:nth-child(3)::after { background: linear-gradient(90deg, var(--green), transparent 80%); }
+  .scenario:nth-child(4)::after { background: linear-gradient(90deg, var(--blue-bright), transparent 80%); }
+
+  .scenario:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 26px 44px -32px rgba(25, 28, 30, .4);
+  }
+
+  .scenario:hover::after { opacity: 1; }
+
+  .scenario-icon {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    background: var(--blue-soft);
+    color: var(--blue);
+    margin-bottom: 13px;
+  }
+
+  .scenario:nth-child(2) .scenario-icon { background: var(--orange-soft); color: var(--orange-deep); }
+  .scenario:nth-child(3) .scenario-icon { background: var(--green-soft); color: var(--green); }
+  .scenario:nth-child(4) .scenario-icon { background: var(--blue-soft); color: var(--blue-bright); }
+
+  .scenario-icon .icon { width: 20px; height: 20px; }
+
+  .scenario h3 {
+    margin: 0 0 6px;
+    font-size: clamp(13px, 1.25vw, 16px);
+    letter-spacing: -.015em;
+  }
+
+  .scenario p {
+    margin: 0 0 13px;
+    min-height: 3.9em;
+    font-size: clamp(10.5px, .95vw, 12px);
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .mini-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .mini-tag {
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: var(--surface-low);
+    color: var(--ink-2);
+    font-size: 9.5px;
+    font-weight: 700;
+  }
+
+  .mini-tag--blue { background: var(--blue-soft); color: var(--blue-deep); }
+  .mini-tag--green { background: var(--green-soft); color: var(--green); }
+  .mini-tag--orange { background: var(--orange-soft); color: var(--orange-deep); }
+
+  .mini-bar {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--surface-low);
+    overflow: hidden;
+  }
+
+  .mini-bar i {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--green), #4EDEA3);
+    transition: width 1.4s var(--ease) 1s;
+  }
+
+  .slide.active .mini-bar i { width: var(--v, 68%); }
+
+  .mini-progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  /* ---------- Slide 6: security ---------- */
+  .security {
+    display: grid;
+    grid-template-columns: minmax(290px, .92fr) minmax(420px, 1.28fr);
+    gap: clamp(22px, 4vw, 60px);
+    align-items: center;
+    margin-top: clamp(16px, 2.6vh, 30px);
+  }
+
+  .shield-stage {
+    position: relative;
+    width: min(100%, 400px);
+    aspect-ratio: 1;
+    margin: 0 auto;
+    display: grid;
+    place-items: center;
+  }
+
+  .ring {
+    position: absolute;
+    inset: 6%;
+    border-radius: 50%;
+    border: 1px dashed rgba(29, 99, 237, .26);
+    animation: spin 32s linear infinite;
+  }
+
+  .ring-2 {
+    inset: 19%;
+    border-style: solid;
+    border-color: rgba(251, 120, 0, .2);
+    animation-duration: 24s;
+    animation-direction: reverse;
+  }
+
+  .ring-3 {
+    inset: 31%;
+    border-color: rgba(29, 99, 237, .14);
+    animation-duration: 18s;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .shield-core {
+    position: relative;
+    width: clamp(124px, 14.5vw, 180px);
+    height: clamp(124px, 14.5vw, 180px);
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: radial-gradient(circle at 34% 28%, var(--blue-bright), var(--blue-deep) 72%);
+    color: #fff;
+    box-shadow: 0 34px 70px -22px rgba(0, 75, 195, .6), inset 0 0 0 1px rgba(255, 255, 255, .22);
+    animation: breathe 4.6s ease-in-out infinite;
+    z-index: 2;
+  }
+
+  .shield-core .icon { width: 43%; height: 43%; }
+
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); box-shadow: 0 34px 70px -22px rgba(0, 75, 195, .6), inset 0 0 0 1px rgba(255, 255, 255, .22); }
+    50% { transform: scale(1.035); box-shadow: 0 42px 84px -24px rgba(0, 75, 195, .72), inset 0 0 0 1px rgba(255, 255, 255, .3); }
+  }
+
+  .orbit-chip {
+    position: absolute;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 11px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--line);
+    color: var(--ink-2);
+    font-size: 10.5px;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 14px 28px -16px rgba(25, 28, 30, .45);
+  }
+
+  .orbit-chip .icon { width: 13px; height: 13px; color: var(--blue); }
+
+  .orbit-1 { top: 4%; left: 8%; animation: float 7.5s ease-in-out infinite; }
+  .orbit-2 { top: 14%; right: 2%; animation: float 8.5s ease-in-out infinite; animation-delay: -2s; }
+  .orbit-3 { bottom: 20%; right: 0; animation: float 7s ease-in-out infinite; animation-delay: -4s; }
+  .orbit-4 { bottom: 6%; left: 13%; animation: float 9s ease-in-out infinite; animation-delay: -1s; }
+  .orbit-5 { top: 44%; left: -2%; animation: float 8s ease-in-out infinite; animation-delay: -3s; }
+
+  .orbit-chip--orange .icon { color: var(--orange); }
+
+  .shield-stats {
+    display: flex;
+    justify-content: center;
+    gap: 9px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    min-width: 100px;
+    padding: 10px 14px;
+    text-align: center;
+    border-radius: 15px;
+    background: #fff;
+    border: 1px solid var(--line);
+  }
+
+  .stat strong {
+    display: block;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -.03em;
+  }
+
+  .stat span {
+    display: block;
+    margin-top: 2px;
+    font-size: 9.5px;
+    line-height: 1.3;
+    color: var(--muted);
+  }
+
+  .rules {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 11px;
+  }
+
+  .rule {
+    padding: 14px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid var(--line);
+    transition: transform .3s var(--ease), border-color .3s;
+  }
+
+  .rule:hover { transform: translateY(-3px); border-color: var(--blue-fixed); }
+
+  .rule-icon {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--blue-soft);
+    color: var(--blue);
+    margin-bottom: 10px;
+  }
+
+  .rule-icon .icon { width: 16px; height: 16px; }
+
+  .rule:nth-child(3) .rule-icon,
+  .rule:nth-child(4) .rule-icon {
+    background: var(--orange-soft);
+    color: var(--orange-deep);
+  }
+
+  .rule h3 {
+    margin: 0 0 4px;
+    font-size: 12.5px;
+    letter-spacing: -.01em;
+  }
+
+  .rule p {
+    margin: 0;
+    font-size: 10.5px;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+
+  /* ---------- Slide 7: quest ---------- */
+  .quest {
+    display: grid;
+    grid-template-columns: minmax(270px, .9fr) minmax(400px, 1.1fr);
+    gap: clamp(26px, 4vw, 66px);
+    align-items: center;
+    margin-top: clamp(14px, 2.4vh, 26px);
+  }
+
+  .ring-wrap {
+    position: relative;
+    width: min(100%, 320px);
+    aspect-ratio: 1;
+    margin: 0 auto;
+  }
+
+  .quest-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+
+  .quest-ring .track {
+    fill: none;
+    stroke: rgba(25, 28, 30, .07);
+    stroke-width: 12;
+  }
+
+  .quest-ring .fill {
+    fill: none;
+    stroke: url(#questGrad);
+    stroke-width: 12;
+    stroke-linecap: round;
+    stroke-dasharray: 402.1;
+    stroke-dashoffset: 402.1;
+    transition: stroke-dashoffset 2s var(--ease) .4s;
+    filter: drop-shadow(0 0 10px rgba(29, 99, 237, .3));
+  }
+
+  .slide.active .quest-ring .fill { stroke-dashoffset: 0; }
+
+  .ring-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .ring-label .value {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    font-size: clamp(42px, 5.2vw, 64px);
+    font-weight: 800;
+    letter-spacing: -.05em;
+    line-height: 1;
+  }
+
+  .ring-label .value span {
+    margin-left: 2px;
+    font-size: .5em;
+    color: var(--muted);
+  }
+
+  .ring-label em {
+    margin-top: 7px;
+    font-style: normal;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .quest-note {
+    margin: 10px auto 0;
+    max-width: 30ch;
+    text-align: center;
+    font-size: 10.5px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .quest-right h3 {
+    margin: 0 0 14px;
+    font-size: clamp(17px, 1.8vw, 22px);
+    letter-spacing: -.02em;
+  }
+
+  .checkpoints {
+    list-style: none;
+    margin: 0 0 18px;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  .checkpoints li {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 10px 13px;
+    border-radius: 13px;
+    background: #fff;
+    border: 1px solid var(--line);
+    font-size: clamp(11px, 1.02vw, 13px);
+    font-weight: 600;
+  }
+
+  .checkpoints .check {
+    width: 20px;
+    height: 20px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--green-soft);
+    color: var(--green);
+    flex: none;
+  }
+
+  .checkpoints .check .icon { width: 12px; height: 12px; }
+
+  .checkpoints li.reveal {
+    animation-delay: calc(var(--d, 0) * 105ms + 300ms);
+  }
+
+  .quest-transition {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 12px 14px;
+    border-radius: 15px;
+    background: linear-gradient(120deg, var(--blue-soft), #F6F9FF 55%, var(--orange-soft));
+    border: 1px solid #DCE7FB;
+  }
+
+  .quest-transition span {
+    font-size: 11.5px;
+    font-weight: 700;
+  }
+
+  .quest-transition .arrow {
+    color: var(--muted);
+    flex: none;
+  }
+
+  .quest-transition .arrow .icon { width: 17px; height: 17px; }
+
+  .quest-transition .adult {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--orange-deep);
+    box-shadow: 0 4px 12px -6px rgba(25, 28, 30, .3);
+  }
+
+  .quest-foot {
+    margin: 12px 0 0;
+    font-size: 10.5px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  /* ---------- Slide 8: stack ---------- */
+  .stack-flow {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+    align-items: stretch;
+    margin: clamp(24px, 4vh, 42px) 0 clamp(16px, 2.6vh, 26px);
+  }
+
+  .stack-node {
+    padding: clamp(13px, 1.7vw, 19px);
+    border-radius: 17px;
+    background: #fff;
+    border: 1px solid var(--line);
+    box-shadow: 0 18px 40px -34px rgba(25, 28, 30, .45);
+  }
+
+  .stack-icon {
+    width: 39px;
+    height: 39px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--blue-soft);
+    color: var(--blue);
+    margin-bottom: 11px;
+  }
+
+  .stack-node:nth-of-type(3) .stack-icon { background: var(--orange-soft); color: var(--orange-deep); }
+  .stack-node:nth-of-type(5) .stack-icon { background: var(--green-soft); color: var(--green); }
+  .stack-node:nth-of-type(7) .stack-icon { background: var(--blue-soft); color: var(--blue-bright); }
+
+  .stack-icon .icon { width: 19px; height: 19px; }
+
+  .stack-node strong {
+    display: block;
+    font-size: clamp(11.5px, 1.05vw, 13.5px);
+    letter-spacing: -.015em;
+    line-height: 1.3;
+  }
+
+  .stack-node span {
+    display: block;
+    margin-top: 4px;
+    font-size: 10px;
+    line-height: 1.42;
+    color: var(--muted);
+  }
+
+  .stack-link {
+    position: relative;
+    width: clamp(16px, 3vw, 46px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .stack-link::before {
+    content: "";
+    width: 100%;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--surface-high);
+  }
+
+  .tech-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 16px;
+  }
+
+  .tech {
+    padding: 6px 11px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--line);
+    color: var(--ink-2);
+    font-size: 10.5px;
+    font-weight: 600;
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 11px;
+  }
+
+  .fact {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 13px 16px;
+    border-radius: 16px;
+    background: linear-gradient(120deg, #fff, #FAFBFD);
+    border: 1px solid var(--line);
+  }
+
+  .fact strong {
+    display: block;
+    font-size: clamp(18px, 2vw, 24px);
+    font-weight: 800;
+    letter-spacing: -.035em;
+    line-height: 1;
+  }
+
+  .fact span {
+    display: block;
+    margin-top: 3px;
+    font-size: 10px;
+    line-height: 1.35;
+    color: var(--muted);
+  }
+
+  .fact-icon {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    background: var(--blue-soft);
+    color: var(--blue);
+    flex: none;
+  }
+
+  .fact-icon .icon { width: 17px; height: 17px; }
+
+  /* ---------- Slide 9: closing ---------- */
+  .slide--closing { text-align: center; }
+
+  .slide--closing .slide-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 980px;
+  }
+
+  .closing-logo {
+    width: clamp(62px, 7vw, 88px);
+    height: clamp(62px, 7vw, 88px);
+    padding: 8px;
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .5);
+    margin-bottom: 22px;
+  }
+
+  .closing-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    border-radius: 12px;
+  }
+
+  .closing h2 {
+    margin: 0 0 18px;
+    font-size: clamp(38px, 6vw, 82px);
+    line-height: .98;
+    letter-spacing: -.045em;
+  }
+
+  .grad-orange {
+    background: linear-gradient(90deg, #FFF1E6, #FFDBC8 32%, #FFB68B 64%, #FB7800);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .closing p {
+    margin: 0;
+    max-width: 52ch;
+    color: rgba(255, 255, 255, .78);
+    font-size: clamp(14px, 1.5vw, 18px);
+    line-height: 1.55;
+  }
+
+  .closing .chip-row {
+    justify-content: center;
+    margin-top: 26px;
+  }
+
+  .closing-foot {
+    margin-top: 32px;
+    color: rgba(255, 255, 255, .5);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+
+  .closing-badge {
+    position: absolute;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 14px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .1);
+    border: 1px solid rgba(255, 255, 255, .18);
+    backdrop-filter: blur(10px);
+    color: rgba(255, 255, 255, .9);
+    font-size: 11px;
+    font-weight: 700;
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .closing-badge .icon { width: 16px; height: 16px; color: var(--orange-fixed); }
+
+  .closing-badge--1 { top: 16%; left: 3%; --rot: -5deg; transform: rotate(var(--rot)); animation-delay: -2s; }
+  .closing-badge--2 { bottom: 18%; right: 4%; --rot: 4deg; transform: rotate(var(--rot)); animation-delay: -4s; }
+  .closing-badge--3 { bottom: 24%; left: 8%; --rot: 3deg; transform: rotate(var(--rot)); animation-delay: -6s; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1180px) {
+    .float-card--mobiks { display: none; }
+    .experience { grid-template-columns: minmax(190px, 1fr) minmax(320px, 1.15fr) minmax(190px, 1fr); }
+    .orbit-5 { display: none; }
+  }
+
+  @media (max-width: 980px) {
+    .slide { justify-content: flex-start; padding: 82px 22px 92px; }
+    .slide-inner { margin-top: 8px; }
+
+    .hero { grid-template-columns: 1fr; gap: 26px; }
+    .hero-visual { min-height: 420px; }
+    .hero-phone--front { margin-right: 8%; }
+    .hero-phone--back { left: 6%; }
+
+    .journey-track, .journey-spark { display: none; }
+    .journey-grid { grid-template-columns: repeat(2, 1fr); gap: 22px 16px; }
+    .journey-step:nth-child(5) { grid-column: span 2; }
+    .journey-step p { max-width: 24ch; }
+    .quote-card { margin-top: 10px; }
+
+    .experience { grid-template-columns: 1fr; gap: 26px; }
+    .experience-phones { order: 1; min-height: 400px; }
+    .experience-side { order: 2; max-width: 520px; }
+    .experience-side--child { order: 3; }
+    .feature-list { grid-template-columns: 1fr 1fr; gap: 8px 18px; }
+
+    .age-grid { grid-template-columns: 1fr; }
+    .scenario-grid { grid-template-columns: 1fr 1fr; }
+    .scenario p { min-height: 0; }
+
+    .security { grid-template-columns: 1fr; gap: 26px; }
+    .shield-stage { max-width: 330px; }
+    .rules { grid-template-columns: 1fr 1fr; }
+
+    .quest { grid-template-columns: 1fr; gap: 28px; }
+    .ring-wrap { max-width: 270px; }
+
+    .stack-flow { grid-template-columns: 1fr; gap: 0; }
+    .stack-link { width: auto; height: 22px; }
+    .stack-link::before { width: 2px; height: 100%; }
+    .stack-link .packet { animation: none; display: none; }
+
+    .dots { display: none; }
+    .closing-badge--1, .closing-badge--3 { display: none; }
+  }
+
+  @media (max-width: 640px) {
+    .slide { padding: 76px 16px 90px; }
+    .brand-pill div { display: none; }
+    .brand-pill { padding: 5px; }
+    .hint { display: none; }
+    #fsBtn { display: none; }
+    .counter { padding: 8px 11px; font-size: 11px; }
+
+    .hero-brand h1 { font-size: clamp(34px, 10vw, 46px); }
+    .hero-logo-tile { width: 62px; height: 62px; }
+    .hero-visual { min-height: 360px; }
+    .hero-phone--back { display: none; }
+    .hero-phone--front { margin: 0 auto; width: min(58vw, 210px); }
+    .float-card--approved { right: 0; top: 4%; }
+    .float-card--goal { left: 0; bottom: 4%; }
+
+    .journey-grid { grid-template-columns: 1fr; }
+    .journey-step:nth-child(5) { grid-column: auto; }
+    .journey-step { display: grid; grid-template-columns: 46px 1fr; column-gap: 14px; text-align: left; align-items: center; }
+    .step-icon { width: 46px; height: 46px; margin: 0; grid-row: span 3; }
+    .step-num { margin: 0; }
+    .journey-step p { margin: 0; max-width: none; }
+
+    .feature-list { grid-template-columns: 1fr; }
+    .experience-phones { min-height: 330px; }
+    .experience-phones .phone { width: min(38vw, 160px); }
+
+    .rows > div { grid-template-columns: 93px 1fr; gap: 10px; }
+    .age-card header { gap: 11px; }
+    .age-badge { width: 50px; height: 50px; border-radius: 14px; font-size: 11px; }
+
+    .flow-demo { flex-wrap: wrap; gap: 10px; }
+    .flow-link { display: none; }
+    .flow-node { flex: 1 1 40%; }
+    .flow-node--ok { flex-basis: 100%; justify-content: center; }
+
+    .scenario-grid { grid-template-columns: 1fr; }
+    .rules { grid-template-columns: 1fr; }
+    .shield-stage { max-width: 280px; }
+    .orbit-2, .orbit-3 { display: none; }
+
+    .facts { grid-template-columns: 1fr; }
+    .closing-badge { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .001ms !important;
+    }
+    .reveal { opacity: 1; transform: none; }
+    .journey-fill { width: 100%; }
+    .slide.active .meter i { width: var(--v, 50%); }
+    .quest-ring .fill { stroke-dashoffset: 0; }
+  }
+</style>
+</head>
+<body>
+
+<svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 6.5"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V6a2 2 0 0 0-2-2H5.5A2.5 2.5 0 0 0 3 6.5v11A2.5 2.5 0 0 0 5.5 20H19a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1Z"/><path d="M3 7h16"/><path d="M16.5 13.5h1.5"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20v3H6.5"/><path d="M8 7h8M8 10.5h5"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></symbol>
+  <symbol id="i-rocket" viewBox="0 0 24 24"><path d="M12 15.5c4.6-2.1 7-6.2 7-11.5-5.3 0-9.4 2.4-11.5 7L4 14l3 3 5-1.5Z"/><path d="m9.5 14.5-3 3"/><circle cx="15" cy="9" r="1.6"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 5 6v5.2c0 4.7 2.9 8.1 7 9.8 4.1-1.7 7-5.1 7-9.8V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8.5a6 6 0 0 0-12 0c0 6-2.5 7.5-2.5 7.5h17S18 14.5 18 8.5Z"/><path d="M10.5 20a2 2 0 0 0 3 0"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/><path d="M12 14.5v2"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18"/><path d="M7 15h4"/></symbol>
+  <symbol id="i-qr" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><path d="M14 14h2v2h-2zM14 20h2M18 14v2h2M20 20h-2"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.2 20c0-3.2 2.6-5.8 5.8-5.8s5.8 2.6 5.8 5.8"/><path d="M16 5.4a3.2 3.2 0 0 1 0 5.2"/><path d="M17 14.6c2.3.8 3.9 3 3.9 5.4"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8" width="17" height="12.5" rx="2.2"/><path d="M3.5 12h17M12 8v12.5"/><path d="M12 8S8.8 8 7.8 6.6A2 2 0 0 1 11.2 4C12.7 5 12 8 12 8ZM12 8s3.2 0 4.2-1.4A2 2 0 0 0 12.8 4C11.3 5 12 8 12 8Z"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5"/></symbol>
+  <symbol id="i-server" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="6.5" rx="2"/><rect x="3" y="13.5" width="18" height="6.5" rx="2"/><path d="M7 7.2h.01M7 16.8h.01"/></symbol>
+  <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="3"/><path d="M10.5 5h3M11.3 18.6h1.4"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v3.5M12 17.5V21M3 12h3.5M17.5 12H21M5.6 5.6l2.5 2.5M15.9 15.9l2.5 2.5M18.4 5.6l-2.5 2.5M8.1 15.9l-2.5 2.5"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9Z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.2 2"/></symbol>
+  <symbol id="i-graduation" viewBox="0 0 24 24"><path d="m12 4 10 5-10 5L2 9l10-5Z"/><path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/><path d="M22 9v5"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.4 5.7"/><path d="M20 5v6h-6"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.9 10.9 0 0 1 12 5c5.4 0 9.4 4.6 10 7-.3 1.2-1.2 2.7-2.6 4M6.2 6.3C4.1 8 2.7 10.4 2 12c.6 2.4 4.6 7 10 7 1.6 0 3-.4 4.3-1"/></symbol>
+</svg>
+
+<div class="backdrop" aria-hidden="true">
+  <div class="blob blob-blue"></div>
+  <div class="blob blob-orange"></div>
+  <div class="grid-overlay"></div>
+</div>
+
+<header class="hud">
+  <div class="brand-pill">
+    <img src="../assets/images/logo-moby-family.png" alt="Moby Family">
+    <div>
+      <strong>Moby Family</strong>
+      <span>МТбанк</span>
+    </div>
+  </div>
+  <div class="progress" role="progressbar" aria-label="Прогресс презентации" aria-valuemin="0" aria-valuemax="100" aria-valuenow="11">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+  <div class="counter"><span id="slideNow">01</span><span class="counter-sep">/</span><span id="slideTotal">09</span></div>
+</header>
+
+<main class="deck" id="deck">
+
+  <!-- 01 -->
+  <section class="slide slide--dark active" data-title="Moby Family">
+    <div class="slide-inner">
+      <div class="hero">
+        <div class="hero-copy">
+          <div class="kicker reveal" style="--d:0"><span class="dot"></span>Хакатон · МТБанк · 2026</div>
+          <div class="hero-brand reveal" style="--d:1">
+            <div class="hero-logo-tile"><img src="../assets/images/logo-moby-family.png" alt="Логотип Moby Family"></div>
+            <div>
+              <h1>Moby Family</h1>
+              <span class="sub">Семейный режим Moby МТбанка для родителей и детей 7–17 лет</span>
+            </div>
+          </div>
+          <p class="hero-claim reveal" style="--d:2">Родителю — <em>спокойствие</em>.<br>Ребёнку — <em>деньги, навыки</em> и <em>самостоятельность</em>.</p>
+          <div class="chip-row reveal" style="--d:3">
+            <span class="chip"><svg class="icon"><use href="#i-users"/></svg>7–17 лет</span>
+            <span class="chip"><svg class="icon"><use href="#i-wallet"/></svg>Карманные и лимиты</span>
+            <span class="chip"><svg class="icon"><use href="#i-target"/></svg>Цели и задания</span>
+          </div>
+        </div>
+
+        <div class="hero-visual reveal" style="--d:2">
+          <div class="hero-phone hero-phone--back">
+            <div class="phone"><img src="screenshots/child-home.png" width="1179" height="2556" alt="Главная ребёнка в Moby Family"></div>
+          </div>
+          <div class="hero-phone hero-phone--front">
+            <div class="phone"><img src="screenshots/parent-home.png" width="1179" height="2556" alt="Главная родителя в Moby Family"></div>
+          </div>
+
+          <div class="float-card float-card--approved">
+            <span class="fc-icon"><svg class="icon"><use href="#i-check"/></svg></span>
+            <div><strong>Запрос одобрен</strong><small>18,00 BYN · уже на карте</small></div>
+          </div>
+          <div class="float-card float-card--mobiks">
+            <span class="fc-icon fc-icon--orange"><svg class="icon"><use href="#i-star"/></svg></span>
+            <div><strong>+24 Мобика</strong><small>за покупку в кафе</small></div>
+          </div>
+          <div class="float-card float-card--goal">
+            <span class="fc-icon fc-icon--blue"><svg class="icon"><use href="#i-target"/></svg></span>
+            <div>
+              <strong>Новый телефон</strong>
+              <small>190 из 600 BYN · 32%</small>
+              <span class="fc-bar"><b></b></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section class="slide" data-title="Продуктовая идея">
+    <div class="slide-inner">
+      <div class="slide-head">
+        <div class="kicker reveal" style="--d:0"><span class="dot"></span>Продуктовая идея</div>
+        <h2 class="reveal" style="--d:1">Путь от карманных<br>до самостоятельности</h2>
+        <p class="lead reveal" style="--d:2">Одна семейная экономика: взрослый задаёт правила, ребёнок учится ими пользоваться — шаг за шагом, а не сразу.</p>
+      </div>
+
+      <div class="journey">
+        <div class="journey-track"><div class="journey-fill"></div></div>
+        <div class="journey-spark" aria-hidden="true"></div>
+
+        <div class="journey-grid">
+          <div class="journey-step reveal" style="--d:3">
+            <div class="step-icon"><svg class="icon"><use href="#i-wallet"/></svg></div>
+            <div class="step-num">01</div>
+            <h3>Карманные</h3>
+            <p>Регулярные выплаты вместо разовых просьб</p>
+          </div>
+          <div class="journey-step reveal" style="--d:4">
+            <div class="step-icon"><svg class="icon"><use href="#i-book"/></svg></div>
+            <div class="step-num">02</div>
+            <h3>Обучение</h3>
+            <p>Три микро-урока финансовой грамотности</p>
+          </div>
+          <div class="journey-step reveal" style="--d:5">
+            <div class="step-icon"><svg class="icon"><use href="#i-zap"/></svg></div>
+            <div class="step-num">03</div>
+            <h3>Действие</h3>
+            <p>QR-оплата, переводы и задания от родителей</p>
+          </div>
+          <div class="journey-step reveal" style="--d:6">
+            <div class="step-icon"><svg class="icon"><use href="#i-target"/></svg></div>
+            <div class="step-num">04</div>
+            <h3>Накопление</h3>
+            <p>Копилки с целями, прогрессом и пополнениями</p>
+          </div>
+          <div class="journey-step reveal" style="--d:7">
+            <div class="step-icon"><svg class="icon"><use href="#i-rocket"/></svg></div>
+            <div class="step-num">05</div>
+            <h3>Самостоятельность</h3>
+            <p>Квест 17.5 и переход во взрослый банкинг</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="quote-card reveal" style="--d:8">
+        <span class="quote-icon"><svg class="icon"><use href="#i-spark"/></svg></span>
+        <div>
+          <p>«Родителю — спокойствие, ребёнку — деньги, навыки и самостоятельность».</p>
+          <span>Главная история продукта</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section class="slide" data-title="Два опыта">
+    <div class="slide-inner">
+      <div class="slide-head slide-head--center">
+        <div class="kicker reveal" style="--d:0"><span class="dot"></span>Два опыта</div>
+        <h2 class="reveal" style="--d:1">Один продукт —<br>две главные</h2>
+        <p class="lead reveal" style="--d:2">Родитель видит семейную картину целиком. Ребёнок получает собственный интерфейс по возрасту — без родительских экранов.</p>
+      </div>
+
+      <div class="experience">
+        <div class="experience-side reveal" style="--d:3">
+          <span class="pill"><svg class="icon"><use href="#i-users"/></svg>Родитель</span>
+          <h3>Спокойствие и рамки</h3>
+          <ul class="feature-list">
+            <li>Семейная карта и баланс</li>
+            <li>Члены семьи в одном обзоре</li>
+            <li>Запросы: одобрить или отклонить</li>
+            <li>Лимиты, карманные, блокировка</li>
+            <li>Задания и проверка отчётов</li>
+            <li>Уведомления о рисках</li>
+          </ul>
+        </div>
+
+        <div class="experience-phones reveal" style="--d:2">
+          <div class="phone phone-left"><img src="screenshots/parent-home.png" width="1179" height="2556" alt="Главная родителя"></div>
+          <div class="phone phone-right"><img src="screenshots/child-home.png" width="1179" height="2556" alt="Главная ребёнка"></div>
+          <span class="family-link"><svg class="icon"><use href="#i-users"/></svg>Одна семья</span>
+        </div>
+
+        <div class="experience-side experience-side--child reveal" style="--d:4">
+          <span class="pill pill--orange"><svg class="icon"><use href="#i-star"/></svg>Ребёнок</span>
+          <h3>Самостоятельность</h3>
+          <ul class="feature-list">
+            <li>Собственный вход по возрасту</li>
+            <li>Moby Junior и дневной лимит</li>
+            <li>QR-оплата и переводы</li>
+            <li>Копилки с целями</li>
+            <li>Задания и отчёты</li>
+            <li>История и аналитика трат</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section class="slide" data-title="Возрастные режимы">
+    <div class="slide-inner">
+      <div class="slide-head">
+        <div class="kicker reveal" style="--d:0"><span class="dot"></span>Возрастные режимы</div>
+        <h2 class="reveal" style="--d:1">7–13 и 14–17 —<br>разные уровни свободы</h2>
+        <p class="lead reveal" style="--d:2">Чем старше ребёнок, тем больше самостоятельных операций — при этом родитель сохраняет контроль над рамками.</p>
+      </div>
+
+      <div class="age-grid">
+        <article class="age-card reveal" style="--d:3">
+          <header>
+            <div class="age-badge">7–13</div>
+            <div>
+              <h3>Младший ребёнок</h3>
+              <p>Кошелёк внутри родительского аккаунта</p>
+            </div>
+          </header>
+          <dl class="rows">
+            <div><dt>Счёт</dt><dd>Кошелёк внутри аккаунта родителя</dd></div>
+            <div><dt>Карта</dt><dd>Физическая, заказывает родитель</dd></div>
+            <div><dt>Доступ</dt><dd>Баланс, цели, задания, уроки</dd></div>
+            <div><dt>Одобрение</dt><dd>Каждый платёж или малые суммы</dd></div>
+            <div><dt>Онлайн</dt><dd>По разрешению родителя</dd></div>
+            <div><dt>Мост</dt><dd>Не применим</dd></div>
+          </dl>
+          <div class="autonomy"><span>Свобода</span><span class="meter"><i style="--v:34%"></i></span></div>
+        </article>
+
+        <article class="age-card age-card--teen reveal" style="--d:4">
+          <header>
+            <div class="age-badge">14–17</div>
+            <div>
+              <h3>Подросток</h3>
+              <p>Собственный счёт с согласия родителя</p>
+            </div>
+          </header>
+          <dl class="rows">
+            <div><dt>Счёт</dt><dd>Собственный счёт с согласия родителя</dd></div>
+            <div><dt>Карта</dt><dd>Цифровая в приложении, физическая по желанию</dd></div>
+            <div><dt>Доступ</dt><dd>Больше операций в рамках правил</dd></div>
+            <div><dt>Одобрение</dt><dd>Запрос сверх лимита</dd></div>
+            <div><dt>Онлайн</dt><dd>По разрешению родителя, с лимитом</dd></div>
+            <div><dt>Мост</dt><dd>Автономия, первая зарплата, 18</dd></div>
+          </dl>
+          <div class="autonomy"><span>Свобода</span><span class="meter"><i style="--v:76%"></i></span></div>
+        </article>
+      </div>
+
+      <p class="age-note reveal" style="--d:5">Рабочее допущение прототипа, не юридическое заключение.</p>
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section class="slide" data-title="Сквозные сценарии">
+    <div class="slide-inner">
+      <div class="slide-head">
+        <div class="kicker reveal" style="--d:0"><span class="dot"></span>Сквозные сценарии</div>
+        <h2 class="reveal" style="--d:1">От запроса до результата<br>за несколько шагов</h2>
+        <p class="lead reveal" style="--d:2">Все ключевые действия собраны в одну рабочую цепочку — без переключения между сервисами и чатами.</p>
+      </div>
+
+      <div class="flow-demo reveal" style="--d:3">
+        <div class="flow-node">
+          <span class="avatar">П</span>
+          <div><strong>Павел</strong><span>просит 18,00 BYN</span></div>
+        </div>
+        <div class="flow-link"><i class="packet"></i></div>
+        <div class="flow-node">
+          <span class="avatar avatar--orange">О</span>
+          <div><strong>Олег</strong><span>видит запрос</span></div>
+        </div>
+        <div class="flow-link"><i class="packet packet--2"></i></div>
+        <div class="flow-node flow-node--ok">
+          <svg class="icon"><use href="#i-check"/></svg>
+          <div><strong>Одобрено</strong><span>деньги на карте</span></div>
+        </div>
+      </div>
+
+      <div class="scenario-grid">
+        <article class="scenario reveal" style="--d:4">
+          <div class="scenario-icon"><svg class="icon"><use href="#i-wallet"/></svg></div>
+          <h3>Запрос денег</h3>
+          <p>Ребёнок просит сумму с комментарием — родитель одобряет или отклоняет с причиной.</p>
+          <div class="mini-chips">
+            <span class="mini-tag mini-tag--blue">Запрос</span>
+            <span class="mini-tag">Одобрение</span>
+            <span class="mini-tag mini-tag--green">Зачислено</span>
+          </div>
+        </article>
+
+        <article class="scenario reveal" style="--d:5">
+          <div class="scenario-icon"><svg class="icon"><use href="#i-gift"/></svg></div>
+          <h3>Задания и награды</h3>
+          <p>Награда резервируется на карте родителя, ребёнок сдаёт отчёт, родитель подтверждает.</p>
+          <div class="mini-chips">
+            <span class="mini-tag mini-tag--orange">Эскроу</span>
+            <span class="mini-tag">Отчёт</span>
+            <span class="mini-tag mini-tag--green">Награда</span>
+          </div>
+        </article>
+
+        <article class="scenario reveal" style="--d:6">
+          <div class="scenario-icon"><svg class="icon"><use href="#i-target"/></svg></div>
+          <h3>Копилки</h3>
+          <p>Цель с прогрессом, пополнения с карты и вывод накоплений одной суммой.</p>
+          <div class="mini-progress-label"><span>Новый телефон</span><span>68%</span></div>
+          <div class="mini-bar"><i style="--v:68%"></i></div>
+        </article>
+
+        <article class="scenario reveal" style="--d:7">
+          <div class="scenario-icon"><svg class="icon"><use href="#i-qr"/></svg></div>
+          <h3>QR-оплата</h3>
+          <p>Проверки карты, лимита, 18+ и ночного времени. За покупки начисляются Мобики.</p>
+          <div class="mini-chips">
+            <span class="mini-tag mini-tag--blue">18+</span>
+            <span class="mini-tag">Лимит</span>
+            <span class="mini-tag mini-tag--orange">Ночь</span>
+            <span class="mini-tag mini-tag--green">Мобики</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section class="slide" data-title="Безопасность">
+    <div class="slide-inner">
+      <div class="slide-head">
+        <div class="kicker reveal" style="--d:0"><span class="dot"></span>Безопасность</div>
+        <h2 class="reveal" style="--d:1">Правила задаёт родитель,<br>банк следит за ними</h2>
+        <p class="lead reveal" style="--d:2">Лимиты, запреты и уведомления работают на уровне операций — ребёнок видит последствия, родитель остаётся в курсе.</p>
+      </div>
+
+      <div class="security">
+        <div class="reveal" style="--d:3">
+          <div class="shield-stage">
+            <div class="ring"></div>
+            <div class="ring ring-2"></div>
+            <div class="ring ring-3"></div>
+            <div class="shield-core"><svg class="icon"><use href="#i-shield"/></svg></div>
+            <span class="orbit-chip orbit-1"><svg class="icon"><use href="#i-lock"/></svg>Лимиты</span>
+            <span class="orbit-chip orbit-2 orbit-chip--orange"><svg class="icon"><use href="#i-bell"/></svg>Уведомления</span>
+            <span class="orbit-chip orbit-3"><svg class="icon"><use href="#i-eye-off"/></svg>18+</span>
+            <span class="orbit-chip orbit-4"><svg class="icon"><use href="#i-card"/></svg>Блокировка</span>
+            <span class="orbit-chip orbit-5"><svg class="icon"><use href="#i-clock"/></svg>Ночной режим</span>
+          </div>
+          <div class="shield-stats">
+            <div class="stat"><strong>4</strong><span>запрещённые MCC-категории</span></div>
+            <div class="stat"><strong>23:00–06:00</strong><span>контроль ночных покупок</span></div>
+            <div class="stat"><strong>0 BYN</strong><span>списано при отказе</span></div>
+          </div>
+        </div>
+
+        <div class="rules">
+          <article class="rule reveal" style="--d:4">
+            <div class="rule-icon"><svg class="icon"><use href="#i-wallet"/></svg></div>
+            <h3>Дневной лимит</h3>
+            <p>Оплата сверх лимита не проходит, деньги не списываются.</p>
+          </article>
+          <article class="rule reveal" style="--d:5">
+            <div class="rule-icon"><svg class="icon"><use href="#i-lock"/></svg></div>
+            <h3>Блокировка карты</h3>
+            <p>Мгновенно, с подтверждением действия родителем.</p>
+          </article>
+          <article class="rule reveal" style="--d:6">
+            <div class="rule-icon"><svg class="icon"><use href="#i-eye-off"/></svg></div>
+            <h3>18+ и азартные игры</h3>
+            <p>Четыре категории MCC отклоняются, родитель получает сигнал.</p>
+          </article>
+          <article class="rule reveal" style="--d:7">
+            <div class="rule-icon"><svg class="icon"><use href="#i-clock"/></svg></div>
+            <h3>Ночные покупки</h3>
+            <p>С 23:00 до 06:00 операция проходит с уведомлением родителям.</p>
+          </article>
+          <article class="rule reveal" style="--d:8">
+            <div class="rule-icon"><svg class="icon"><use href="#i-card"/></svg></div>
+            <h3>Онлайн и наличные</h3>
+            <p>Отдельные переключатели для покупок и снятия.</p>
+          </article>
+          <article class="rule reveal" style="--d:9">
+            <div class="rule-icon"><svg class="icon"><use href="#i-bell"/></svg></div>
+            <h3>PUSH родителям</h3>
+            <p>Запреты, лимиты, запросы и сброс трат — в одном месте.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 -->
+  <section class="slide" data-title="Квест 17.5">
+    <div class="slide-inner">
+      <div class="slide-head">
+        <div class="kicker reveal" style="--d:0"><span class="dot"></span>Квест 17.5</div>
+        <h2 class="reveal" style="--d:1">Мост из детского банкинга<br>во взрослый</h2>
+        <p class="lead reveal" style="--d:2">Перед 18 годами подросток проходит чекпоинты и видит, что уже умеет — переход не обнуляет его финансовую историю.</p>
+      </div>
+
+      <div class="quest">
+        <div class="reveal" style="--d:3">
+          <div class="ring-wrap">
+            <svg class="quest-ring" viewBox="0 0 160 160" aria-hidden="true">
+              <defs>
+                <linearGradient id="questGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#1D63ED"/>
+                  <stop offset="62%" stop-color="#2B73FA"/>
+                  <stop offset="100%" stop-color="#FB7800"/>
+                </linearGradient>
+              </defs>
+              <circle class="track" cx="80" cy="80" r="64"/>
+              <circle class="fill" cx="80" cy="80" r="64"/>
+            </svg>
+            <div class="ring-label">
+              <div class="value"><strong data-count="100">0</strong><span>%</span></div>
+              <em>Путь к 18</em>
+            </div>
+          </div>
+          <p class="quest-note">Чекпоинты показывают готовность к самостоятельности, а не заменяют согласие родителя.</p>
+        </div>
+
+        <div class="quest-right">
+          <h3 class="reveal" style="--d:3">Чекпоинты квеста</h3>
+          <ul class="checkpoints">
+            <li class="reveal" style="--d:4"><span class="check"><svg class="icon"><use href="#i-check"/></svg></span>Возраст 14+</li>
+            <li class="reveal" style="--d:5"><span class="check"><svg class="icon"><use href="#i-check"/></svg></span>Хотя бы одна закрытая копилка</li>
+            <li class="reveal" style="--d:6"><span class="check"><svg class="icon"><use href="#i-check"/></svg></span>Три выполненных задания</li>
+            <li class="reveal" style="--d:7"><span class="check"><svg class="icon"><use href="#i-check"/></svg></span>Пять успешных операций</li>
+            <li class="reveal" style="--d:8"><span class="check"><svg class="icon"><use href="#i-check"/></svg></span>50 Мобиков</li>
+          </ul>
+
+          <div class="quest-transition reveal" style="--d:9">
+            <span>Детский счёт</span>
+            <span class="arrow"><svg class="icon"><use href="#i-arrow-right"/></svg></span>
+            <span class="adult">Взрослый банкинг</span>
+            <span class="arrow"><svg class="icon"><use href="#i-arrow-right"/></svg></span>
+            <span>18 лет</span>
+          </div>
+          <p class="quest-foot reveal" style="--d:10">Выпуск сохраняет карты, копилки, Мобики и историю; родительские привязки снимаются.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 -->
+  <section class="slide" data-title="Под капотом">
+    <div class="slide-inner">
+      <div class="slide-head">
+        <div class="kicker reveal" style="--d:0"><span class="dot"></span>Под капотом</div>
+        <h2 class="reveal" style="--d:1">Прототип с реальным API,<br>а не моками на экране</h2>
+        <p class="lead reveal" style="--d:2">Мобильный клиент ходит в собственный NestJS-бэкенд. Контракт описан в OpenAPI, из него генерируются типы и fetch-клиенты.</p>
+      </div>
+
+      <div class="stack-flow">
+        <div class="stack-node reveal" style="--d:3">
+          <div class="stack-icon"><svg class="icon"><use href="#i-phone"/></svg></div>
+          <strong>Expo · React Native</strong>
+          <span>iOS · Android · Web, Expo Router</span>
+        </div>
+        <div class="stack-link" aria-hidden="true"><i class="packet"></i></div>
+        <div class="stack-node reveal" style="--d:4">
+          <div class="stack-icon"><svg class="icon"><use href="#i-code"/></svg></div>
+          <strong>Kubb · OpenAPI</strong>
+          <span>Типы и клиенты из контракта</span>
+        </div>
+        <div class="stack-link" aria-hidden="true"><i class="packet packet--2"></i></div>
+        <div class="stack-node reveal" style="--d:5">
+          <div class="stack-icon"><svg class="icon"><use href="#i-server"/></svg></div>
+          <strong>NestJS API</strong>
+          <span>Валидация, роли, операции, Socket.IO</span>
+        </div>
+        <div class="stack-link" aria-hidden="true"><i class="packet"></i></div>
+        <div class="stack-node reveal" style="--d:6">
+          <div class="stack-icon"><svg class="icon"><use href="#i-database"/></svg></div>
+          <strong>PostgreSQL · Prisma</strong>
+          <span>Карты, семья, операции, задания</span>
+        </div>
+      </div>
+
+      <div class="tech-row reveal" style="--d:7">
+        <span class="tech">Expo SDK 57</span>
+        <span class="tech">React Native 0.86</span>
+        <span class="tech">React 19</span>
+        <span class="tech">TypeScript</span>
+        <span class="tech">NativeWind</span>
+        <span class="tech">Reanimated</span>
+        <span class="tech">Kubb 5</span>
+        <span class="tech">NestJS 11</span>
+        <span class="tech">Prisma 7</span>
+        <span class="tech">PostgreSQL</span>
+      </div>
+
+      <div class="facts">
+        <div class="fact reveal" style="--d:8">
+          <span class="fact-icon"><svg class="icon"><use href="#i-chart"/></svg></span>
+          <div><strong data-count="50">0</strong><span>путей в OpenAPI</span></div>
+        </div>
+        <div class="fact reveal" style="--d:9">
+          <span class="fact-icon"><svg class="icon"><use href="#i-users"/></svg></span>
+          <div><strong data-count="4">0</strong><span>роли пользователей</span></div>
+        </div>
+        <div class="fact reveal" style="--d:10">
+          <span class="fact-icon"><svg class="icon"><use href="#i-refresh"/></svg></span>
+          <div><strong>0</strong><span>моков на экранах</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 -->
+  <section class="slide slide--dark slide--closing" data-title="Финал">
+    <div class="slide-inner">
+      <span class="closing-badge closing-badge--1"><svg class="icon"><use href="#i-target"/></svg>Цель достигнута</span>
+      <span class="closing-badge closing-badge--2"><svg class="icon"><use href="#i-gift"/></svg>Задание · +10 BYN</span>
+      <span class="closing-badge closing-badge--3"><svg class="icon"><use href="#i-rocket"/></svg>Квест 17.5 · 100%</span>
+
+      <div class="closing-logo reveal" style="--d:0"><img src="../assets/images/logo-moby-family.png" alt="Moby Family"></div>
+      <div class="kicker reveal" style="--d:1"><span class="dot"></span>Moby Family · Moby МТбанк</div>
+      <h2 class="reveal" style="--d:2">Не контроль.<br><span class="grad-orange">Самостоятельность.</span></h2>
+      <p class="reveal" style="--d:3">Семейный режим, в котором родитель сохраняет спокойствие, а ребёнок получает деньги, навыки и пространство для собственных решений.</p>
+      <div class="chip-row reveal" style="--d:4">
+        <span class="chip"><svg class="icon"><use href="#i-wallet"/></svg>Карманные</span>
+        <span class="chip"><svg class="icon"><use href="#i-lock"/></svg>Лимиты</span>
+        <span class="chip"><svg class="icon"><use href="#i-gift"/></svg>Задания</span>
+        <span class="chip"><svg class="icon"><use href="#i-target"/></svg>Копилки</span>
+        <span class="chip"><svg class="icon"><use href="#i-rocket"/></svg>Квест 17.5</span>
+      </div>
+      <div class="closing-foot reveal" style="--d:5">Прототип для хакатона · Expo + NestJS · 2026</div>
+    </div>
+  </section>
+
+</main>
+
+<nav class="controls" aria-label="Навигация по презентации">
+  <button id="prevBtn" type="button" aria-label="Предыдущий слайд" title="Предыдущий слайд">
+    <svg class="icon"><use href="#i-arrow-left"/></svg>
+  </button>
+  <button id="autoBtn" type="button" aria-label="Автопрокрутка" title="Автопрокрутка (A)" aria-pressed="false">
+    <svg class="icon"><use href="#i-play"/></svg><span>Авто</span>
+  </button>
+  <button id="nextBtn" type="button" aria-label="Следующий слайд" title="Следующий слайд">
+    <svg class="icon"><use href="#i-arrow-right"/></svg>
+  </button>
+  <button id="fsBtn" type="button" aria-label="На весь экран" title="На весь экран (F)">
+    <svg class="icon"><use href="#i-expand"/></svg>
+  </button>
+</nav>
+
+<div class="dots" id="dots" aria-label="Слайды"></div>
+<div class="hint" id="hint">← → / пробел · F — весь экран · A — авто</div>
+
+<script>
+  (() => {
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const deck = document.getElementById('deck');
+    const progressFill = document.getElementById('progressFill');
+    const progress = document.querySelector('.progress');
+    const slideNow = document.getElementById('slideNow');
+    const slideTotal = document.getElementById('slideTotal');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const autoBtn = document.getElementById('autoBtn');
+    const fsBtn = document.getElementById('fsBtn');
+    const dotsWrap = document.getElementById('dots');
+    const hint = document.getElementById('hint');
+
+    let current = 0;
+    let auto = false;
+    let autoTimer = null;
+    let wheelLock = false;
+
+    slideTotal.textContent = String(slides.length).padStart(2, '0');
+
+    slides.forEach((slide, i) => {
+      slide.setAttribute('aria-label', slide.dataset.title || `Слайд ${i + 1}`);
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.setAttribute('aria-label', `Слайд ${i + 1}: ${slide.dataset.title || ''}`);
+      dot.addEventListener('click', () => {
+        goTo(i);
+        if (auto) scheduleAuto();
+      });
+      dotsWrap.appendChild(dot);
+    });
+
+    const dots = Array.from(dotsWrap.children);
+
+    function resetCounters(slide) {
+      slide.querySelectorAll('[data-count]').forEach(el => { el.textContent = '0'; });
+    }
+
+    function animateCounters(slide) {
+      slide.querySelectorAll('[data-count]').forEach(el => {
+        const target = Number(el.dataset.count) || 0;
+        if (target === 0) { el.textContent = '0'; return; }
+        const duration = 1300;
+        const start = performance.now();
+        const tick = now => {
+          const t = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - t, 3);
+          el.textContent = String(Math.round(target * eased));
+          if (t < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      });
+    }
+
+    function updateHud() {
+      slideNow.textContent = String(current + 1).padStart(2, '0');
+      const percent = Math.round(((current + 1) / slides.length) * 100);
+      progressFill.style.width = percent + '%';
+      progress.setAttribute('aria-valuenow', String(percent));
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === current));
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === slides.length - 1;
+      document.title = current === 0
+        ? 'Moby Family — презентация'
+        : `${slides[current].dataset.title || 'Moby Family'} — Moby Family`;
+    }
+
+    function goTo(n, options = {}) {
+      n = Math.max(0, Math.min(slides.length - 1, n));
+      if (n === current && !options.force) return;
+
+      const previous = slides[current];
+      if (previous !== slides[n]) resetCounters(previous);
+
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === n);
+        slide.classList.toggle('prev', i < n);
+        slide.setAttribute('aria-hidden', i === n ? 'false' : 'true');
+      });
+
+      current = n;
+      slides[current].scrollTop = 0;
+      updateHud();
+
+      const active = slides[current];
+      requestAnimationFrame(() => animateCounters(active));
+
+      if (auto) scheduleAuto();
+    }
+
+    function scheduleAuto() {
+      clearTimeout(autoTimer);
+      if (!auto) return;
+      autoTimer = setTimeout(() => {
+        if (current >= slides.length - 1) {
+          setAuto(false);
+          return;
+        }
+        goTo(current + 1);
+        scheduleAuto();
+      }, 10000);
+    }
+
+    function setAuto(on) {
+      auto = on;
+      autoBtn.classList.toggle('on', auto);
+      autoBtn.setAttribute('aria-pressed', String(auto));
+      autoBtn.querySelector('span').textContent = auto ? 'Пауза' : 'Авто';
+      autoBtn.querySelector('use').setAttribute('href', auto ? '#i-pause' : '#i-play');
+      if (auto) scheduleAuto();
+      else clearTimeout(autoTimer);
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.().catch(() => {});
+      } else {
+        document.exitFullscreen?.();
+      }
+    }
+
+    prevBtn.addEventListener('click', () => goTo(current - 1));
+    nextBtn.addEventListener('click', () => goTo(current + 1));
+    autoBtn.addEventListener('click', () => setAuto(!auto));
+    fsBtn.addEventListener('click', toggleFullscreen);
+
+    if (!document.documentElement.requestFullscreen) fsBtn.hidden = true;
+
+    document.addEventListener('fullscreenchange', () => {
+      fsBtn.classList.toggle('on', Boolean(document.fullscreenElement));
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      const key = event.key;
+      if (key === 'ArrowRight' || key === 'ArrowDown' || key === 'PageDown' || key === ' ') {
+        event.preventDefault();
+        goTo(current + 1);
+      } else if (key === 'ArrowLeft' || key === 'ArrowUp' || key === 'PageUp') {
+        event.preventDefault();
+        goTo(current - 1);
+      } else if (key === 'Home') {
+        event.preventDefault();
+        goTo(0);
+      } else if (key === 'End') {
+        event.preventDefault();
+        goTo(slides.length - 1);
+      } else if (key === 'f' || key === 'F' || key === 'а' || key === 'А') {
+        toggleFullscreen();
+      } else if (key === 'a' || key === 'A' || key === 'ф' || key === 'Ф') {
+        setAuto(!auto);
+      }
+    });
+
+    deck.addEventListener('wheel', event => {
+      const active = slides[current];
+      const canScroll = active.scrollHeight > active.clientHeight + 4;
+      if (canScroll) return;
+      if (wheelLock || Math.abs(event.deltaY) < 24) return;
+      wheelLock = true;
+      goTo(current + (event.deltaY > 0 ? 1 : -1));
+      setTimeout(() => { wheelLock = false; }, 700);
+    }, { passive: true });
+
+    let touchX = null;
+    let touchY = null;
+
+    deck.addEventListener('touchstart', event => {
+      const touch = event.changedTouches[0];
+      touchX = touch.clientX;
+      touchY = touch.clientY;
+    }, { passive: true });
+
+    deck.addEventListener('touchend', event => {
+      if (touchX === null) return;
+      const touch = event.changedTouches[0];
+      const dx = touch.clientX - touchX;
+      const dy = touch.clientY - touchY;
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+        goTo(current + (dx < 0 ? 1 : -1));
+      }
+      touchX = null;
+      touchY = null;
+    }, { passive: true });
+
+    window.addEventListener('resize', () => {
+      slides[current].scrollTop = 0;
+    });
+
+    setTimeout(() => hint.classList.add('faded'), 7000);
+
+    goTo(0, { force: true });
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setAuto(false);
+    }
+  })();
+</script>
+
+</body>
+</html>
