@@ -7,11 +7,10 @@ export function AddMemberIntro() {
     <View className="gap-2">
       <View className="flex-row items-center gap-1.5 self-start rounded-full bg-primary-fixed px-3 py-1">
         <Icon name="family-restroom" size={16} color="#004BC3" />
-        <Text className="text-label-sm font-inter-semibold uppercase tracking-wide text-primary">
-          Moby Junior • мтбанк
+        <Text className="text-label-sm font-inter-semibold tracking-wide text-primary">
+          MOBY JUNIOR • МТбанк
         </Text>
       </View>
-
       <Text className="text-display-mobile font-inter-bold tracking-tight text-on-surface">
         Добавить ребёнка
       </Text>
